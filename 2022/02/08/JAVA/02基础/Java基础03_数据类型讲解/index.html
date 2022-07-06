@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>数据类型讲解 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="数据类型强类型语言要求变量的使用要严格符合规定，所有的变量都必须先定义后才能使用   弱类型语言">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据类型讲解">
+<meta property="og:url" content="http://example.com/2022/02/08/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8003_%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%AE%B2%E8%A7%A3/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="数据类型强类型语言要求变量的使用要严格符合规定，所有的变量都必须先定义后才能使用   弱类型语言">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/02/08/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8003_%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%AE%B2%E8%A7%A3/Java基础03_数据类型讲解/未初始化的变量无法使用.png">
+<meta property="og:image" content="http://example.com/2022/02/08/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8003_%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%AE%B2%E8%A7%A3/Java基础03_数据类型讲解/变量内容必须符合声明.png">
+<meta property="og:image" content="http://example.com/2022/02/08/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8003_%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%AE%B2%E8%A7%A3/Java基础03_数据类型讲解/正确使用.png">
+<meta property="og:image" content="http://example.com/2022/02/08/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8003_%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%AE%B2%E8%A7%A3/Java基础03_数据类型讲解/Java中的数据类型导图.png">
+<meta property="article:published_time" content="2022-02-08T07:12:00.000Z">
+<meta property="article:modified_time" content="2022-02-08T09:27:28.468Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="狂神">
+<meta property="article:tag" content="基础">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/02/08/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8003_%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%AE%B2%E8%A7%A3/Java基础03_数据类型讲解/未初始化的变量无法使用.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-JAVA/02基础/Java基础03_数据类型讲解" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/02/08/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8003_%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%AE%B2%E8%A7%A3/" class="article-date">
+  <time class="dt-published" datetime="2022-02-08T07:12:00.000Z" itemprop="datePublished">2022-02-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%8B%82%E7%A5%9E/">狂神</a>►<a class="article-category-link" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/">狂神说Java</a>►<a class="article-category-link" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/">Java零基础学习视频通俗易懂</a>►<a class="article-category-link" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/Java%E5%9F%BA%E7%A1%80/">Java基础</a>►<a class="article-category-link" href="/categories/%E8%87%AA%E5%AD%A6/">自学</a>►<a class="article-category-link" href="/categories/%E8%87%AA%E5%AD%A6/Java/">Java</a>►<a class="article-category-link" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E5%9F%BA%E7%A1%80/">基础</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      数据类型讲解
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><h3 id="强类型语言"><a href="#强类型语言" class="headerlink" title="强类型语言"></a>强类型语言</h3><p>要求变量的使用要严格符合规定，所有的变量都必须先定义后才能使用  </p>
+<h3 id="弱类型语言"><a href="#弱类型语言" class="headerlink" title="弱类型语言"></a>弱类型语言</h3><span id="more"></span>
+
+<ul>
+<li><p>未初始化的变量无法使用</p>
+ <img src="Java基础03_数据类型讲解/未初始化的变量无法使用.png">
+</li>
+<li><p>变量内容必须符合声明</p>
+ <img src="Java基础03_数据类型讲解/变量内容必须符合声明.png">
+</li>
+<li><p>正确使用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Demo02</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">a</span> <span class="operator">=</span> <span class="string">&quot;十早九木&quot;</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> <span class="number">123</span>;</span><br><span class="line">        System.out.println(a);</span><br><span class="line">        System.out.println(num);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+ <img src="Java基础03_数据类型讲解/正确使用.png"></li>
+</ul>
+<h3 id="Java的数据基本类型分为两大类"><a href="#Java的数据基本类型分为两大类" class="headerlink" title="Java的数据基本类型分为两大类"></a>Java的数据基本类型分为两大类</h3><h4 id="基本类型（primitive-type）"><a href="#基本类型（primitive-type）" class="headerlink" title="基本类型（primitive type）"></a>基本类型（primitive type）</h4><h4 id="引用类型（reference-type）"><a href="#引用类型（reference-type）" class="headerlink" title="引用类型（reference type）"></a>引用类型（reference type）</h4>   <img src="Java基础03_数据类型讲解/Java中的数据类型导图.png">
+
+
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;root&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqinypzv6o0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308356398</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;Java中的数据类型&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiohxjq2o0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308398213</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;基本数据类型（primitive type）&quot;</span><span class="punctuation">,</span><span class="attr">&quot;layout&quot;</span><span class="punctuation">:</span><span class="keyword">null</span><span class="punctuation">,</span><span class="attr">&quot;layout_bottom_offset&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;x&quot;</span><span class="punctuation">:</span><span class="number">-40</span><span class="punctuation">,</span><span class="attr">&quot;y&quot;</span><span class="punctuation">:</span><span class="number">-2</span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiq0c7fps0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308516646</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;数值型&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqir1f284o0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308597359</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;整型&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqirkbv5140&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308638525</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;字节（byte）&quot;</span><span class="punctuation">,</span><span class="attr">&quot;progress&quot;</span><span class="punctuation">:</span><span class="keyword">null</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqizb9toa00&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644309245724</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;占1字节&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqizdgo6sg0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644309250491</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;范围 -128~127（-2的7次方到2的7次方-1）&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiro529lk0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308646821</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;短整型（short）&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiz82g7a80&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644309238748</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;占2字节&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqizl236cg0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644309267024</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;范围 -32768~32757（-2的15次方到2的15次方-1）&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqirsndxs80&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308656636</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;整型（int）&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiz503zw80&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644309232076</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;占4字节&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqj0lktw400&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644309346521</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;范围 -2147483648～2147483647（-2的31次方到2的31次方-1）&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqis2upxmw0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308678847</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;长整型（long）&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiz2nulww0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644309226981</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;占8字节&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqj0ql4vgo0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644309357424</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;范围 -9223372036854774808～9223372036854774807（-2的63次方到2的63次方-1）&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqir3xxi1s0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308602854</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;浮点型&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqir6jv0fk0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308608534</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;单精度浮点型（float）&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiyydc2s80&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644309217638</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;占4字节&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqirbiiq2o0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308619336</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;双精度浮点型（double）&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiyqxqtjs0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644309201458</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;占8字节&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqivwes1gg0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308978279</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;字符类型&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqivzend340&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308984802</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;char&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiw4w9p3k0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308996751</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;占2字节&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiq3am1i00&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308523080</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;boolean类型&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiwd0o2co0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644309014431</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;只有true和false两种值&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiwokfx7c0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644309039572</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;占1位&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiom12i680&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308407133</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;引用数据类型（reference type）&quot;</span><span class="punctuation">,</span><span class="attr">&quot;layout_bottom_offset&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;x&quot;</span><span class="punctuation">:</span><span class="number">112</span><span class="punctuation">,</span><span class="attr">&quot;y&quot;</span><span class="punctuation">:</span><span class="number">-119</span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqis9bad6o0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308692910</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;类（class）&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqiscc2whk0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308699488</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;接口（interface）&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;data&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;chqisi15pm00&quot;</span><span class="punctuation">,</span><span class="attr">&quot;created&quot;</span><span class="punctuation">:</span><span class="number">1644308711888</span><span class="punctuation">,</span><span class="attr">&quot;text&quot;</span><span class="punctuation">:</span><span class="string">&quot;数组（array）&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;children&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="attr">&quot;template&quot;</span><span class="punctuation">:</span><span class="string">&quot;right&quot;</span><span class="punctuation">,</span><span class="attr">&quot;theme&quot;</span><span class="punctuation">:</span><span class="string">&quot;fresh-blue&quot;</span><span class="punctuation">,</span><span class="attr">&quot;version&quot;</span><span class="punctuation">:</span><span class="string">&quot;1.4.43&quot;</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以使用<a target="_blank" rel="noopener" href="https://www.iodraw.com/">ioDraw</a>平台还原为思维导图</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2022/02/08/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8003_%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%AE%B2%E8%A7%A3/" data-id="cl5943lvw002fo0vt42zcdyul" data-title="数据类型讲解" class="article-share-link">Share</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9F%BA%E7%A1%80/" rel="tag">基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%8B%82%E7%A5%9E/" rel="tag">狂神</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2022/02/13/Spring/SpringBoot/SpringBoot%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BBToken%E9%AA%8C%E8%AF%81/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          SpringBoot前后端分离Token验证
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2022/02/08/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8002_%E6%A0%87%E8%AF%86%E7%AC%A6%E5%92%8C%E5%85%B3%E9%94%AE%E5%AD%97/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">标识符和关键字</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS/">CentOS</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS/%E5%AE%89%E8%A3%85JDK/">安装JDK</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS/%E5%AE%89%E8%A3%85MySQL/">安装MySQL</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS/%E5%AE%89%E8%A3%85Nginx/">安装Nginx</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS/%E8%AE%BE%E7%BD%AEMySQL/">设置MySQL</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS/%E8%BF%9E%E6%8E%A5/">连接</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/%E4%BB%A5%E5%90%8E%E5%86%8D%E5%88%86%E7%B1%BB%E5%90%A7/">以后再分类吧</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Python/%E5%B0%8F%E5%B7%A5%E5%85%B7/">小工具</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/">Spring Cloud</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/Hoxton%E7%89%88%E6%9C%AC/">Hoxton版本</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/%E5%85%A5%E9%97%A8/">入门</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Spring-Cloud/%E5%85%A5%E9%97%A8/Eureka%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%8E%E5%8F%91%E7%8E%B0/">Eureka服务注册与发现</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%87%E6%9C%AC/">升本</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%87%E6%9C%AC/%E6%95%B0%E5%AD%A6/">数学</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%87%E6%9C%AC/%E6%95%B0%E5%AD%A6/%E5%87%BD%E6%95%B0/">函数</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E4%BD%9C/">工作</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E4%BD%9C/%E6%99%BA%E5%B0%A7/">智尧</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E4%BD%9C/%E6%99%BA%E5%B0%A7/SpringBoot/">SpringBoot</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E4%BD%9C/%E6%99%BA%E5%B0%A7/SpringBoot/Token%E9%AA%8C%E8%AF%81/">Token验证</a></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F/">微信小程序</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F/%E5%88%B7%E6%96%B0/">刷新</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%A5%A0%E5%93%A5/">楠哥</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%A5%A0%E5%93%A5/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/">开源项目学习</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%A5%A0%E5%93%A5/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E5%AD%A6%E4%B9%A0/%E8%8B%A5%E4%BE%9D%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E7%89%88/">若依前后端分离版</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%8B%82%E7%A5%9E/">狂神</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/">狂神说Java</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/">Java零基础学习视频通俗易懂</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/Java%E5%85%A5%E9%97%A8/">Java入门</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/Java%E5%9F%BA%E7%A1%80/">Java基础</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/Java%E6%95%B0%E7%BB%84/">Java数组</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/Java%E6%96%B9%E6%B3%95/">Java方法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/">Java流程控制</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/">Java面向对象</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/Java%E9%A2%84%E7%A7%91/">Java预科</a></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%87%AA%E5%AD%A6/">自学</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%87%AA%E5%AD%A6/Java/">Java</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E5%85%A5%E9%97%A8/">入门</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E5%9F%BA%E7%A1%80/">基础</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E6%95%B0%E7%BB%84/">数组</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E6%96%B9%E6%B3%95/">方法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/">流程控制</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E8%8B%A5%E4%BE%9D/">若依</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E8%8B%A5%E4%BE%9D/%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/">前后端分离</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/">面向对象</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E9%A2%84%E7%A7%91/">预科</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%9A%8F%E8%AE%B0%EF%BC%8C%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F/">随记，微信小程序</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%9A%8F%E8%AE%B0%EF%BC%8C%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F/%E5%88%B7%E6%96%B0/">刷新</a></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS/" rel="tag">CentOS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Eureka%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%8E%E5%8F%91%E7%8E%B0/" rel="tag">Eureka服务注册与发现</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hoxton%E7%89%88%E6%9C%AC/" rel="tag">Hoxton版本</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/" rel="tag">Python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-Cloud%E5%85%A5%E9%97%A8/" rel="tag">Spring Cloud入门</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" rel="tag">SpringBoot前后端分离</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Token%E9%AA%8C%E8%AF%81/" rel="tag">Token验证</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">云服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A5%E5%90%8E%E5%86%8D%E5%88%86%E7%B1%BB%E5%90%A7/" rel="tag">以后再分类吧</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%A5%E9%97%A8/" rel="tag">入门</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0/" rel="tag">函数</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" rel="tag">前后端分离</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%87%E6%9C%AC/" rel="tag">升本</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%BA%E7%A1%80/" rel="tag">基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E8%A3%85/" rel="tag">安装</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%8F%E5%B7%A5%E5%85%B7/" rel="tag">小工具</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F/" rel="tag">微信小程序</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E5%AD%A6/" rel="tag">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%96%B9%E6%B3%95/" rel="tag">方法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A5%A0%E5%93%A5/" rel="tag">楠哥</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/" rel="tag">流程控制</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%8B%82%E7%A5%9E/" rel="tag">狂神</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E7%BD%AEMySQL/" rel="tag">设置MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E8%AE%B0/" rel="tag">随记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" rel="tag">面向对象</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A2%84%E7%A7%91/" rel="tag">预科</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CentOS/" style="font-size: 14px;">CentOS</a> <a href="/tags/Eureka%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%8E%E5%8F%91%E7%8E%B0/" style="font-size: 10px;">Eureka服务注册与发现</a> <a href="/tags/Hoxton%E7%89%88%E6%9C%AC/" style="font-size: 10px;">Hoxton版本</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Linux/" style="font-size: 14px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 12px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Python/" style="font-size: 12px;">Python</a> <a href="/tags/Redis/" style="font-size: 10px;">Redis</a> <a href="/tags/Spring-Cloud%E5%85%A5%E9%97%A8/" style="font-size: 10px;">Spring Cloud入门</a> <a href="/tags/SpringBoot%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" style="font-size: 10px;">SpringBoot前后端分离</a> <a href="/tags/Token%E9%AA%8C%E8%AF%81/" style="font-size: 10px;">Token验证</a> <a href="/tags/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 14px;">云服务器</a> <a href="/tags/%E4%BB%A5%E5%90%8E%E5%86%8D%E5%88%86%E7%B1%BB%E5%90%A7/" style="font-size: 10px;">以后再分类吧</a> <a href="/tags/%E5%85%A5%E9%97%A8/" style="font-size: 13px;">入门</a> <a href="/tags/%E5%87%BD%E6%95%B0/" style="font-size: 10px;">函数</a> <a href="/tags/%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/" style="font-size: 12px;">前后端分离</a> <a href="/tags/%E5%8D%87%E6%9C%AC/" style="font-size: 10px;">升本</a> <a href="/tags/%E5%9F%BA%E7%A1%80/" style="font-size: 18px;">基础</a> <a href="/tags/%E5%AE%89%E8%A3%85/" style="font-size: 12px;">安装</a> <a href="/tags/%E5%B0%8F%E5%B7%A5%E5%85%B7/" style="font-size: 12px;">小工具</a> <a href="/tags/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F/" style="font-size: 10px;">微信小程序</a> <a href="/tags/%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">数学</a> <a href="/tags/%E6%95%B0%E7%BB%84/" style="font-size: 16px;">数组</a> <a href="/tags/%E6%96%B9%E6%B3%95/" style="font-size: 15px;">方法</a> <a href="/tags/%E6%A5%A0%E5%93%A5/" style="font-size: 12px;">楠哥</a> <a href="/tags/%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/" style="font-size: 17px;">流程控制</a> <a href="/tags/%E7%8B%82%E7%A5%9E/" style="font-size: 19px;">狂神</a> <a href="/tags/%E8%8B%A5%E4%BE%9D/" style="font-size: 12px;">若依</a> <a href="/tags/%E8%AE%BE%E7%BD%AEMySQL/" style="font-size: 10px;">设置MySQL</a> <a href="/tags/%E9%9A%8F%E8%AE%B0/" style="font-size: 10px;">随记</a> <a href="/tags/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" style="font-size: 16px;">面向对象</a> <a href="/tags/%E9%A2%84%E7%A7%91/" style="font-size: 11px;">预科</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">July 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/06/">June 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">April 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">February 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">January 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/07/06/%E6%9C%AA%E7%9F%A5/Windows%E4%B8%8BErlang%E5%92%8CRabbitMQ%E4%B8%8B%E8%BD%BD%E5%AE%89%E8%A3%85/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2022/07/06/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A117_N%E7%A7%8D%E5%86%85%E9%83%A8%E7%B1%BB/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2022/07/06/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A110_Super%E8%AF%A6%E8%A7%A3/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2022/07/06/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A111_%E6%96%B9%E6%B3%95%E9%87%8D%E5%86%99/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2022/07/06/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A112_%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%9A%E6%80%81/">(no title)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2022 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
