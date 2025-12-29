@@ -1,0 +1,226 @@
+<!DOCTYPE html><html lang="zh-Hans" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>打印九九乘法表 | 十早九木のBlog</title><meta name="author" content="十早九木"><meta name="copyright" content="十早九木"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="打印九九乘法表效果 1234567891*1&#x3D;1	1*2&#x3D;2	2*2&#x3D;4	1*3&#x3D;3	2*3&#x3D;6	3*3&#x3D;9	1*4&#x3D;4	2*4&#x3D;8	3*4&#x3D;12	4*4&#x3D;16	1*5&#x3D;5	2*5&#x3D;10	3*5&#x3D;15	4*5&#x3D;20	5*5&#x3D;25	1*6&#x3D;6	2*6&#x3D;12	3*6&#x3D;18	4*6&#x3D;24	5*6&#x3D;30	6*6&#x3D;36	1*7&#x3D;7	2*7&#x3D;14	3*7&#x3D;21	4*7&#x3D;28	5*7&#x3D;35	6*7&#x3D;42	7*7">
+<meta property="og:type" content="article">
+<meta property="og:title" content="打印九九乘法表">
+<meta property="og:url" content="https://www.szjm.online/2022/02/28/JAVA/03%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B609_%E6%89%93%E5%8D%B0%E4%B9%9D%E4%B9%9D%E4%B9%98%E6%B3%95%E8%A1%A8/index.html">
+<meta property="og:site_name" content="十早九木のBlog">
+<meta property="og:description" content="打印九九乘法表效果 1234567891*1&#x3D;1	1*2&#x3D;2	2*2&#x3D;4	1*3&#x3D;3	2*3&#x3D;6	3*3&#x3D;9	1*4&#x3D;4	2*4&#x3D;8	3*4&#x3D;12	4*4&#x3D;16	1*5&#x3D;5	2*5&#x3D;10	3*5&#x3D;15	4*5&#x3D;20	5*5&#x3D;25	1*6&#x3D;6	2*6&#x3D;12	3*6&#x3D;18	4*6&#x3D;24	5*6&#x3D;30	6*6&#x3D;36	1*7&#x3D;7	2*7&#x3D;14	3*7&#x3D;21	4*7&#x3D;28	5*7&#x3D;35	6*7&#x3D;42	7*7">
+<meta property="og:locale">
+<meta property="og:image" content="https://www.szjm.online/img/post/Furina_cover.png">
+<meta property="article:published_time" content="2022-02-28T06:53:00.000Z">
+<meta property="article:modified_time" content="2025-12-25T07:49:29.265Z">
+<meta property="article:author" content="十早九木">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="流程控制">
+<meta property="article:tag" content="狂神">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.szjm.online/img/post/Furina_cover.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "打印九九乘法表",
+  "url": "https://www.szjm.online/2022/02/28/JAVA/03%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B609_%E6%89%93%E5%8D%B0%E4%B9%9D%E4%B9%9D%E4%B9%98%E6%B3%95%E8%A1%A8/",
+  "image": "https://www.szjm.online/img/post/Furina_cover.png",
+  "datePublished": "2022-02-28T06:53:00.000Z",
+  "dateModified": "2025-12-25T07:49:29.265Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "十早九木",
+      "url": "https://www.szjm.online"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/ui/favicon.png"><link rel="canonical" href="https://www.szjm.online/2022/02/28/JAVA/03%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B609_%E6%89%93%E5%8D%B0%E4%B9%9D%E4%B9%9D%E4%B9%98%E6%B3%95%E8%A1%A8/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '打印九九乘法表',
+  isHighlightShrink: undefined,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.1">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="十早九木のBlog" type="application/atom+xml">
+</head><body><div id="web_bg" style="background: [object Object];"></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/post/Furina_cover.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">打印九九乘法表</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">打印九九乘法表</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-02-28T06:53:00.000Z" title="Created 2022-02-28 14:53:00">2022-02-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-12-25T07:49:29.265Z" title="Updated 2025-12-25 15:49:29">2025-12-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8B%82%E7%A5%9E/">狂神</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/">狂神说Java</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/">Java零基础学习视频通俗易懂</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/">Java流程控制</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%AD%A6/">自学</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%AD%A6/Java/">Java</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E7%8B%82%E7%A5%9E%E8%AF%B4Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/">狂神说Java零基础学习视频通俗易懂</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E7%8B%82%E7%A5%9E%E8%AF%B4Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/">流程控制</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h4 id="打印九九乘法表"><a href="#打印九九乘法表" class="headerlink" title="打印九九乘法表"></a>打印九九乘法表</h4><p>效果</p>
+<figure class="highlight txt"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1*1=1	</span><br><span class="line">1*2=2	2*2=4	</span><br><span class="line">1*3=3	2*3=6	3*3=9	</span><br><span class="line">1*4=4	2*4=8	3*4=12	4*4=16	</span><br><span class="line">1*5=5	2*5=10	3*5=15	4*5=20	5*5=25	</span><br><span class="line">1*6=6	2*6=12	3*6=18	4*6=24	5*6=30	6*6=36	</span><br><span class="line">1*7=7	2*7=14	3*7=21	4*7=28	5*7=35	6*7=42	7*7=49	</span><br><span class="line">1*8=8	2*8=16	3*8=24	4*8=32	5*8=40	6*8=48	7*8=56	8*8=64	</span><br><span class="line">1*9=9	2*9=18	3*9=27	4*9=36	5*9=45	6*9=54	7*9=63	8*9=72	9*9=81</span><br></pre></td></tr></tbody></table></figure>
+
+<span id="more"></span>
+
+<h5 id="教学思路"><a href="#教学思路" class="headerlink" title="教学思路"></a>教学思路</h5><ol>
+<li><p>计算<code>1*9</code></p>
+<ul>
+<li>从1开始</li>
+<li>**&lt;=**9</li>
+</ul>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i1</span> <span class="operator">=</span> <span class="number">1</span>; i1 &lt;= <span class="number">9</span>; i1++) {</span><br><span class="line">    System.out.println(<span class="number">1</span> + <span class="string">"*"</span> + i1 + <span class="string">"="</span> + (<span class="number">1</span>*i1));</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<img src="Java流程控制09_打印九九乘法表/image-20220228141756982.png" alt="计算1*9">
+</li>
+<li><p>嵌套循环</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i2</span> <span class="operator">=</span> <span class="number">1</span>; i2 &lt;= <span class="number">9</span>; i2++) {</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i1</span> <span class="operator">=</span> <span class="number">1</span>; i1 &lt;= <span class="number">9</span>; i1++) {</span><br><span class="line">        System.out.println(i2 + <span class="string">"*"</span> + i1 + <span class="string">"="</span> + (i2*i1));</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<img src="Java流程控制09_打印九九乘法表/image-20220228142255669.png" alt="image-20220228142255669">
+</li>
+<li><p>去掉重复项</p>
+<ul>
+<li>修改内部循环</li>
+</ul>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i2</span> <span class="operator">=</span> <span class="number">1</span>; i2 &lt;= <span class="number">9</span>; i2++) {</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i1</span> <span class="operator">=</span> <span class="number">1</span>; i1 &lt;= i2; i1++) {</span><br><span class="line">        System.out.println(i2 + <span class="string">"*"</span> + i1 + <span class="string">"="</span> + (i2*i1));</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<img src="Java流程控制09_打印九九乘法表/image-20220228142526878.png" alt="image-20220228142526878">
+</li>
+<li><p>优化</p>
+<ul>
+<li><p>换行</p>
+</li>
+<li><p>对齐</p>
+</li>
+<li><p>较小数在前</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i1</span> <span class="operator">=</span> <span class="number">1</span>; i1 &lt;= <span class="number">9</span>; i1++) {</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i2</span> <span class="operator">=</span> <span class="number">1</span>; i2 &lt;= i1; i2++) {</span><br><span class="line">        System.out.print(i2 + <span class="string">"*"</span> + i1 + <span class="string">"="</span> + (i2*i1) + <span class="string">"\t"</span>);</span><br><span class="line">    }</span><br><span class="line">    System.out.println();</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<img src="Java流程控制09_打印九九乘法表/image-20220228144540370.png" alt="优化"></li>
+</ol>
+<h5 id="个人思路"><a href="#个人思路" class="headerlink" title="个人思路"></a>个人思路</h5><ol>
+<li><p>循环有多少行</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i1</span> <span class="operator">=</span> <span class="number">1</span>; i1 &lt;= <span class="number">9</span>; i1++) {</span><br><span class="line">    System.out.println(i1);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<img src="Java流程控制09_打印九九乘法表/image-20220228143426257.png" alt="循环有多少行">
+</li>
+<li><p>输出每一行</p>
+<ul>
+<li>i1既是行数 也是每行最大列数 当i2 == i1时换行 并且退出当前循环进入下一行</li>
+</ul>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i1</span> <span class="operator">=</span> <span class="number">1</span>; i1 &lt;= <span class="number">9</span>; i1++) {</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i2</span> <span class="operator">=</span> <span class="number">1</span>; i2 &lt;= <span class="number">9</span>; i2++){</span><br><span class="line">        System.out.print(i1 + <span class="string">"*"</span> + i2 + <span class="string">"="</span> + (i1*i2) + <span class="string">"\t"</span>);</span><br><span class="line">        <span class="keyword">if</span> (i2 == i1){</span><br><span class="line">            System.out.println();</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<img src="Java流程控制09_打印九九乘法表/image-20220228144133254.png" alt="输出每一行">
+</li>
+<li><p>个人优化</p>
+<ul>
+<li>小数在前</li>
+<li>因为i1是每行最大列数 所以每行输出到<code>i2 &lt;= i1</code>即可</li>
+<li>修改换行机制 输出完一行（完成一个内循环）</li>
+</ul>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i1</span> <span class="operator">=</span> <span class="number">1</span>; i1 &lt;= <span class="number">9</span>; i1++) {</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i2</span> <span class="operator">=</span> <span class="number">1</span>; i2 &lt;= i1; i2++){</span><br><span class="line">        System.out.print(i2 + <span class="string">"*"</span> + i1 + <span class="string">"="</span> + (i1*i2) + <span class="string">"\t"</span>);</span><br><span class="line">    }</span><br><span class="line">    System.out.println();</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<img src="Java流程控制09_打印九九乘法表/image-20220228144453350.png" alt="个人优化"></li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://www.szjm.online">十早九木</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://www.szjm.online/2022/02/28/JAVA/03%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B609_%E6%89%93%E5%8D%B0%E4%B9%9D%E4%B9%9D%E4%B9%98%E6%B3%95%E8%A1%A8/">https://www.szjm.online/2022/02/28/JAVA/03%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B609_%E6%89%93%E5%8D%B0%E4%B9%9D%E4%B9%9D%E4%B9%98%E6%B3%95%E8%A1%A8/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%8B%82%E7%A5%9E/">狂神</a><a class="post-meta__tags" href="/tags/Java/">Java</a><a class="post-meta__tags" href="/tags/%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/">流程控制</a></div><div class="post-share"><div class="social-share" data-image="/img/post/Furina_cover.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2022/02/28/JAVA/03%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B610_%E5%A2%9E%E5%BC%BAfor%E5%BE%AA%E7%8E%AF/" title="增强for循环"><img class="cover" src="/img/post/Furina_cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">增强for循环</div></div><div class="info-2"><div class="info-item-1">增强for循环 这里我们先只是见一面，做个了解，之后数组我们重点使用  Java5引入了一种主要用于数组或集合的增强型for循环  Java增强for循环语法格式如下： 123for(声明语句:表达式)	//代码句子}    声明语句：声明新的局部变量,该变量的类型必须和数组元素的类型匹配。其作用域限定在循环语句块，其值与此时数组元素的值相等  表达式：表达式是要访问的数组名，或者是返回值为数组的方法。   123456789101112131415package com.szjm.struct;public class ForDemo05 {    public static void main(String[] args) {        int[] nums ={10, 20, 30, 40, 50, 60};//定义一个数组        // 遍历数组        for (int x : nums){//把nums每一项遍历出来赋值给x 每一次循环从nums取值            System.out.println(x);        }        S...</div></div></div></a><a class="pagination-related" href="/2022/02/28/JAVA/03%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B608_For%E5%BE%AA%E7%8E%AF%E8%AF%A6%E8%A7%A3/" title="For循环详解"><img class="cover" src="/img/post/Furina_cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">For循环详解</div></div><div class="info-2"><div class="info-item-1">For循环详解 虽然所有循环结构都可以用while或者do…while表示，但Java提供了另一种语句——for循环，使一些循环结构变得更加简单  for循环语句是支持迭代的一-种通用结构，是最有效、最灵活的循环结构  for循环执行的次数是在执行前就确定的。语法格式如下: 123for(初始化;布尔表达式;更新) { 	//代码语句}  与while对照12345678910111213141516171819package com.szjm.struct;public class ForDemo01 {    public static void main(String[] args) {        int a = 1;//初始化条件        while (a &lt;= 100){//条件判断            System.out.println(a);//循环体            a++;//迭代        }        System.out.println("while循环结束");//        ====================...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2022/02/25/JAVA/03%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B601_%E7%94%A8%E6%88%B7%E4%BA%A4%E4%BA%92Scanner/" title="用户交互Scanner"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-25</div><div class="info-item-2">用户交互Scanner</div></div><div class="info-2"><div class="info-item-1">Java流程控制用户交互Scanner 之前我们学的基本语法并没有实现程序和人的交互，Java给我们提供了一个工具类，可以获取用户的输入 java.util.Scanner是Java5的新特征，我们通过Scanner类来获取用户的输入。 基本语法  1Scanner s = new Scanner(System.in);   通过Scanner类的 next()与 nextLine()方法获取用户的字符串，读取前一般用hasNext()与hasNextLine()判断是否还有输入的数据。  1234567891011121314151617181920package com.szjm.scanner;import java.util.Scanner;public class Demo01 {    public static void main(String[] args) {        //创建一个扫描器对象 用于接收键盘数据        Scanner scanner = new Scanner(System.in);        System.out.println...</div></div></div></a><a class="pagination-related" href="/2022/02/25/JAVA/03%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B602_Scanner%E8%BF%9B%E9%98%B6%E4%BD%BF%E7%94%A8/" title="Scanner进阶使用"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-25</div><div class="info-item-2">Scanner进阶使用</div></div><div class="info-2"><div class="info-item-1">Scanner进阶使用判断输入数据类型 123456789101112131415161718192021222324252627282930package com.szjm.scanner;import java.util.Scanner;public class Demo04 {    public static void main(String[] args) {        Scanner scanner = new Scanner(System.in);        //创建一个扫描器对象 用于接收键盘数据        int i = 0;        float f = 0.0f;        System.out.println("请输入整数: ");        if (scanner.hasNextInt()){            i = scanner.nextInt();            System.out.println("整数数据: " + i);        }else {            System.out.prin...</div></div></div></a><a class="pagination-related" href="/2022/02/25/JAVA/03%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B603_%E9%A1%BA%E5%BA%8F%E7%BB%93%E6%9E%84/" title="顺序结构"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-25</div><div class="info-item-2">顺序结构</div></div><div class="info-2"><div class="info-item-1">顺序结构  Java的基本结构就是顺序结构，除非特别指明，否则就按语句一条一条执行。 顺序结构是最简单的算法结构。 语句语句之间是按从上到下执行的，它是由若干个依次执行的处理步骤组成的，它是如何一种算法都离不开的一种基本算法结构。  1234567891011package com.szjm.struct;public class Demo01_shunxu {    public static void main(String[] args) {        System.out.println("Hello1");        System.out.println("Hello2");        System.out.println("Hello3");        System.out.println("Hello4");        System.out.println("Hello5");    }}   </div></div></div></a><a class="pagination-related" href="/2022/02/28/JAVA/03%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B604_if%E9%80%89%E6%8B%A9%E7%BB%93%E6%9E%84/" title="if选择结构"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-28</div><div class="info-item-2">if选择结构</div></div><div class="info-2"><div class="info-item-1">选择结构 if单选择结构 if( )  if双选择结构 if( ){ }else{ }  if多选择结构 if( ){ }else if{ }else{}  嵌套的if结构 if( ){ if( ) }    if单选择结构 if( )  123456789101112131415161718package com.szjm.struct;import java.util.Scanner;public class IfDemo01 {    public static void main(String[] args) {        Scanner scanner = new Scanner(System.in);        System.out.println("请输入内容: ");        String s = scanner.nextLine();        //*.equals判断字符串是否相等 与==有区别        if (s.equals("Hello")){            System.out.println(s);        } ...</div></div></div></a><a class="pagination-related" href="/2022/02/28/JAVA/03%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B605_Switch%E9%80%89%E6%8B%A9%E7%BB%93%E6%9E%84/" title="Switch选择结构"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-28</div><div class="info-item-2">Switch选择结构</div></div><div class="info-2"><div class="info-item-1">switch多选择结构 多选择结构还有一个实现方式就是switch case语句。 switch case语句判断一个变量与一系列值中某个值是否相等,每个值称为一个分支。 switch语句中的变量类型可以是: byte, short, int 或者char 从JavaSE7开始switch支持字符串String类型了 同时case标签必须为字符串常量或字面量    123456789101112switch(expression){            case value :                //语句                break; //可选            case value :                //语句                break; //可选        // 你可以有任意数量的case语句            default :                 //可选                //语句        }  12345678910111213141516171819202122232...</div></div></div></a><a class="pagination-related" href="/2022/02/28/JAVA/03%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6/Java%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B606_While%E5%BE%AA%E7%8E%AF%E8%AF%A6%E8%A7%A3/" title="While循环详解"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-28</div><div class="info-item-2">While循环详解</div></div><div class="info-2"><div class="info-item-1">循环结构 while 循环 do…while 循环 for循环 Java5中引入了-种主要用于数组的增强型for循环   while循环 while是最基本的循环， 它的结构为: 123while(布尔表达式) {	//循环内容}  只要布尔表达式为true, 循环就会一直执行下去  我们大多数情况是会让循环停止下来的，我们需要一个让表达式失效的方式来结束循环  少部分情况需要循环一直执行，比如服务器的请求响应监听等  循环条件一直为true就会造成无限循环[死循环]，我们正常的业务编程中应该尽量避免死循环。会影响程序性能或者造成程序卡死奔溃!   输出1~100123456789101112package com.szjm.struct;public class WhileDemo01 {    public static void main(String[] args) {        //输出1~100        int i = 1;        while (i &lt;= 100){            System.out.println(i);      ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">十早九木</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">12</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">21</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%89%93%E5%8D%B0%E4%B9%9D%E4%B9%9D%E4%B9%98%E6%B3%95%E8%A1%A8"><span class="toc-number">1.</span> <span class="toc-text">打印九九乘法表</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%95%99%E5%AD%A6%E6%80%9D%E8%B7%AF"><span class="toc-number">1.1.</span> <span class="toc-text">教学思路</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%AA%E4%BA%BA%E6%80%9D%E8%B7%AF"><span class="toc-number">1.2.</span> <span class="toc-text">个人思路</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/23/rustdesk%E9%83%A8%E7%BD%B2/" title="使用Docker部署RustDesk服务器"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用Docker部署RustDesk服务器"/></a><div class="content"><a class="title" href="/2025/12/23/rustdesk%E9%83%A8%E7%BD%B2/" title="使用Docker部署RustDesk服务器">使用Docker部署RustDesk服务器</a><time datetime="2025-12-23T06:00:00.000Z" title="Created 2025-12-23 14:00:00">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A113_instanceof%E5%92%8C%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" title="instanceof和类型转换"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="instanceof和类型转换"/></a><div class="content"><a class="title" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A113_instanceof%E5%92%8C%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" title="instanceof和类型转换">instanceof和类型转换</a><time datetime="2022-08-20T15:08:47.000Z" title="Created 2022-08-20 23:08:47">2022-08-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A112_%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%9A%E6%80%81/" title="什么是多态"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="什么是多态"/></a><div class="content"><a class="title" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A112_%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%9A%E6%80%81/" title="什么是多态">什么是多态</a><time datetime="2022-08-20T15:01:59.000Z" title="Created 2022-08-20 23:01:59">2022-08-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/17/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A111_%E6%96%B9%E6%B3%95%E9%87%8D%E5%86%99/" title="方法重写"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="方法重写"/></a><div class="content"><a class="title" href="/2022/08/17/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A111_%E6%96%B9%E6%B3%95%E9%87%8D%E5%86%99/" title="方法重写">方法重写</a><time datetime="2022-08-17T13:52:45.000Z" title="Created 2022-08-17 21:52:45">2022-08-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/16/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A110_Super%E8%AF%A6%E8%A7%A3/" title="Super详解"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Super详解"/></a><div class="content"><a class="title" href="/2022/08/16/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A110_Super%E8%AF%A6%E8%A7%A3/" title="Super详解">Super详解</a><time datetime="2022-08-16T14:29:12.000Z" title="Created 2022-08-16 22:29:12">2022-08-16</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By 十早九木</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script></div></body></html>

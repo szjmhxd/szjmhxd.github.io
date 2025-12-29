@@ -1,0 +1,177 @@
+<!DOCTYPE html><html lang="zh-Hans" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>可变参数 | 十早九木のBlog</title><meta name="author" content="十早九木"><meta name="copyright" content="十早九木"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="可变参数可变参数 JDK 1.5开始，Java支持传递同类型的可变参数给一个方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="可变参数">
+<meta property="og:url" content="https://www.szjm.online/2022/04/06/JAVA/04%E6%96%B9%E6%B3%95/Java%E6%96%B9%E6%B3%9505_%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0/index.html">
+<meta property="og:site_name" content="十早九木のBlog">
+<meta property="og:description" content="可变参数可变参数 JDK 1.5开始，Java支持传递同类型的可变参数给一个方法。">
+<meta property="og:locale">
+<meta property="og:image" content="https://www.szjm.online/img/post/Furina_cover.png">
+<meta property="article:published_time" content="2022-04-06T08:51:53.000Z">
+<meta property="article:modified_time" content="2025-12-25T07:49:28.301Z">
+<meta property="article:author" content="十早九木">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="方法">
+<meta property="article:tag" content="狂神">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.szjm.online/img/post/Furina_cover.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "可变参数",
+  "url": "https://www.szjm.online/2022/04/06/JAVA/04%E6%96%B9%E6%B3%95/Java%E6%96%B9%E6%B3%9505_%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0/",
+  "image": "https://www.szjm.online/img/post/Furina_cover.png",
+  "datePublished": "2022-04-06T08:51:53.000Z",
+  "dateModified": "2025-12-25T07:49:28.301Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "十早九木",
+      "url": "https://www.szjm.online"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/ui/favicon.png"><link rel="canonical" href="https://www.szjm.online/2022/04/06/JAVA/04%E6%96%B9%E6%B3%95/Java%E6%96%B9%E6%B3%9505_%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '可变参数',
+  isHighlightShrink: undefined,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.1">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="十早九木のBlog" type="application/atom+xml">
+</head><body><div id="web_bg" style="background: [object Object];"></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/post/Furina_cover.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">可变参数</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">可变参数</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-04-06T08:51:53.000Z" title="Created 2022-04-06 16:51:53">2022-04-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-12-25T07:49:28.301Z" title="Updated 2025-12-25 15:49:28">2025-12-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8B%82%E7%A5%9E/">狂神</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/">狂神说Java</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/">Java零基础学习视频通俗易懂</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%AD%A6/">自学</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%AD%A6/Java/">Java</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E7%8B%82%E7%A5%9E%E8%AF%B4Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/">狂神说Java零基础学习视频通俗易懂</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/Java%E6%96%B9%E6%B3%95/">Java方法</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E7%8B%82%E7%A5%9E%E8%AF%B4Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/%E6%96%B9%E6%B3%95/">方法</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="可变参数"><a href="#可变参数" class="headerlink" title="可变参数"></a>可变参数</h2><h3 id="可变参数-1"><a href="#可变参数-1" class="headerlink" title="可变参数"></a>可变参数</h3><ul>
+<li><p>JDK 1.5开始，Java支持传递同类型的可变参数给一个方法。<span id="more"></span></p>
+</li>
+<li><p>在方法声明中，在指定参数类型后加一个省略号(..)。</p>
+</li>
+<li><p>一个方法中<strong>只能指定一个</strong>可变参数,它必须是方法的<strong>最后一个</strong>参数。任何普通的参数必须在它<br>之前声明。</p>
+</li>
+<li><p>可变参数<strong>必须是一个类型</strong></p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.szjm.method;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Demo04</span> {</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> {</span><br><span class="line">        printMax(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">1.2</span>,<span class="number">4.5</span>);</span><br><span class="line">        printMax(<span class="keyword">new</span> <span class="title class_">double</span>[]{<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">1.2</span>,<span class="number">4.5</span>});</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">printMax</span><span class="params">(<span class="type">double</span>... numbers)</span>{</span><br><span class="line">        <span class="keyword">if</span> (numbers.length == <span class="number">0</span>){</span><br><span class="line">            System.out.println(<span class="string">"没有输入"</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        <span class="type">double</span> <span class="variable">result</span> <span class="operator">=</span> numbers [<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//        排序</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>; i &lt; numbers.length; i++) {</span><br><span class="line">            <span class="keyword">if</span> (numbers[i] &gt; result){</span><br><span class="line">                result = numbers[i];</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"Max = "</span> + result);</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+</ul>
+<img src="Java方法05_可变参数/可变参数.png" alt="可变参数"></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://www.szjm.online">十早九木</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://www.szjm.online/2022/04/06/JAVA/04%E6%96%B9%E6%B3%95/Java%E6%96%B9%E6%B3%9505_%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0/">https://www.szjm.online/2022/04/06/JAVA/04%E6%96%B9%E6%B3%95/Java%E6%96%B9%E6%B3%9505_%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%8B%82%E7%A5%9E/">狂神</a><a class="post-meta__tags" href="/tags/Java/">Java</a><a class="post-meta__tags" href="/tags/%E6%96%B9%E6%B3%95/">方法</a></div><div class="post-share"><div class="social-share" data-image="/img/post/Furina_cover.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2022/04/06/JAVA/04%E6%96%B9%E6%B3%95/Java%E6%96%B9%E6%B3%9506_%E9%80%92%E5%BD%92%E8%AE%B2%E8%A7%A3/" title="递归讲解"><img class="cover" src="/img/post/Furina_cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">递归讲解</div></div><div class="info-2"><div class="info-item-1">递归递归 A方法调用B方法，我们很容易理解！ 递归就是: A方法调用A方法！就是自己调用自己 利用递归可以用简单的程序来解决一些复杂的问题。 它通常把一个大型复杂的问题层层转化为一个与原问题相似的规模较小的问题来求解，递归策略只需少量的程序就可描述出解题过程所需要的多次重复计算，大大地减少了程序的代码量。递归的能力在于用有限的语句来定义对象的无限集合。 递归结构包括两个部分: 递归头：什么时候不调用自身方法。如果没有头,将陷入死循环。 递归体：什么时候需要调用自身方法。  1234567891011package com.szjm.method;public class Demo05 {    public static void main(String[] args) {        Demo05 test = new Demo05();        test.test();    }    public void test(){        test();    }}    递归求阶乘 12345678910111213141516171819202122package...</div></div></div></a><a class="pagination-related" href="/2022/04/06/JAVA/04%E6%96%B9%E6%B3%95/Java%E6%96%B9%E6%B3%9504_%E5%91%BD%E4%BB%A4%E8%A1%8C%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0/" title="命令行传递参数"><img class="cover" src="/img/post/Furina_cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">命令行传递参数</div></div><div class="info-2"><div class="info-item-1">命令行传参命令行传参 有时候你希望运行一个程序时候再传递给它消息。这要靠传递命令行参数给main()函数实现。  12345678910package com.szjm.method;public class Demo03 {    public static void main(String[] args) {//        list.length  数组长度        for (int i = 0; i &lt; args.length; i++) {            System.out.println("args[" + i + "]: " + args[i]);        }    }}   编译 1javac Demo03.java  无参数运行 必须在src文件夹下输入包名才能运行 1java com.szjm.method.Demo03 传参 1java com.szjm.method.Demo03 i am Iron Man      </div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2022/04/02/JAVA/04%E6%96%B9%E6%B3%95/Java%E6%96%B9%E6%B3%9501_%E4%BB%80%E4%B9%88%E6%98%AF%E6%96%B9%E6%B3%95%EF%BC%9F/" title="什么是方法？"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-02</div><div class="info-item-2">什么是方法？</div></div><div class="info-2"><div class="info-item-1">Java方法什么是方法？ Java方法是语句的集合，它们在一 起执行一个功能。 方法是解决一类问题的步骤的有序组合 方法包含于类或对象中 方法在程序中被创建, 在其他地方被引用  设计方法的原则:方法的本意是功能块，就是实现某个功能的语句块的集合。我们设计方法的 时候，最好保持方法的原子性，就是一个方法只完成1个功能，这样利于我们后期的扩展。 123456789101112131415161718192021222324public class Demo01 {//    main 方法    public static void main(String[] args) {        int sum = add(1,2);        System.out.println(sum);        test();    }//    加法 static  静态 全局调用    public static int add(int a, int b){        return a + b;    }    //输出1~100 void 没有返回值    public sta...</div></div></div></a><a class="pagination-related" href="/2022/04/06/JAVA/04%E6%96%B9%E6%B3%95/Java%E6%96%B9%E6%B3%9502_%E6%96%B9%E6%B3%95%E7%9A%84%E5%AE%9A%E4%B9%89%E5%92%8C%E8%B0%83%E7%94%A8/" title="方法的定义和调用"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-06</div><div class="info-item-2">方法的定义和调用</div></div><div class="info-2"><div class="info-item-1">方法的定义和调用方法的定义 Java的方法类似于其它语言的函数，是一段用来完成特定功能的代码片段，一般情况下，定义一个方法包含以下语法: **方法包含一个方法头和一个方法体。**下面是一个方法的所有部分:1234修饰符 返回值类型 方法名(参数类型 参数名,...){   方法体...   return 返回值；}  修饰符：修饰符，这是可选的，告诉编译器如何调用该方法。定义了该方法的访问类型。 返回值类型：方法可能会返回值。returnValueType 是方法返回值的数据类型。有些方法执行所需的操作，但没有返回值。在这种情况下，returnValueType 是关键字void。 方法名：是方法的实际名称。方法名和参数表共同构成方法签名。 参数类型：参数像是一个占位符。当方法被调用时，传递值给参数。这个值被称为实参或变量。参数列表是指方法的参数类型、顺序和参数的个数。参数是可选的，方法可以不包含任何参数。 形式参数：在方法被调用时用于接收外界输入的数据。 实参：调用方法时实际传给方法的数据。   方法体：方法体包含具体的语句，定义该方法的功能。      方法调用 调用方法:对...</div></div></div></a><a class="pagination-related" href="/2022/04/06/JAVA/04%E6%96%B9%E6%B3%95/Java%E6%96%B9%E6%B3%9503_%E6%96%B9%E6%B3%95%E7%9A%84%E9%87%8D%E8%BD%BD/" title="方法的重载"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-06</div><div class="info-item-2">方法的重载</div></div><div class="info-2"><div class="info-item-1">方法的重载方法的重载 重载就是在一个类中，有相同的函数名称，但形参不同的函数。  方法的重载的规则:  方法名称必须相同。  参数列表必须不同(个数不同、或类型不同、参数排列顺序不同等)。  方法的返回类型可以相同也可以不相同。仅仅返回类型不同不足以成为方法的重载。    实现理论:  方法名称相同时,编译器会根据调用方法的参数个数、参数类型等去逐个匹配，以选择对应的方法，如果匹配失败，则编译器报错。    </div></div></div></a><a class="pagination-related" href="/2022/04/06/JAVA/04%E6%96%B9%E6%B3%95/Java%E6%96%B9%E6%B3%9504_%E5%91%BD%E4%BB%A4%E8%A1%8C%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0/" title="命令行传递参数"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-06</div><div class="info-item-2">命令行传递参数</div></div><div class="info-2"><div class="info-item-1">命令行传参命令行传参 有时候你希望运行一个程序时候再传递给它消息。这要靠传递命令行参数给main()函数实现。  12345678910package com.szjm.method;public class Demo03 {    public static void main(String[] args) {//        list.length  数组长度        for (int i = 0; i &lt; args.length; i++) {            System.out.println("args[" + i + "]: " + args[i]);        }    }}   编译 1javac Demo03.java  无参数运行 必须在src文件夹下输入包名才能运行 1java com.szjm.method.Demo03 传参 1java com.szjm.method.Demo03 i am Iron Man      </div></div></div></a><a class="pagination-related" href="/2022/04/06/JAVA/04%E6%96%B9%E6%B3%95/Java%E6%96%B9%E6%B3%9506_%E9%80%92%E5%BD%92%E8%AE%B2%E8%A7%A3/" title="递归讲解"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-06</div><div class="info-item-2">递归讲解</div></div><div class="info-2"><div class="info-item-1">递归递归 A方法调用B方法，我们很容易理解！ 递归就是: A方法调用A方法！就是自己调用自己 利用递归可以用简单的程序来解决一些复杂的问题。 它通常把一个大型复杂的问题层层转化为一个与原问题相似的规模较小的问题来求解，递归策略只需少量的程序就可描述出解题过程所需要的多次重复计算，大大地减少了程序的代码量。递归的能力在于用有限的语句来定义对象的无限集合。 递归结构包括两个部分: 递归头：什么时候不调用自身方法。如果没有头,将陷入死循环。 递归体：什么时候需要调用自身方法。  1234567891011package com.szjm.method;public class Demo05 {    public static void main(String[] args) {        Demo05 test = new Demo05();        test.test();    }    public void test(){        test();    }}    递归求阶乘 12345678910111213141516171819202122package...</div></div></div></a><a class="pagination-related" href="/2022/04/06/JAVA/04%E6%96%B9%E6%B3%95/Java%E6%96%B9%E6%B3%9507_%E4%BD%9C%E4%B8%9A/" title="作业"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-06</div><div class="info-item-2">作业</div></div><div class="info-2"><div class="info-item-1">作业作业我单方面不承认这是我写的  随便瞎写 功能完成了 没有容错 没有四则运算 不支持运算符号和数字混输 反正就是只完成功能 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162package com.szjm.method;import java.util.Scanner;public class Job01 {    public static void main(String[] args) {        int i = 1;        while (i == 1){            calculator();            System.out.println("输入0退出，否则继续");            Scanner scanner = new Scanner(System.in);            i = Integer.parseInt(scanner....</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">十早九木</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">12</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">21</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0"><span class="toc-number">1.</span> <span class="toc-text">可变参数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0-1"><span class="toc-number">1.1.</span> <span class="toc-text">可变参数</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/23/rustdesk%E9%83%A8%E7%BD%B2/" title="使用Docker部署RustDesk服务器"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用Docker部署RustDesk服务器"/></a><div class="content"><a class="title" href="/2025/12/23/rustdesk%E9%83%A8%E7%BD%B2/" title="使用Docker部署RustDesk服务器">使用Docker部署RustDesk服务器</a><time datetime="2025-12-23T06:00:00.000Z" title="Created 2025-12-23 14:00:00">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A113_instanceof%E5%92%8C%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" title="instanceof和类型转换"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="instanceof和类型转换"/></a><div class="content"><a class="title" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A113_instanceof%E5%92%8C%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" title="instanceof和类型转换">instanceof和类型转换</a><time datetime="2022-08-20T15:08:47.000Z" title="Created 2022-08-20 23:08:47">2022-08-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A112_%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%9A%E6%80%81/" title="什么是多态"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="什么是多态"/></a><div class="content"><a class="title" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A112_%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%9A%E6%80%81/" title="什么是多态">什么是多态</a><time datetime="2022-08-20T15:01:59.000Z" title="Created 2022-08-20 23:01:59">2022-08-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/17/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A111_%E6%96%B9%E6%B3%95%E9%87%8D%E5%86%99/" title="方法重写"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="方法重写"/></a><div class="content"><a class="title" href="/2022/08/17/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A111_%E6%96%B9%E6%B3%95%E9%87%8D%E5%86%99/" title="方法重写">方法重写</a><time datetime="2022-08-17T13:52:45.000Z" title="Created 2022-08-17 21:52:45">2022-08-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/16/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A110_Super%E8%AF%A6%E8%A7%A3/" title="Super详解"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Super详解"/></a><div class="content"><a class="title" href="/2022/08/16/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A110_Super%E8%AF%A6%E8%A7%A3/" title="Super详解">Super详解</a><time datetime="2022-08-16T14:29:12.000Z" title="Created 2022-08-16 22:29:12">2022-08-16</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By 十早九木</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script></div></body></html>

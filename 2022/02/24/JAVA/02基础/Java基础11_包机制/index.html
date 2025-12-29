@@ -1,0 +1,183 @@
+<!DOCTYPE html><html lang="zh-Hans" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>包机制 | 十早九木のBlog</title><meta name="author" content="十早九木"><meta name="copyright" content="十早九木"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="包机制 为了更好地组织类，Java提供了包机制，由于区分类名的命名空间">
+<meta property="og:type" content="article">
+<meta property="og:title" content="包机制">
+<meta property="og:url" content="https://www.szjm.online/2022/02/24/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8011_%E5%8C%85%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:site_name" content="十早九木のBlog">
+<meta property="og:description" content="包机制 为了更好地组织类，Java提供了包机制，由于区分类名的命名空间">
+<meta property="og:locale">
+<meta property="og:image" content="https://www.szjm.online/img/post/Furina_cover.png">
+<meta property="article:published_time" content="2022-02-24T03:52:00.000Z">
+<meta property="article:modified_time" content="2025-12-25T07:49:31.921Z">
+<meta property="article:author" content="十早九木">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="基础">
+<meta property="article:tag" content="狂神">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.szjm.online/img/post/Furina_cover.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "包机制",
+  "url": "https://www.szjm.online/2022/02/24/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8011_%E5%8C%85%E6%9C%BA%E5%88%B6/",
+  "image": "https://www.szjm.online/img/post/Furina_cover.png",
+  "datePublished": "2022-02-24T03:52:00.000Z",
+  "dateModified": "2025-12-25T07:49:31.921Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "十早九木",
+      "url": "https://www.szjm.online"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/ui/favicon.png"><link rel="canonical" href="https://www.szjm.online/2022/02/24/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8011_%E5%8C%85%E6%9C%BA%E5%88%B6/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '包机制',
+  isHighlightShrink: undefined,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.1">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="十早九木のBlog" type="application/atom+xml">
+</head><body><div id="web_bg" style="background: [object Object];"></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/post/Furina_cover.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">包机制</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">包机制</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-02-24T03:52:00.000Z" title="Created 2022-02-24 11:52:00">2022-02-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-12-25T07:49:31.921Z" title="Updated 2025-12-25 15:49:31">2025-12-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8B%82%E7%A5%9E/">狂神</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/">狂神说Java</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/">Java零基础学习视频通俗易懂</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8B%82%E7%A5%9E/%E7%8B%82%E7%A5%9E%E8%AF%B4Java/Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/Java%E5%9F%BA%E7%A1%80/">Java基础</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%AD%A6/">自学</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%AD%A6/Java/">Java</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E7%8B%82%E7%A5%9E%E8%AF%B4Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/">狂神说Java零基础学习视频通俗易懂</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%87%AA%E5%AD%A6/Java/%E7%8B%82%E7%A5%9E%E8%AF%B4Java%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82/%E5%9F%BA%E7%A1%80/">基础</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="包机制"><a href="#包机制" class="headerlink" title="包机制"></a>包机制</h2><ul>
+<li>为了更好地组织类，Java提供了包机制，由于区分类名的命名空间 <span id="more"></span></li>
+<li>包的本质就是文件夹</li>
+<li>包的语法格式：</li>
+</ul>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> pkg1[.pkg2[.pkg3...]];</span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li>一般利用公司域名倒置作为包名；<code>com.szjm.blog</code></li>
+<li>为了能够使用一个包的成员，需要在Java程序中导入该包</li>
+</ul>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> package1[.package2...].(className|*); <span class="comment">//通配符* 导入包下所有的类</span></span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li>参考：阿里巴巴Java开发手册<a target="_blank" rel="noopener" href="https://developer.aliyun.com/guidebook/java">阿里巴巴Java开发者手册官方免费版 - 阿里云 (aliyun.com)</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://www.szjm.online">十早九木</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://www.szjm.online/2022/02/24/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8011_%E5%8C%85%E6%9C%BA%E5%88%B6/">https://www.szjm.online/2022/02/24/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8011_%E5%8C%85%E6%9C%BA%E5%88%B6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%8B%82%E7%A5%9E/">狂神</a><a class="post-meta__tags" href="/tags/Java/">Java</a><a class="post-meta__tags" href="/tags/%E5%9F%BA%E7%A1%80/">基础</a></div><div class="post-share"><div class="social-share" data-image="/img/post/Furina_cover.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2022/02/25/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8012_JavaDoc%E7%94%9F%E6%88%90%E6%96%87%E6%A1%A3/" title="JavaDoc生成文档"><img class="cover" src="/img/post/Furina_cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">JavaDoc生成文档</div></div><div class="info-2"><div class="info-item-1">JavaDoc生成文档 javadoc命令是用来生成自己API文档的 参数信息 @author 作者名 @version 版本号 @since 指明最早用的jdk版本 @param 参数名 @return 返回值情况 @throws 异常抛出情况   API文档：https://docs.oracle.com/javase/8/docs/api/  123456789101112131415161718192021package com.szjm.base;/** * @author szjm * @version 1.0 * @since 1.8 */public class Doc {    String name;    /**     * @author szjm     * @param name     * @return     * @throws Exception     */    public String test(String name)throws Exception{        return name;    }}   打开某个类所在文件夹下的c...</div></div></div></a><a class="pagination-related" href="/2022/02/23/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8010_%E4%B8%89%E5%85%83%E8%BF%90%E7%AE%97%E7%AC%A6%E5%8F%8A%E5%B0%8F%E7%BB%93/" title="逻辑运算符、位运算符"><img class="cover" src="/img/post/Furina_cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">逻辑运算符、位运算符</div></div><div class="info-2"><div class="info-item-1"> a += b; //a = a + ba -= b; //a = a - b   1234567891011121314151617181920package operator;public class Demo07 {    public static void main(String[] args) {        int a = 10;        int b = 20;        a += b; //a = a + b        a -= b; //a = a - b        System.out.println(a); //10        //字符串连接符  +        System.out.println(a + b); //30        System.out.println("str" + a + b); //str1020        System.out.println(a + b + "str"); //30str        System.out.println("str" + (a + b)); //str30   ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2022/02/07/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8000_%E6%96%B0%E5%BB%BA%E7%A9%BA%E7%99%BD%E9%A1%B9%E7%9B%AE/" title="新建空白项目"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-07</div><div class="info-item-2">新建空白项目</div></div><div class="info-2"><div class="info-item-1">新建项目为了方便以后的管理 我们在这里新建一个空项目  新建空项目Empty Project   新建完空项目之后会弹出项目结构窗口 不用管 关闭即可   空项目无法新建代码文件   在这里选择新建模块   后面就和之前一样了     由于是空项目 所以需要设置项目结构   可以点击这里（不同版本IDEA的图标样式和位置可能不一样 但大体相同）   或者依次点击 File –&gt; Project Structure   点击Project 发现SDK设置报红   修改为之前安装好的Java SDK版本     同时修改项目源等级与版本对应   然后选择OK确定 或Apply应用      配置完成后可以新建Java文件      输入代码运行 快速输入helloworld代码   尝试运行（如果项目结构没有配置好这里可能没有绿色运行箭头）   </div></div></div></a><a class="pagination-related" href="/2022/02/07/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8001_%E6%B3%A8%E9%87%8A%E4%B8%8E%E6%B3%A8%E9%87%8A%E6%A0%B7%E5%BC%8F%E8%AE%BE%E7%BD%AE/" title="注释与注释样式设置"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-07</div><div class="info-item-2">注释与注释样式设置</div></div><div class="info-2"><div class="info-item-1"> 写完代码第一天 这是什么神仙代码 真优美 写完代码第二天 这代码现在只有我和上帝看得懂 写完代码第二天 这代码现在只有上帝看得懂了     代码量较少的时候，我们可以看得懂自己写的什么，但是当代码复杂起来的时候，我们就需要注释了 注释不会被执行，是为了给写代码的人看 书写注释是个好习惯  注释样式设置依次选择编辑器 色彩选项 Java 修改编辑器界面颜色        注释 单行注释 //开头 1// 我是单行注释  多行注释 /*开头 */结尾 12345678910111213141516171819202122/* 我是多行注释                      _ooOoo_                     o8888888o                     88" . "88                     (| -_- |)                     O\  =  /O                  ____/`---'\____                .'  \\|     |//  `.         ...</div></div></div></a><a class="pagination-related" href="/2022/02/08/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8002_%E6%A0%87%E8%AF%86%E7%AC%A6%E5%92%8C%E5%85%B3%E9%94%AE%E5%AD%97/" title="标识符和关键字"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-08</div><div class="info-item-2">标识符和关键字</div></div><div class="info-2"><div class="info-item-1"> Java所有的组成部分都需要名字。类名、变量名以及方法名都被称为标识符。    标识符注意点 所有的标识符都应该以字母(A-Z 或者a-z) ,美元符($) 、或者下划线(_)开始 首字符之后可以是字母(A-Z或者a-z) ,美元符($)、下划线(_)或数字的任何字符组合 不能使用关键字作为变量名或方法名。 标识符是大小写敏感的 合法标识符举例: age、$salary、_ value、__ 1 value 非法标识符举例: 123abc、-salary、 #abc 可以使用中文命名，但是一般不建议这样去使用，也不建议使用拼音  代码示范 规范命名 123456789101112public class Demo01 {    public static void main(String[] args) {        String Apple = "大写字母开头";        String apple = "小写字母开头";        String $Apple = "$开头";        String _Apple = "_开头";        System...</div></div></div></a><a class="pagination-related" href="/2022/02/08/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8003_%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%AE%B2%E8%A7%A3/" title="数据类型讲解"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-08</div><div class="info-item-2">数据类型讲解</div></div><div class="info-2"><div class="info-item-1">数据类型强类型语言要求变量的使用要严格符合规定，所有的变量都必须先定义后才能使用   弱类型语言   未初始化的变量无法使用    变量内容必须符合声明    正确使用 12345678public class Demo02 {    public static void main(String[] args) {        String a = "十早九木";        int num = 123;        System.out.println(a);        System.out.println(num);    }}     Java的数据基本类型分为两大类基本类型（primitive type）引用类型（reference type）      1{"root":{"data":{"id":"chqinypzv6o0","created":1644308356398,"text":"Java中的数据类型"},"children":[{"data":{"id":"chqiohxjq2o0","created":1644308398213,"text":"...</div></div></div></a><a class="pagination-related" href="/2022/02/22/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8005_%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" title="类型转换"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-22</div><div class="info-item-2">类型转换</div></div><div class="info-2"><div class="info-item-1">类型转换 由于Java是强类型语言，所以要进行有些运算的时候的，需要用到类型转换。 低————————————————————&gt; 高byte,  short, char -&gt; int -&gt; long -&gt; float -&gt; double 小数优先级高 运算中，不同类型的数据先转化为同一类型，然后进行运算。  强制类型转换（类型）变量名 高–低 1byte b = (byte)i;  自动类型转换低–高 注意 不能对布尔值进行转换 不能把对象类型转为不想干的类型 高–低 需要强转 低–高自动 转换的时候可能存在内存溢出或者精度问题  1234567System.out.println((int)23.7); //23 丢失精度System.out.println((int)-45.89f); //45char c = 'a';int n = c+1;System.out.println((int)c);System.out.println(n); //98System.out.println((char)n); //b    当操作数比较大时，注意溢出...</div></div></div></a><a class="pagination-related" href="/2022/02/22/JAVA/02%E5%9F%BA%E7%A1%80/Java%E5%9F%BA%E7%A1%8006_%E5%8F%98%E9%87%8F%E3%80%81%E5%B8%B8%E9%87%8F%E3%80%81%E4%BD%9C%E7%94%A8%E5%9F%9F/" title="变量、常量、作用域"><img class="cover" src="/img/post/Furina_cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-22</div><div class="info-item-2">变量、常量、作用域</div></div><div class="info-2"><div class="info-item-1">变量、常量、作用域 变量是什么：就是可以变化的量  Java是一种强类型语言，每个变量都必须声明其类型 Java变量是程序中最基本的存储单元，要素包括变量名，变量类型和作用域  123//数据类型 变量名 = 值;type varName [=value][{,varName[=value]}];//可以使用逗号隔开同多个类型的变量，但不建议在一行定义多个变量  变量作用域 类变量（static） 实例变量 局部变量  123456789101112131415161718192021222324252627282930313233public class Demo08 {//    =======================================//    变量//    =======================================//    类变量 static    static double salary = 1744;//    实例变量 从属于对象 如果不初始化 会生成这个类型的默认值//    基本类型都是0  布尔值 false 除...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">十早九木</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">12</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">21</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%85%E6%9C%BA%E5%88%B6"><span class="toc-number">1.</span> <span class="toc-text">包机制</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/23/rustdesk%E9%83%A8%E7%BD%B2/" title="使用Docker部署RustDesk服务器"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用Docker部署RustDesk服务器"/></a><div class="content"><a class="title" href="/2025/12/23/rustdesk%E9%83%A8%E7%BD%B2/" title="使用Docker部署RustDesk服务器">使用Docker部署RustDesk服务器</a><time datetime="2025-12-23T06:00:00.000Z" title="Created 2025-12-23 14:00:00">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A113_instanceof%E5%92%8C%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" title="instanceof和类型转换"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="instanceof和类型转换"/></a><div class="content"><a class="title" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A113_instanceof%E5%92%8C%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" title="instanceof和类型转换">instanceof和类型转换</a><time datetime="2022-08-20T15:08:47.000Z" title="Created 2022-08-20 23:08:47">2022-08-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A112_%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%9A%E6%80%81/" title="什么是多态"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="什么是多态"/></a><div class="content"><a class="title" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A112_%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%9A%E6%80%81/" title="什么是多态">什么是多态</a><time datetime="2022-08-20T15:01:59.000Z" title="Created 2022-08-20 23:01:59">2022-08-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/17/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A111_%E6%96%B9%E6%B3%95%E9%87%8D%E5%86%99/" title="方法重写"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="方法重写"/></a><div class="content"><a class="title" href="/2022/08/17/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A111_%E6%96%B9%E6%B3%95%E9%87%8D%E5%86%99/" title="方法重写">方法重写</a><time datetime="2022-08-17T13:52:45.000Z" title="Created 2022-08-17 21:52:45">2022-08-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/16/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A110_Super%E8%AF%A6%E8%A7%A3/" title="Super详解"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Super详解"/></a><div class="content"><a class="title" href="/2022/08/16/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A110_Super%E8%AF%A6%E8%A7%A3/" title="Super详解">Super详解</a><time datetime="2022-08-16T14:29:12.000Z" title="Created 2022-08-16 22:29:12">2022-08-16</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By 十早九木</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script></div></body></html>

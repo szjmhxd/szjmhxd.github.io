@@ -1,0 +1,221 @@
+<!DOCTYPE html><html lang="zh-Hans" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>使用Docker部署RustDesk服务器 | 十早九木のBlog</title><meta name="author" content="十早九木"><meta name="copyright" content="十早九木"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="使用Docker部署RustDesk服务器RustDesk是一款开源远程桌面软件，本文将详细介绍如何使用Docker部署RustDesk服务器及其API服务。 一、准备工作1. 环境要求 Docker 和 Docker Compose 服务器一台 域名或公网IP地址  2. 相关资源 RustDesk API项目：lejianwen&#x2F;rustdesk-api (官方免费版不支持web api，无法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Docker部署RustDesk服务器">
+<meta property="og:url" content="https://www.szjm.online/2025/12/23/rustdesk%E9%83%A8%E7%BD%B2/index.html">
+<meta property="og:site_name" content="十早九木のBlog">
+<meta property="og:description" content="使用Docker部署RustDesk服务器RustDesk是一款开源远程桌面软件，本文将详细介绍如何使用Docker部署RustDesk服务器及其API服务。 一、准备工作1. 环境要求 Docker 和 Docker Compose 服务器一台 域名或公网IP地址  2. 相关资源 RustDesk API项目：lejianwen&#x2F;rustdesk-api (官方免费版不支持web api，无法">
+<meta property="og:locale">
+<meta property="og:image" content="https://www.szjm.online/img/post/Furina_cover.png">
+<meta property="article:published_time" content="2025-12-23T06:00:00.000Z">
+<meta property="article:modified_time" content="2025-12-23T03:21:06.214Z">
+<meta property="article:author" content="十早九木">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="RustDesk">
+<meta property="article:tag" content="远程桌面">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.szjm.online/img/post/Furina_cover.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "使用Docker部署RustDesk服务器",
+  "url": "https://www.szjm.online/2025/12/23/rustdesk%E9%83%A8%E7%BD%B2/",
+  "image": "https://www.szjm.online/img/post/Furina_cover.png",
+  "datePublished": "2025-12-23T06:00:00.000Z",
+  "dateModified": "2025-12-23T03:21:06.214Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "十早九木",
+      "url": "https://www.szjm.online"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/ui/favicon.png"><link rel="canonical" href="https://www.szjm.online/2025/12/23/rustdesk%E9%83%A8%E7%BD%B2/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '使用Docker部署RustDesk服务器',
+  isHighlightShrink: undefined,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.1">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="十早九木のBlog" type="application/atom+xml">
+</head><body><div id="web_bg" style="background: [object Object];"></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/post/Furina_cover.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">使用Docker部署RustDesk服务器</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">使用Docker部署RustDesk服务器</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-12-23T06:00:00.000Z" title="Created 2025-12-23 14:00:00">2025-12-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-12-23T03:21:06.214Z" title="Updated 2025-12-23 11:21:06">2025-12-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/">技术教程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="使用Docker部署RustDesk服务器"><a href="#使用Docker部署RustDesk服务器" class="headerlink" title="使用Docker部署RustDesk服务器"></a>使用Docker部署RustDesk服务器</h1><p>RustDesk是一款开源远程桌面软件，本文将详细介绍如何使用Docker部署RustDesk服务器及其API服务。</p>
+<h2 id="一、准备工作"><a href="#一、准备工作" class="headerlink" title="一、准备工作"></a>一、准备工作</h2><h3 id="1-环境要求"><a href="#1-环境要求" class="headerlink" title="1. 环境要求"></a>1. 环境要求</h3><ul>
+<li>Docker 和 Docker Compose</li>
+<li>服务器一台</li>
+<li>域名或公网IP地址</li>
+</ul>
+<h3 id="2-相关资源"><a href="#2-相关资源" class="headerlink" title="2. 相关资源"></a>2. 相关资源</h3><ul>
+<li>RustDesk API项目：<a target="_blank" rel="noopener" href="https://github.com/lejianwen/rustdesk-api">lejianwen/rustdesk-api</a> (官方免费版不支持web api，无法登录和管理)</li>
+<li>官方文档：<a target="_blank" rel="noopener" href="https://github.com/lejianwen/rustdesk-api/wiki/Use-Docker-With-Rustdesk-Server-S6">Use Docker With Rustdesk-Server-S6</a></li>
+</ul>
+<h2 id="二、部署步骤"><a href="#二、部署步骤" class="headerlink" title="二、部署步骤"></a>二、部署步骤</h2><h3 id="1-创建Docker-Compose文件"><a href="#1-创建Docker-Compose文件" class="headerlink" title="1. 创建Docker Compose文件"></a>1. 创建Docker Compose文件</h3><p>提供了直接自定义key的方法，还需要修改一些配置。我选择<code>直接替换key文件</code>的方式：</p>
+<figure class="highlight yaml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">rustdesk-net:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">rustdesk-server:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">rustdesk-server</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">21115</span><span class="string">:21115</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">21116</span><span class="string">:21116</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">21116</span><span class="string">:21116/udp</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">21117</span><span class="string">:21117</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">21118</span><span class="string">:21118</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">21119</span><span class="string">:21119</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">rustdesk/rustdesk-server-s6:latest</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">RELAY=&lt;server[:21117]&gt;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">ENCRYPTED_ONLY=1</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/data/rustdesk/server:/data</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">rustdesk-api:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">rustdesk-api</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">21114</span><span class="string">:21114</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">lejianwen/rustdesk-api</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TZ=Asia/Shanghai</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">RUSTDESK_API_RUSTDESK_ID_SERVER=&lt;server[:21116]&gt;</span> <span class="comment"># 21116端口</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">RUSTDESK_API_RUSTDESK_RELAY_SERVER=&lt;server[:21117]&gt;</span> <span class="comment"># 21117端口</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">RUSTDESK_API_RUSTDESK_API_SERVER=http://&lt;server[:21114]&gt;</span> <span class="comment"># 21114端口</span></span><br><span class="line">      <span class="comment">#- RUSTDESK_API_RUSTDESK_KEY=&lt;key&gt; # 可选：直接指定key</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/data/rustdesk/api:/app/data</span> <span class="comment"># 将数据库挂载</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/data/rustdesk/server:/app/conf/data</span> <span class="comment"># 挂载key文件到api容器，可不用设置RUSTDESK_API_RUSTDESK_KEY</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">rustdesk-net</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">rustdesk-server</span></span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h2 id="三、使用指南"><a href="#三、使用指南" class="headerlink" title="三、使用指南"></a>三、使用指南</h2><h3 id="1-客户端连接"><a href="#1-客户端连接" class="headerlink" title="1. 客户端连接"></a>1. 客户端连接</h3><p>启动服务后，可以在日志中看到生成的<code>key</code></p>
+<p><img src="/rustdesk%E9%83%A8%E7%BD%B2/image-20251223105729175.png" alt="image-20251223105729175"></p>
+<h4 id="客户端设置"><a href="#客户端设置" class="headerlink" title="客户端设置"></a>客户端设置</h4><p>直接使用官方客户端就行</p>
+<p>高手可以试试用github生成自己的客户端(可以把配置信息写进入)</p>
+<ul>
+<li><p>id服务器/中继服务器  直接使用IP即可</p>
+</li>
+<li><p>api服务器  需要使用 http+ip+端口的格式</p>
+</li>
+<li><p>key  就是刚才日志里显示的key</p>
+</li>
+</ul>
+<p><img src="/rustdesk%E9%83%A8%E7%BD%B2/image-20251223105820499.png" alt="image-20251223105820499"></p>
+<h3 id="2-登录"><a href="#2-登录" class="headerlink" title="2. 登录"></a>2. 登录</h3><p>这个镜像的默认密码是 admin admin</p>
+<p>可以访问 <code>ip:21114</code> 端口登录web界面，也可以在客户端登录</p>
+<h3 id="3-CLI设置"><a href="#3-CLI设置" class="headerlink" title="3. CLI设置"></a>3. CLI设置</h3><p>比较重要的设置是重置admin密码：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看帮助</span></span><br><span class="line">./apimain -h</span><br></pre></td></tr></tbody></table></figure>
+
+<h4 id="重置管理员密码"><a href="#重置管理员密码" class="headerlink" title="重置管理员密码"></a>重置管理员密码</h4><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./apimain reset-admin-pwd &lt;<span class="built_in">pwd</span>&gt;</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h4 id="帮助信息"><a href="#帮助信息" class="headerlink" title="帮助信息"></a>帮助信息</h4><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">/app <span class="comment"># ./apimain -h</span></span><br><span class="line">RUSTDESK API SERVER</span><br><span class="line"></span><br><span class="line">Usage:</span><br><span class="line">  apimain [flags]</span><br><span class="line">  apimain [<span class="built_in">command</span>]</span><br><span class="line"></span><br><span class="line">Available Commands:</span><br><span class="line">  completion      Generate the autocompletion script <span class="keyword">for</span> the specified shell</span><br><span class="line">  <span class="built_in">help</span>            Help about any <span class="built_in">command</span></span><br><span class="line">  reset-admin-pwd Reset Admin Password</span><br><span class="line">  reset-pwd       Reset User Password</span><br><span class="line"></span><br><span class="line">Flags:</span><br><span class="line">  -c, --config string   choose config file (default <span class="string">"./conf/config.yaml"</span>)</span><br><span class="line">  -h, --<span class="built_in">help</span>            <span class="built_in">help</span> <span class="keyword">for</span> apimain</span><br><span class="line"></span><br><span class="line">Use <span class="string">"apimain [command] --help"</span> <span class="keyword">for</span> more information about a <span class="built_in">command</span>.</span><br><span class="line">/app <span class="comment"># ./apimain reset-admin-pwd --help</span></span><br><span class="line">Reset Admin Password</span><br><span class="line"></span><br><span class="line">Usage:</span><br><span class="line">  apimain reset-admin-pwd [<span class="built_in">pwd</span>] [flags]</span><br><span class="line"></span><br><span class="line">Examples:</span><br><span class="line">reset-admin-pwd 123456</span><br><span class="line"></span><br><span class="line">Flags:</span><br><span class="line">  -h, --<span class="built_in">help</span>   <span class="built_in">help</span> <span class="keyword">for</span> reset-admin-pwd</span><br><span class="line"></span><br><span class="line">Global Flags:</span><br><span class="line">  -c, --config string   choose config file (default <span class="string">"./conf/config.yaml"</span>)</span><br><span class="line">/app <span class="comment"># </span></span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h2 id="四、备份策略"><a href="#四、备份策略" class="headerlink" title="四、备份策略"></a>四、备份策略</h2><p>如果之前设置了文件映射，可以直接备份映射目录，比如我的文件位置在 <code>/data/rustdesk/server</code></p>
+<figure class="highlight yaml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">/data/rustdesk/server:/data</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>如果之前没有备份过，可以在宿主机使用以下命令从容器中复制数据，然后在新服务器上恢复：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 基础命令：将rustdesk容器的/data目录备份到宿主机/root/rustdesk_backup/目录（自动创建目录）</span></span><br><span class="line"><span class="built_in">mkdir</span> -p /root/rustdesk_backup &amp;&amp; </span><br><span class="line">docker <span class="built_in">cp</span> &lt;你的容器名称&gt;:/data /root/rustdesk_backup/</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h2><p>通过Docker部署RustDesk服务器和API服务，可以快速搭建一个安全可靠的远程桌面解决方案。Docker容器化部署使得管理和扩展变得更加简单，适合个人和企业使用。</p>
+<hr>
+<p><strong>参考资料：</strong></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/lejianwen/rustdesk-api">rustdesk-api GitHub仓库</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/lejianwen/rustdesk-api/wiki/Use-Docker-With-Rustdesk-Server-S6">使用Docker部署文档</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://www.szjm.online">十早九木</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://www.szjm.online/2025/12/23/rustdesk%E9%83%A8%E7%BD%B2/">https://www.szjm.online/2025/12/23/rustdesk%E9%83%A8%E7%BD%B2/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Docker/">Docker</a><a class="post-meta__tags" href="/tags/RustDesk/">RustDesk</a><a class="post-meta__tags" href="/tags/%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/">远程桌面</a></div><div class="post-share"><div class="social-share" data-image="/img/post/Furina_cover.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A113_instanceof%E5%92%8C%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" title="instanceof和类型转换"><img class="cover" src="/img/post/Furina_cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">instanceof和类型转换</div></div><div class="info-2"><div class="info-item-1">instanceof和类型转换instanceofinstanceof 可以判断两个类之间是否存在父子关系 新增Teacher类继承与Person 1234package com.oop.Demo06;public class Teacher extends Person{}  在测试类新增指向Student的Object 测试继承关系 123456789101112131415161718package com.oop;import com.oop.Demo06.Person;import com.oop.Demo06.Student;import com.oop.Demo06.Teacher;//一个项目只存在一个main方法 在Application测试类中public class Application {    public static void main(String[] args) {        Object object = new Student();        System.out.println(object instanceof Student)...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">十早九木</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">12</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">21</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2RustDesk%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">1.</span> <span class="toc-text">使用Docker部署RustDesk服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">1.1.</span> <span class="toc-text">一、准备工作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%8E%AF%E5%A2%83%E8%A6%81%E6%B1%82"><span class="toc-number">1.1.1.</span> <span class="toc-text">1. 环境要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%9B%B8%E5%85%B3%E8%B5%84%E6%BA%90"><span class="toc-number">1.1.2.</span> <span class="toc-text">2. 相关资源</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%83%A8%E7%BD%B2%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.2.</span> <span class="toc-text">二、部署步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BADocker-Compose%E6%96%87%E4%BB%B6"><span class="toc-number">1.2.1.</span> <span class="toc-text">1. 创建Docker Compose文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97"><span class="toc-number">1.3.</span> <span class="toc-text">三、使用指南</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.3.1.</span> <span class="toc-text">1. 客户端连接</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AE%BE%E7%BD%AE"><span class="toc-number">1.3.1.1.</span> <span class="toc-text">客户端设置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%99%BB%E5%BD%95"><span class="toc-number">1.3.2.</span> <span class="toc-text">2. 登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-CLI%E8%AE%BE%E7%BD%AE"><span class="toc-number">1.3.3.</span> <span class="toc-text">3. CLI设置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E5%91%98%E5%AF%86%E7%A0%81"><span class="toc-number">1.3.3.1.</span> <span class="toc-text">重置管理员密码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%AE%E5%8A%A9%E4%BF%A1%E6%81%AF"><span class="toc-number">1.3.3.2.</span> <span class="toc-text">帮助信息</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%A4%87%E4%BB%BD%E7%AD%96%E7%95%A5"><span class="toc-number">1.4.</span> <span class="toc-text">四、备份策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">1.5.</span> <span class="toc-text">五、总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/23/rustdesk%E9%83%A8%E7%BD%B2/" title="使用Docker部署RustDesk服务器"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用Docker部署RustDesk服务器"/></a><div class="content"><a class="title" href="/2025/12/23/rustdesk%E9%83%A8%E7%BD%B2/" title="使用Docker部署RustDesk服务器">使用Docker部署RustDesk服务器</a><time datetime="2025-12-23T06:00:00.000Z" title="Created 2025-12-23 14:00:00">2025-12-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A113_instanceof%E5%92%8C%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" title="instanceof和类型转换"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="instanceof和类型转换"/></a><div class="content"><a class="title" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A113_instanceof%E5%92%8C%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" title="instanceof和类型转换">instanceof和类型转换</a><time datetime="2022-08-20T15:08:47.000Z" title="Created 2022-08-20 23:08:47">2022-08-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A112_%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%9A%E6%80%81/" title="什么是多态"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="什么是多态"/></a><div class="content"><a class="title" href="/2022/08/20/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A112_%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%9A%E6%80%81/" title="什么是多态">什么是多态</a><time datetime="2022-08-20T15:01:59.000Z" title="Created 2022-08-20 23:01:59">2022-08-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/17/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A111_%E6%96%B9%E6%B3%95%E9%87%8D%E5%86%99/" title="方法重写"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="方法重写"/></a><div class="content"><a class="title" href="/2022/08/17/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A111_%E6%96%B9%E6%B3%95%E9%87%8D%E5%86%99/" title="方法重写">方法重写</a><time datetime="2022-08-17T13:52:45.000Z" title="Created 2022-08-17 21:52:45">2022-08-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/16/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A110_Super%E8%AF%A6%E8%A7%A3/" title="Super详解"><img src="/img/post/Furina_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Super详解"/></a><div class="content"><a class="title" href="/2022/08/16/JAVA/06%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A110_Super%E8%AF%A6%E8%A7%A3/" title="Super详解">Super详解</a><time datetime="2022-08-16T14:29:12.000Z" title="Created 2022-08-16 22:29:12">2022-08-16</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By 十早九木</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><div class="js-pjax"></div><script async data-pjax src="/"></script></div></body></html>
