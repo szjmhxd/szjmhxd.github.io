@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>安装MySQL</title>
+<style>
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;max-width:860px;margin:0 auto;padding:0 1.2rem;color:#2c3e50;line-height:1.8;background:#fff}
+a{color:#0070c9;text-decoration:none}a:hover{text-decoration:underline}
+header.nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;border-bottom:1px solid #eee;margin-bottom:1.5rem}
+header.nav .site{font-weight:600}
+h1.ptitle{font-size:1.7rem;margin:.2rem 0 1rem}
+img{max-width:100%;height:auto}
+pre{background:#f6f8fa;padding:1rem;border-radius:6px;overflow-x:auto;font-size:.85rem;line-height:1.5}
+code{background:#f0f2f4;padding:.1em .35em;border-radius:3px;font-size:.85em;font-family:Consolas,Monaco,monospace}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:1rem 0}th,td{border:1px solid #dfe2e5;padding:.4rem .7rem;text-align:left}th{background:#f6f8fa}
+blockquote{border-left:4px solid #42b983;margin:1rem 0;padding:.3rem 1rem;color:#555;background:#f8f9fa}
+footer.ft{margin:3rem 0 2rem;color:#999;font-size:.85rem;border-top:1px solid #eee;padding-top:1rem}
+
+</style>
+</head>
+<body>
+<header class="nav"><a href="/">&larr; 首页</a><span class="site">szjmhxd 的博客</span></header>
+<main>
+<h1 class="ptitle">安装MySQL</h1>
+<div class="post">
+<blockquote>
+<p>安装之前要检查系统中是否已存在<span id="more"></span></p>
+</blockquote>
+<h2 id="检查当前系统中是否已安装MySQL"><a href="#检查当前系统中是否已安装MySQL" class="headerlink" title="检查当前系统中是否已安装MySQL"></a>检查当前系统中是否已安装MySQL</h2><ol>
+<li><p><code>rpm -qa | grep -i mysql</code>检查一下是否安装了</p>
+</li>
+<li><p>这里可以看到我们已经安装了8.0.26版本的MySQL</p>
+<p><img src="%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85MySQL.png" alt="是否安装MySQL"></p>
+</li>
+<li><p><code>service mysql status</code>  查看MySQL服务运行状态</p>
+</li>
+<li><p><code>service mysql stop</code>  停止MySQL服务</p>
+</li>
+<li><p><code>find / -name mysql</code>  查看MySQL对应的文件夹</p>
+<p><img src="%E6%9F%A5%E7%9C%8BMySQL%E5%AF%B9%E5%BA%94%E7%9A%84%E6%96%87%E4%BB%B6%E5%A4%B9.png" alt="查看MySQL对应的文件夹"></p>
+</li>
+<li><p>卸载并删除MySQL安装的组键服务</p>
+</li>
+<li><p>主要就是下面这几个（使用<code> rpm -ev</code>删除对应组件即可 再加上<code>--nodeps</code>安装时不检查依赖关系 防止报错）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rpm -ev --nodeps mysql-community-release-el7-5.noarch</span><br><span class="line">rpm -ev --nodeps mysql-errmsg-8.0.26-1.module_el8.4.0+915+de215114.x86_64</span><br><span class="line">rpm -ev --nodeps mysql-8.0.26-1.module_el8.4.0+915+de215114.x86_64</span><br><span class="line">rpm -ev --nodeps mysql-server-8.0.26-1.module_el8.4.0+915+de215114.x86_64</span><br><span class="line">rpm -ev --nodeps mysql-common-8.0.26-1.module_el8.4.0+915+de215114.x86_64</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>rpm -qa | grep -i mysql</code>  最后验证MySQL是否删除完成</p>
+</li>
+<li><p>如若是空空如也就是删除成功了</p>
+</li>
+</ol>
+<p>   <img src="%E5%88%A0%E9%99%A4%E6%88%90%E5%8A%9F.png" alt="删除成功"></p>
+<h2 id="如何在-CentOS-8-上安装-MySQL"><a href="#如何在-CentOS-8-上安装-MySQL" class="headerlink" title="如何在 CentOS 8 上安装 MySQL"></a>如何在 CentOS 8 上安装 MySQL</h2><ol>
+<li><p><code>sudo dnf install @mysql</code> </p>
+</li>
+<li><p>使用 CentOS 包管理器来安装 MySQL 8.0 服务器 </p>
+</li>
+<li><p><code>@mysql</code>模块会安装 MySQL 和所有依赖安装包</p>
+<p><img src="%E5%AE%89%E8%A3%85%E5%AE%8C%E6%88%90.png" alt="安装完成"></p>
+</li>
+<li><p><code>sudo systemctl enable --now mysqld</code>   启动 MySQL 服务并且启用开机启动功能</p>
+<p><img src="%E5%90%AF%E7%94%A8%E5%B9%B6%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8.png" alt="启用并开机启动"></p>
+</li>
+<li><p><code>sudo systemctl status mysqld</code> 检查 MySQL 服务器是否正在运行</p>
+<p>![检查 MySQL 服务器是否正在运行](安装MySQL&#x2F;检查 MySQL 服务器是否正在运行.png)</p>
+</li>
+<li><p><code>mysql_secure_installation</code>  执行一些安全相关的操作，并且设置 MySQL root 用户密码</p>
+</li>
+<li><p>接下来会要求配置<code>VALIDATE PASSWORD PLUGIN</code></p>
+<p>这个插件是用来测试 MySQL 用户的密码强度和提高安全性的。</p>
+<p>有三个密码安全级别，弱，中等，强。如果你不想设置密码验证插件，请直接按<code>Enter</code>回车。</p>
+</li>
+<li><p>在下一个被提示的地方，你会被问到给 MySQL root 用户设置密码。操作完成后，脚本会要求你移除匿名用户，限制 root 用户访问本地机器，移除 test 测试数据库。对于所有的问题都应该回答”Y“（yes）</p>
+<p><img src="%E8%AE%BE%E7%BD%AE%E5%AE%8C%E6%88%90.png" alt="设置完成"></p>
+</li>
+<li><p><code>mysql -u root -p</code>  root 用户访问</p>
+<p><img src="%E6%88%90%E5%8A%9F%E8%AE%BF%E9%97%AE.png" alt="成功访问"></p>
+</li>
+</ol>
+</div>
+</div>
+</main>
+<footer class="ft">迁移自 blog-hexo-Melody-old · 2022-03-29</footer>
+</body>
+</html>

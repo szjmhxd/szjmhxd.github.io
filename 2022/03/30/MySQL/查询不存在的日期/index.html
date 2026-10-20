@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MySQL查询不存在的日期</title>
+<style>
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;max-width:860px;margin:0 auto;padding:0 1.2rem;color:#2c3e50;line-height:1.8;background:#fff}
+a{color:#0070c9;text-decoration:none}a:hover{text-decoration:underline}
+header.nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;border-bottom:1px solid #eee;margin-bottom:1.5rem}
+header.nav .site{font-weight:600}
+h1.ptitle{font-size:1.7rem;margin:.2rem 0 1rem}
+img{max-width:100%;height:auto}
+pre{background:#f6f8fa;padding:1rem;border-radius:6px;overflow-x:auto;font-size:.85rem;line-height:1.5}
+code{background:#f0f2f4;padding:.1em .35em;border-radius:3px;font-size:.85em;font-family:Consolas,Monaco,monospace}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:1rem 0}th,td{border:1px solid #dfe2e5;padding:.4rem .7rem;text-align:left}th{background:#f6f8fa}
+blockquote{border-left:4px solid #42b983;margin:1rem 0;padding:.3rem 1rem;color:#555;background:#f8f9fa}
+footer.ft{margin:3rem 0 2rem;color:#999;font-size:.85rem;border-top:1px solid #eee;padding-top:1rem}
+
+</style>
+</head>
+<body>
+<header class="nav"><a href="/">&larr; 首页</a><span class="site">szjmhxd 的博客</span></header>
+<main>
+<h1 class="ptitle">MySQL查询不存在的日期</h1>
+<div class="post">
+<blockquote>
+<p>今天接到一个任务</p>
+<ol>
+<li>建表test，在一列中插入三月的所有日期</li>
+<li>将1中，3月5日、7日、13日，三条数据删掉</li>
+<li>用MySQL将2中的三个日期查出来</li>
+</ol>
+</blockquote>
+<span id="more"></span>
+
+<p>首先审题 审题第一步 先去问百度</p>
+<p>搜索过程中我发现列两条比较靠谱的方案</p>
+<ul>
+<li>查看MySQL日志     <a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_35824356/article/details/113424423">mysql binlog查询被删除的数据_mysql利用mysqlbinlog命令恢复误删除数据</a></li>
+<li>查询不连续的id     <a target="_blank" rel="noopener" href="https://bbs.csdn.net/topics/391923499">查询mysql 的被删除的所有Id</a></li>
+</ul>
+<p>首先排除看日志，然后开始研究通过查询不连续id的方法查询被删除的数据</p>
+<h3 id="建表test1，在一列中插入三月的所有日期"><a href="#建表test1，在一列中插入三月的所有日期" class="headerlink" title="建表test1，在一列中插入三月的所有日期"></a>建表test1，在一列中插入三月的所有日期</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">-- ----------------------------</span><br><span class="line">-- Table structure for test1</span><br><span class="line">-- ----------------------------</span><br><span class="line">DROP TABLE IF EXISTS `test1`;</span><br><span class="line">CREATE TABLE `test1`  (</span><br><span class="line">  `id` int(0) NOT NULL,</span><br><span class="line">  `date` date NULL DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`) USING BTREE</span><br><span class="line">) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;</span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Records of test1</span><br><span class="line">-- ----------------------------</span><br><span class="line">INSERT INTO `test1` VALUES (1, &#x27;2022-03-01&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (2, &#x27;2022-03-02&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (3, &#x27;2022-03-03&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (4, &#x27;2022-03-04&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (5, &#x27;2022-03-05&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (6, &#x27;2022-03-06&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (7, &#x27;2022-03-07&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (8, &#x27;2022-03-08&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (9, &#x27;2022-03-09&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (10, &#x27;2022-03-10&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (11, &#x27;2022-03-11&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (12, &#x27;2022-03-12&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (13, &#x27;2022-03-13&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (14, &#x27;2022-03-14&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (15, &#x27;2022-03-15&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (16, &#x27;2022-03-16&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (17, &#x27;2022-03-17&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (18, &#x27;2022-03-18&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (19, &#x27;2022-03-19&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (20, &#x27;2022-03-20&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (21, &#x27;2022-03-21&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (22, &#x27;2022-03-22&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (23, &#x27;2022-03-23&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (24, &#x27;2022-03-24&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (25, &#x27;2022-03-25&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (26, &#x27;2022-03-26&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (27, &#x27;2022-03-27&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (28, &#x27;2022-03-28&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (29, &#x27;2022-03-29&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (30, &#x27;2022-03-30&#x27;);</span><br><span class="line">INSERT INTO `test1` VALUES (31, &#x27;2022-03-31&#x27;);</span><br><span class="line"></span><br><span class="line">SET FOREIGN_KEY_CHECKS = 1;</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E5%BB%BA%E8%A1%A8%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE.png" alt="建表插入数据"></p>
+<h3 id="将1中，3月5日、7日、13日，三条数据删掉"><a href="#将1中，3月5日、7日、13日，三条数据删掉" class="headerlink" title="将1中，3月5日、7日、13日，三条数据删掉"></a>将1中，3月5日、7日、13日，三条数据删掉</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DELETE FROM test1 WHERE date = &quot;2022-03-05&quot;;</span><br><span class="line">DELETE FROM test1 WHERE date = &quot;2022-03-07&quot;;</span><br><span class="line">DELETE FROM test1 WHERE date = &quot;2022-03-13&quot;;</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE.png" alt="删除数据"></p>
+<h3 id="用MySQL将2中的三个日期查出来"><a href="#用MySQL将2中的三个日期查出来" class="headerlink" title="用MySQL将2中的三个日期查出来"></a>用MySQL将2中的三个日期查出来</h3><p>这里我写的是我的思路 要结果直接跳到文章结尾即可</p>
+<ol>
+<li><p>首先是使用前面网页里的思路</p>
+<ol>
+<li><p>查询是不连续的id</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">  *</span><br><span class="line">FROM</span><br><span class="line">    ( SELECT * FROM test1 ORDER BY id ASC ) t </span><br><span class="line">WHERE</span><br><span class="line">    ( SELECT 1 FROM test1 WHERE id = t.id - 1 ) IS NULL</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E4%B8%8D%E8%BF%9E%E7%BB%ADid.png" alt="不连续id"></p>
+</li>
+<li><p>现在查询出来的是不连续的id 还多了一个2022-03-01 因为没有2022-03-00与他连续 我们先把查询的数据-1 变成那些被删除的数据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line"> id - 1 AS id,</span><br><span class="line"> CONVERT ( date - 1, DATE ) AS date </span><br><span class="line">FROM</span><br><span class="line"> ( SELECT * FROM test1 ORDER BY id ASC ) t </span><br><span class="line">WHERE</span><br><span class="line"> ( SELECT 1 FROM test1 WHERE id = t.id - 1 ) IS NULL</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E4%BF%AE%E6%94%B9%E4%B8%BA%E5%BD%93%E5%89%8D.png" alt="修改为当前"></p>
+</li>
+<li><p>然后限制日期区域排除掉<code>2022-03-00</code>这种不存在的日期</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line"> id - 1 AS id,</span><br><span class="line"> CONVERT ( date - 1, DATE ) AS date </span><br><span class="line">FROM</span><br><span class="line"> ( SELECT * FROM test1 ORDER BY id ASC ) t </span><br><span class="line">WHERE</span><br><span class="line"> ( SELECT 1 FROM test1 WHERE id = t.id - 1 ) IS NULL </span><br><span class="line"> AND date BETWEEN &quot;2022-03-02&quot; AND LAST_DAY(&quot;2022-03-02&quot;)</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E5%88%A0%E9%99%A4%E6%97%A5%E6%9C%9F0.png" alt="删除日期0"></p>
+</li>
+<li><p>删除6号和31号</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DELETE FROM test1 WHERE date = &quot;2022-03-06&quot;;</span><br><span class="line">DELETE FROM test1 WHERE date = &quot;2022-03-31&quot;;</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E5%88%A0%E9%99%A46%E5%92%8C31.png" alt="删除6和31"></p>
+</li>
+<li><p>再使用上面的查询发现失败了</p>
+<p><img src="%E5%86%8D%E6%AC%A1%E4%B8%8D%E8%BF%9E%E7%BB%AD%E6%9F%A5%E8%AF%A2%E5%A4%B1%E8%B4%A5.png" alt="再次不连续查询失败"></p>
+</li>
+<li><p>究其原因是因为 这个是抄的查询不连续id 与我们的需求不一样</p>
+</li>
+</ol>
+</li>
+<li><p>尝试新的方法</p>
+<ol>
+<li><p>上面使用的<code>IS NULL</code>函数就是判断数据不存在 两个表对比把不存在的数据显示出来  </p>
+</li>
+<li><p>我们可以新建立一个表 这个表里包含一年之内完整的日期 <strong>如果对应不上就说明这个日期的数据被删除了</strong></p>
+</li>
+<li><p>这里我是用Python建表并插入的数据</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 引入 PyMySQL</span></span><br><span class="line"><span class="keyword">import</span> pymysql</span><br><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"></span><br><span class="line"><span class="comment"># 连接数据库</span></span><br><span class="line">conn = pymysql.connect(</span><br><span class="line">    host=<span class="string">&#x27;127.0.0.1&#x27;</span>,         <span class="comment"># 主机名</span></span><br><span class="line">    user=<span class="string">&#x27;root&#x27;</span>,              <span class="comment"># 用户名</span></span><br><span class="line">    passwd=<span class="string">&#x27;root&#x27;</span>,          <span class="comment"># 密码</span></span><br><span class="line">    db=<span class="string">&#x27;test&#x27;</span>,          <span class="comment"># 数据库名</span></span><br><span class="line">    port=<span class="number">3306</span>,                <span class="comment"># 端口</span></span><br><span class="line">    charset=<span class="string">&#x27;utf8&#x27;</span>            <span class="comment"># 编码</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用cursor()方法获取操作游标</span></span><br><span class="line">cursor = conn.cursor()</span><br><span class="line"></span><br><span class="line"><span class="comment">#如果存在&#123;db_name&#125;表，则删除</span></span><br><span class="line">cursor.execute(<span class="string">&quot;DROP TABLE IF EXISTS date2022&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#创建&#123;db_name&#125;表</span></span><br><span class="line">sql = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    create table date2022(</span></span><br><span class="line"><span class="string">    id int(0) NOT NULL,</span></span><br><span class="line"><span class="string">    date date NULL DEFAULT NULL</span></span><br><span class="line"><span class="string">    )</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    <span class="comment"># 执行SQL语句</span></span><br><span class="line">    cursor.execute(sql)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;创建数据库成功&quot;</span>)</span><br><span class="line"><span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;创建数据库失败：case%s&quot;</span>%e)</span><br><span class="line">    </span><br><span class="line">d1 = datetime.datetime.strptime(<span class="string">&#x27;2022-01-01&#x27;</span>, <span class="string">&#x27;%Y-%m-%d&#x27;</span>)</span><br><span class="line">delta = datetime.timedelta(days=<span class="number">1</span>)</span><br><span class="line">d2 = d1</span><br><span class="line"></span><br><span class="line">i = <span class="number">1</span></span><br><span class="line">n = <span class="number">365</span></span><br><span class="line"><span class="keyword">while</span> i &lt;= n:</span><br><span class="line"></span><br><span class="line">    sql = <span class="string">&#x27;insert into date2022(id , date) values(%s, %s)&#x27;</span></span><br><span class="line">    param = (i, d2)</span><br><span class="line"></span><br><span class="line">    cursor.execute(sql, param)</span><br><span class="line">    i += <span class="number">1</span>    </span><br><span class="line">    d2 = d2 + delta</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;next&quot;</span>, i)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;#############&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 提交事务</span></span><br><span class="line">conn.commit()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;数据插入完成&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 最后，关闭游标</span></span><br><span class="line">cursor.close()</span><br><span class="line"><span class="comment"># 提交事务</span></span><br><span class="line">conn.commit()</span><br><span class="line"><span class="comment"># 关闭连接</span></span><br><span class="line">conn.close()</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E6%8F%92%E5%85%A5%E6%88%90%E5%8A%9FPython.png" alt="插入成功Python"></p>
+<p><img src="%E6%8F%92%E5%85%A5%E6%88%90%E5%8A%9FMySQL.png" alt="插入成功MySQL"></p>
+</li>
+<li><p>修改代码为这两个表对照 成功 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">	date </span><br><span class="line">FROM</span><br><span class="line">	date2022 </span><br><span class="line">WHERE</span><br><span class="line">date BETWEEN &quot;2022-03-01&quot; AND LAST_DAY(&quot;2022-03-01&quot;)	</span><br><span class="line">AND ( SELECT 1 FROM test1 WHERE date = date2022.date ) IS NULL</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E4%BF%AE%E6%94%B9%E4%BB%A3%E7%A0%81%E4%B8%BA%E8%BF%99%E4%B8%A4%E4%B8%AA%E8%A1%A8%E5%AF%B9%E7%85%A7.png" alt="修改代码为这两个表对照"></p>
+</li>
+<li><p>再次删除2022-03-01试试 也可以查到</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">DELETE FROM test1 WHERE date = &quot;2022-03-01&quot;;</span><br><span class="line">SELECT</span><br><span class="line">	date </span><br><span class="line">FROM</span><br><span class="line">	date2022 </span><br><span class="line">WHERE</span><br><span class="line">date BETWEEN &quot;2022-03-01&quot; AND LAST_DAY(&quot;2022-03-01&quot;)	</span><br><span class="line">AND ( SELECT 1 FROM test1 WHERE date = date2022.date ) IS NULL</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E5%88%A0%E9%99%A41%E6%9F%A5%E8%AF%A2%E6%88%90%E5%8A%9F.png" alt="删除1查询成功"></p>
+</li>
+<li><p>自此 功能完成</p>
+</li>
+</ol>
+</li>
+<li><p>但是在实际生产中 宝贵的数据库中不会新建一个表用来放这些东西 我们需要修改一下代码 </p>
+<ol>
+<li><p>在网上找到了这样一个帖子<a target="_blank" rel="noopener" href="https://blog.csdn.net/sinat_35840555/article/details/108262949">mysql遍历一段时间内的所有日期、月份 遍历日期</a>代码很有启发</p>
+<p>这段代码要求依赖于一个数据量大于31的表，这种表生产中是常见的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">SELECT DISTINCT</span><br><span class="line">	date_format(</span><br><span class="line">		DATE_ADD(</span><br><span class="line">			&#x27;2022-03-01&#x27; ,</span><br><span class="line">			INTERVAL id day</span><br><span class="line">		),</span><br><span class="line">		&#x27;%Y-%m-%d&#x27;</span><br><span class="line">	) AS `TIME`</span><br><span class="line">FROM</span><br><span class="line">	date2022</span><br><span class="line">WHERE</span><br><span class="line">	DATE_ADD(</span><br><span class="line">		&#x27;2022-03-01&#x27; ,</span><br><span class="line">		INTERVAL id day</span><br><span class="line">	) &lt;= &#x27;2022-03-31&#x27;</span><br><span class="line">ORDER BY time</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E6%97%A5%E6%9C%9F%E9%81%8D%E5%8E%86.png" alt="日期遍历"></p>
+</li>
+<li><p>效果不是很好 优化一下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">	date_format( DATE_ADD( LAST_DAY( &quot;2022-02-01&quot; ), INTERVAL id DAY ), &#x27;%Y-%m-%d&#x27; ) AS date </span><br><span class="line">FROM</span><br><span class="line">	date2022 </span><br><span class="line">WHERE</span><br><span class="line">	id &lt;= DAY ( LAST_DAY( &quot;2022-03-01&quot; ))</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E6%A0%B9%E6%8D%AE%E8%BF%9E%E7%BB%ADid%E7%94%9F%E6%88%90%E6%97%A5%E6%9C%9F.png" alt="根据连续id生成日期"></p>
+</li>
+<li><p>和之前写的结合 能用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">	* </span><br><span class="line">FROM</span><br><span class="line">	(SELECT</span><br><span class="line">	date_format( DATE_ADD( LAST_DAY( &quot;2022-02-01&quot; ), INTERVAL id DAY ), &#x27;%Y-%m-%d&#x27; ) AS date </span><br><span class="line">FROM</span><br><span class="line">	date2022 </span><br><span class="line">WHERE</span><br><span class="line">	id &lt;= DAY ( LAST_DAY( &quot;2022-03-01&quot; ))) t1 </span><br><span class="line">WHERE</span><br><span class="line">	( SELECT 1 FROM test1 WHERE date = t1.date ) IS NULL</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E7%BB%93%E5%90%883.png" alt="结合3"></p>
+</li>
+<li><p>这种方法也存在问题 依赖的数据表必须有id字段 id字段必须从1开始且起码从1~31不能有不连续数据</p>
+</li>
+</ol>
+</li>
+<li><p>凭空输出连续数据</p>
+<ol>
+<li><p>多年的编程思维让我先想到的是用循环<code>selete i </code>但是MySQL循环真难用</p>
+</li>
+<li><p>然后发现了这篇帖子<a target="_blank" rel="noopener" href="https://blog.csdn.net/qiuli_liu/article/details/81707562">mysql生成连续数字或日期</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">	@xi := @xi + 1 AS xc </span><br><span class="line">FROM</span><br><span class="line">	( SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 ) xc1,</span><br><span class="line">	( SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 ) xc2,</span><br><span class="line">	( SELECT @xi := 0 ) xc0</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E7%AC%9B%E5%B0%94%E5%8D%A1%E7%A7%AF%E7%94%9F%E6%88%90.png" alt="笛尔卡积生成"></p>
+</li>
+<li><p>很好用 一个月只有31天 我们修改一下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">	@xi := @xi + 1 AS id</span><br><span class="line">FROM</span><br><span class="line">	( SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6) xc1,</span><br><span class="line">	( SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6) xc2,</span><br><span class="line">	( SELECT @xi := 0 ) xc0</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E5%87%AD%E7%A9%BA%E9%80%A0%E6%95%B0.png" alt="凭空造数"></p>
+</li>
+<li><p>结合上一步的日期生成</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">	date_format( DATE_ADD( LAST_DAY( &quot;2022-02-01&quot; ), INTERVAL t.id DAY ), &#x27;%Y-%m-%d&#x27; ) AS date </span><br><span class="line">FROM</span><br><span class="line">	(SELECT</span><br><span class="line">	@xi := @xi + 1 AS id</span><br><span class="line">FROM</span><br><span class="line">	( SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6) xc1,</span><br><span class="line">	( SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6) xc2,</span><br><span class="line">	( SELECT @xi := 0 ) xc0) t </span><br><span class="line">WHERE</span><br><span class="line">	t.id &lt;= DAY ( LAST_DAY( &quot;2022-03-01&quot; ))</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E5%87%AD%E7%A9%BA%E9%80%A0%E6%95%B0%E7%94%9F%E6%88%90%E6%97%A5%E6%9C%9F.png" alt="凭空造数生成日期"></p>
+</li>
+<li><p>最终使用生成的date查询不存在的日期 效果不错</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">	* </span><br><span class="line">FROM</span><br><span class="line">	(</span><br><span class="line">	SELECT</span><br><span class="line">		date_format( DATE_ADD( LAST_DAY( &quot;2022-02-01&quot; ), INTERVAL t.id DAY ), &#x27;%Y-%m-%d&#x27; ) AS date </span><br><span class="line">	FROM</span><br><span class="line">		(</span><br><span class="line">		SELECT</span><br><span class="line">			@xi := @xi + 1 AS id </span><br><span class="line">		FROM</span><br><span class="line">			( SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 ) xc1,</span><br><span class="line">			( SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 ) xc2,</span><br><span class="line">			( SELECT @xi := 0 ) xc0 </span><br><span class="line">		) t </span><br><span class="line">	WHERE</span><br><span class="line">		t.id &lt;= DAY (LAST_DAY( &quot;2022-03-01&quot; ))) t1 </span><br><span class="line">WHERE</span><br><span class="line">	( SELECT 1 FROM test1 WHERE date = t1.date ) IS NULL</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E4%BD%BF%E7%94%A8%E7%94%9F%E6%88%90date%E6%9F%A5%E8%AF%A2.png" alt="使用生成date查询"></p>
+</li>
+</ol>
+</li>
+</ol>
+</div>
+</div>
+</main>
+<footer class="ft">迁移自 blog-hexo-Melody-old · 2022-03-30</footer>
+</body>
+</html>

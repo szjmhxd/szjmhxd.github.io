@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微信小程序刷新</title>
+<style>
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;max-width:860px;margin:0 auto;padding:0 1.2rem;color:#2c3e50;line-height:1.8;background:#fff}
+a{color:#0070c9;text-decoration:none}a:hover{text-decoration:underline}
+header.nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;border-bottom:1px solid #eee;margin-bottom:1.5rem}
+header.nav .site{font-weight:600}
+h1.ptitle{font-size:1.7rem;margin:.2rem 0 1rem}
+img{max-width:100%;height:auto}
+pre{background:#f6f8fa;padding:1rem;border-radius:6px;overflow-x:auto;font-size:.85rem;line-height:1.5}
+code{background:#f0f2f4;padding:.1em .35em;border-radius:3px;font-size:.85em;font-family:Consolas,Monaco,monospace}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:1rem 0}th,td{border:1px solid #dfe2e5;padding:.4rem .7rem;text-align:left}th{background:#f6f8fa}
+blockquote{border-left:4px solid #42b983;margin:1rem 0;padding:.3rem 1rem;color:#555;background:#f8f9fa}
+footer.ft{margin:3rem 0 2rem;color:#999;font-size:.85rem;border-top:1px solid #eee;padding-top:1rem}
+
+</style>
+</head>
+<body>
+<header class="nav"><a href="/">&larr; 首页</a><span class="site">szjmhxd 的博客</span></header>
+<main>
+<h1 class="ptitle">微信小程序刷新</h1>
+<div class="post">
+<blockquote>
+<p>微信小程序刷新其实很简单<code>onLoad</code>就行<span id="more"></span></p>
+</blockquote>
+<h2 id="刷新"><a href="#刷新" class="headerlink" title="刷新"></a>刷新</h2><p>其实用 <code>onLoad </code>周期方法重新加载，就能实现当前页面的刷新</p>
+<p>其实只需要</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">this</span>.<span class="title function_">onLoad</span>()</span><br></pre></td></tr></table></figure>
+
+<p>这一句就行 但是网上很多人都不成功 其实只要再js服务的最外层</p>
+<p>也就是 <code>wx.request</code>和<code>wx.showModal</code>方法外定义一下就行</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> that = <span class="variable language_">this</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>总体代码大致如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">delVisitorWblist</span>(<span class="params">id</span>)&#123;</span><br><span class="line">    <span class="keyword">var</span> that = <span class="variable language_">this</span>;</span><br><span class="line">    <span class="comment">// 删除提示框</span></span><br><span class="line">    wx.<span class="title function_">showModal</span>(&#123;</span><br><span class="line">      <span class="attr">title</span>: <span class="string">&#x27;提示&#x27;</span>,</span><br><span class="line">      <span class="attr">content</span>: <span class="string">&#x27;确定删除？&#x27;</span>,</span><br><span class="line">      <span class="attr">success</span>: <span class="keyword">function</span> (<span class="params">res</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (res.<span class="property">confirm</span>) &#123;</span><br><span class="line">    <span class="comment">//  调用删除接口</span></span><br><span class="line">          wx.<span class="title function_">request</span>(&#123;</span><br><span class="line">          <span class="attr">url</span>:  urlList.<span class="property">updateWList</span>,</span><br><span class="line">            <span class="attr">method</span>:<span class="string">&quot;POST&quot;</span>,</span><br><span class="line">            <span class="attr">header</span>: &#123;<span class="string">&#x27;content-type&#x27;</span>: <span class="string">&#x27;application/x-www-form-urlencoded&#x27;</span>&#125;,</span><br><span class="line">            <span class="attr">data</span>: &#123;</span><br><span class="line">              <span class="string">&quot;wblist_id&quot;</span>: id.<span class="property">target</span>.<span class="property">dataset</span>.<span class="property">id</span></span><br><span class="line">            &#125;,</span><br><span class="line">            success (res) &#123;</span><br><span class="line">              <span class="variable language_">console</span>.<span class="title function_">log</span>(res.<span class="property">data</span>)</span><br><span class="line">              <span class="keyword">if</span>(res.<span class="property">data</span>.<span class="property">code</span> == <span class="number">200</span>)&#123;</span><br><span class="line">                wx.<span class="title function_">showToast</span>(&#123;</span><br><span class="line">                  <span class="attr">title</span>: <span class="string">&#x27;删除成功&#x27;</span>,</span><br><span class="line">                  <span class="attr">icon</span>: <span class="string">&#x27;success&#x27;</span>,</span><br><span class="line">                  <span class="attr">duration</span>: <span class="number">2000</span></span><br><span class="line">                &#125;)</span><br><span class="line">              &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                wx.<span class="title function_">showToast</span>(&#123;</span><br><span class="line">                  <span class="attr">title</span>: <span class="string">&#x27;删除失败&#x27;</span>,</span><br><span class="line">                  <span class="attr">icon</span>: <span class="string">&#x27;error&#x27;</span>,</span><br><span class="line">                  <span class="attr">duration</span>: <span class="number">2000</span></span><br><span class="line">                &#125;)</span><br><span class="line">              &#125;</span><br><span class="line">              that.<span class="title function_">onLoad</span>()</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;取消&#x27;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+</div>
+</div>
+</main>
+<footer class="ft">迁移自 blog-hexo-Melody-old · 2022-04-01</footer>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设置MySQL</title>
+<style>
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;max-width:860px;margin:0 auto;padding:0 1.2rem;color:#2c3e50;line-height:1.8;background:#fff}
+a{color:#0070c9;text-decoration:none}a:hover{text-decoration:underline}
+header.nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;border-bottom:1px solid #eee;margin-bottom:1.5rem}
+header.nav .site{font-weight:600}
+h1.ptitle{font-size:1.7rem;margin:.2rem 0 1rem}
+img{max-width:100%;height:auto}
+pre{background:#f6f8fa;padding:1rem;border-radius:6px;overflow-x:auto;font-size:.85rem;line-height:1.5}
+code{background:#f0f2f4;padding:.1em .35em;border-radius:3px;font-size:.85em;font-family:Consolas,Monaco,monospace}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:1rem 0}th,td{border:1px solid #dfe2e5;padding:.4rem .7rem;text-align:left}th{background:#f6f8fa}
+blockquote{border-left:4px solid #42b983;margin:1rem 0;padding:.3rem 1rem;color:#555;background:#f8f9fa}
+footer.ft{margin:3rem 0 2rem;color:#999;font-size:.85rem;border-top:1px solid #eee;padding-top:1rem}
+
+</style>
+</head>
+<body>
+<header class="nav"><a href="/">&larr; 首页</a><span class="site">szjmhxd 的博客</span></header>
+<main>
+<h1 class="ptitle">设置MySQL</h1>
+<div class="post">
+<blockquote>
+<p>修改密码 创建用户 分配权限<span id="more"></span></p>
+</blockquote>
+<h2 id="设置MySQL"><a href="#设置MySQL" class="headerlink" title="设置MySQL"></a>设置MySQL</h2><h3 id="修改密码"><a href="#修改密码" class="headerlink" title="修改密码"></a>修改密码</h3><h4 id="对密码策略进行设置"><a href="#对密码策略进行设置" class="headerlink" title="对密码策略进行设置"></a>对密码策略进行设置</h4><p>在这之前  我们先要对密码策略进行设置</p>
+<ol>
+<li><p><code>mysql -u root -p</code> 首先使用root用户登录</p>
+<p><img src="root%E7%99%BB%E5%BD%95-16485380250441.png" alt="root登录"></p>
+</li>
+<li><p>查看密码策略</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show variables like &#x27;validate_password%&#x27;;</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E6%9F%A5%E7%9C%8B%E5%AF%86%E7%A0%81%E7%AD%96%E7%95%A5.png" alt="查看密码策略"></p>
+</li>
+<li><p>修改密码策略</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set global validate_password.policy=0; #设置为弱口令</span><br><span class="line">set global validate_password.length=1; #密码最小长度为1</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81%E7%AD%96%E7%95%A5.png" alt="修改密码策略"></p>
+</li>
+<li><p>再次查看密码策略</p>
+<p><img src="%E5%86%8D%E6%AC%A1%E6%9F%A5%E7%9C%8B%E5%AF%86%E7%A0%81%E7%AD%96%E7%95%A5.png" alt="再次查看密码策略"></p>
+</li>
+</ol>
+<h4 id="修改密码-1"><a href="#修改密码-1" class="headerlink" title="修改密码"></a>修改密码</h4><p>参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_40757240/article/details/118068317"> MySQL修改root用户密码</a></p>
+<p>使用<code>ALTER USER</code>修改密码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER USER &#x27;root&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;newpswd&#x27;;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81.png" alt="修改密码"></p>
+<h3 id="新建用户"><a href="#新建用户" class="headerlink" title="新建用户"></a>新建用户</h3><p>参考 <a target="_blank" rel="noopener" href="http://c.biancheng.net/view/7490.html">MySQL创建用户（3种方式）</a></p>
+<ol>
+<li><p>使用<code>CREATE USER</code>新建用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CREATE USER &#x27;test1&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;test1&#x27;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>使用 CREATE USER 创建一个用户，用户名是 test1，密码是 test1，主机名是localhost。</p>
+</li>
+<li><p>使用新用户登录<br><img src="%E6%96%B0%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95.png" alt="新用户登录"></p>
+</li>
+</ol>
+<h3 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h3><ol>
+<li><p>使用<code>CREATE DATABASE</code>创建数据库</p>
+</li>
+<li><pre><code class="mysql">CREATE DATABASE IF NOT EXISTS test_db1
+DEFAULT CHARACTER SET utf8
+DEFAULT COLLATE utf8_general_ci;
+</code></pre>
+</li>
+<li><p><img src="%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%BA%93.png" alt="创建数据库"></p>
+</li>
+<li><p>使用<code>SHOW DATABASES;</code>查看有哪些数据库</p>
+</li>
+<li><p><img src="%E6%9F%A5%E7%9C%8B%E6%95%B0%E6%8D%AE%E5%BA%93.png" alt="查看数据库"></p>
+</li>
+</ol>
+<h3 id="分配数据库权限"><a href="#分配数据库权限" class="headerlink" title="分配数据库权限"></a>分配数据库权限</h3><p>参考<a target="_blank" rel="noopener" href="https://www.cnblogs.com/tangyb/p/10042616.html">mysql 创建用户、设置权限</a></p>
+<p>使用<code>GRANT</code>命令授权用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GRANT privileges ON databasename.tablename TO &#x27;username&#x27;@&#x27;localhost&#x27;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>privileges</code>：用户的操作权限，如<code>SELECT</code>，<code>INSERT</code>，<code>UPDATE</code>等，如果要授予所的权限则使用<code>ALL</code></p>
+</li>
+<li><p><code>databasename</code>：数据库名</p>
+</li>
+<li><p><code>tablename</code>：表名，如果要授予该用户对所有数据库和表的相应操作权限则可用<code>*</code>表示，如<code>*.*</code></p>
+</li>
+</ul>
+<p><img src="%E5%88%86%E9%85%8D%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90.png" alt="分配用户权限"></p>
+<h3 id="使用Navicat远程连接"><a href="#使用Navicat远程连接" class="headerlink" title="使用Navicat远程连接"></a>使用Navicat远程连接</h3><blockquote>
+<p>使用Navicat远程连接时遇到错误</p>
+<p>1130- Host 16.47.201.183’is not allowed to connect to this MySQL server</p>
+<p>这是由于Mysql配置了不支持远程连接引起的</p>
+</blockquote>
+<ol>
+<li><p>在安装Mysql数据库的主机上登录root用户</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br></pre></td></tr></table></figure>
+
+<p><img src="01root%E7%99%BB%E5%BD%95-16485409091512.png" alt="01root登录"></p>
+</li>
+<li><p>看到当前主机配置信息</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">use mysql;</span><br><span class="line">select user,host from user;</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E6%9F%A5%E7%9C%8Bhost%E4%BF%A1%E6%81%AF.png" alt="查看host信息"></p>
+<p>Host列指定了允许用户登录所使用的IP，比如user&#x3D;root Host&#x3D;192.168.1.1。这里的意思就是说root用户只能通过192.168.1.1的客户端去访问。 user&#x3D;root Host&#x3D;localhost，表示只能通过本机客户端去访问。而%是个通配符，如果Host&#x3D;192.168.1.%，那么就表示只要是IP地址前缀为“192.168.1.”的客户端都可以连接。如果Host&#x3D;%，表示所有IP都有连接权限。 </p>
+</li>
+<li><p>修改host</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">update user set host = &#x27;%&#x27; where user =&#x27;root&#x27;;</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E4%BF%AE%E6%94%B9host%E4%BF%A1%E6%81%AF.png" alt="修改host信息"></p>
+</li>
+<li><p>再次查看</p>
+<p><img src="%E6%9F%A5%E7%9C%8Bhost%E4%BF%A1%E6%81%AF%E4%BF%AE%E6%94%B9%E5%90%8E.png" alt="查看host信息修改后"></p>
+</li>
+<li><p>Host修改完成后记得执行flush privileges使配置立即生效</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E7%AB%8B%E5%8D%B3%E6%89%A7%E8%A1%8C.png" alt="立即执行"></p>
+</li>
+<li><p>再次用navicat连接成功</p>
+</li>
+</ol>
+</div>
+</div>
+</main>
+<footer class="ft">迁移自 blog-hexo-Melody-old · 2022-03-29</footer>
+</body>
+</html>

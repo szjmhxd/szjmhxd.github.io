@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>运行若依项目</title>
+<style>
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;max-width:860px;margin:0 auto;padding:0 1.2rem;color:#2c3e50;line-height:1.8;background:#fff}
+a{color:#0070c9;text-decoration:none}a:hover{text-decoration:underline}
+header.nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;border-bottom:1px solid #eee;margin-bottom:1.5rem}
+header.nav .site{font-weight:600}
+h1.ptitle{font-size:1.7rem;margin:.2rem 0 1rem}
+img{max-width:100%;height:auto}
+pre{background:#f6f8fa;padding:1rem;border-radius:6px;overflow-x:auto;font-size:.85rem;line-height:1.5}
+code{background:#f0f2f4;padding:.1em .35em;border-radius:3px;font-size:.85em;font-family:Consolas,Monaco,monospace}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:1rem 0}th,td{border:1px solid #dfe2e5;padding:.4rem .7rem;text-align:left}th{background:#f6f8fa}
+blockquote{border-left:4px solid #42b983;margin:1rem 0;padding:.3rem 1rem;color:#555;background:#f8f9fa}
+footer.ft{margin:3rem 0 2rem;color:#999;font-size:.85rem;border-top:1px solid #eee;padding-top:1rem}
+
+</style>
+</head>
+<body>
+<header class="nav"><a href="/">&larr; 首页</a><span class="site">szjmhxd 的博客</span></header>
+<main>
+<h1 class="ptitle">运行若依项目</h1>
+<div class="post">
+<h1 id="1-若依（前后端分离版）"><a href="#1-若依（前后端分离版）" class="headerlink" title="1. 若依（前后端分离版）"></a>1. 若依（前后端分离版）</h1><h2 id="1-1-什么是若依？"><a href="#1-1-什么是若依？" class="headerlink" title="1.1 什么是若依？"></a>1.1 什么是若依？</h2><p>开源项目 在此基础上二次开发</p>
+<ul>
+<li>学习开源项目的目标：</li>
+</ul>
+<ol>
+<li>直接用，减少自己的工作量</li>
+<li>学习优秀开源项目底层的编程思想，设计思路，提高自己的编程能力</li>
+</ol>
+<ul>
+<li>官网： <a target="_blank" rel="noopener" href="http://www.ruoyi.vip/">RuoYi 若依官方网站</a><span id="more"></span></li>
+<li>基础：SpringBoot + Vue</li>
+<li>环境要求：<ol>
+<li>JDK1.8+</li>
+<li>MySQL</li>
+<li>Redis</li>
+<li>Maven</li>
+<li>Vue</li>
+</ol>
+</li>
+</ul>
+<h2 id="1-2-使用若依"><a href="#1-2-使用若依" class="headerlink" title="1.2 使用若依"></a>1.2 使用若依</h2><p>使用开源项目的步骤：</p>
+<ol>
+<li><p>下载并运行</p>
+</li>
+<li><p>看懂业务流程</p>
+</li>
+<li><p>进行二次开发</p>
+</li>
+</ol>
+<h3 id="1-2-1-下载"><a href="#1-2-1-下载" class="headerlink" title="1.2.1 下载"></a>1.2.1 下载</h3><p>若依的项目托管与Gitee，直接从gitee上<code>git clone</code>即可</p>
+<h3 id="1-2-2-配置数据库MySQL、Redis"><a href="#1-2-2-配置数据库MySQL、Redis" class="headerlink" title="1.2.2 配置数据库MySQL、Redis"></a>1.2.2 配置数据库MySQL、Redis</h3><ul>
+<li><p>MySQL</p>
+<ol>
+<li>创建数据库<code>ry-vue</code>并导入数据脚本<code>ry_2021xxxx.sql</code>，<code>quartz.sql</code></li>
+<li>在<code>ruoyi-admin/src/main/resources/application-druid.yml</code>中配置数据库连接</li>
+<li><img src="1.2.2_1%E9%85%8D%E7%BD%AE%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5.png"></li>
+</ol>
+</li>
+<li><p>Redis</p>
+<ol>
+<li>在<code>ruoyi-admin/src/main/resources/application.yml</code>中配置Redis连接</li>
+<li><img src="1.2.2_2%E9%85%8D%E7%BD%AERedis%E8%BF%9E%E6%8E%A5.png"></li>
+</ol>
+</li>
+</ul>
+<h2 id="1-2-3-运行后端"><a href="#1-2-3-运行后端" class="headerlink" title="1.2.3 运行后端"></a>1.2.3 运行后端</h2><ol>
+<li>运行<code>ruoyi-admin/src/main/java/com/ruoyi/RuoYiApplication.java</code></li>
+<li>启动成功</li>
+<li><img src="1.2.3_1%E5%90%AF%E5%8A%A8%E6%88%90%E5%8A%9F.png"></li>
+<li>浏览器访问成功</li>
+<li><img src="1.2.3_2%E6%B5%8F%E8%A7%88%E5%99%A8%E8%AE%BF%E9%97%AE%E6%88%90%E5%8A%9F.png"></li>
+</ol>
+<h3 id="1-2-4-运行前端"><a href="#1-2-4-运行前端" class="headerlink" title="1.2.4 运行前端"></a>1.2.4 运行前端</h3><ol>
+<li><p>安装依赖环境 </p>
+</li>
+<li><pre><code class="powershell">npm install --registry=https://registry.npmmirror.com
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">   </span><br><span class="line">3. 启动服务</span><br><span class="line"></span><br><span class="line">4. ```powershell</span><br><span class="line">   npm run dev</span><br></pre></td></tr></table></figure>
+</code></pre>
+</li>
+<li><img src="1.2.4_1%E5%89%8D%E7%AB%AF%E5%90%AF%E5%8A%A8%E6%88%90%E5%8A%9F.png">
+</li>
+<li><img src="1.2.4_2%E6%B5%8F%E8%A7%88%E5%99%A8%E8%AE%BF%E9%97%AE%E6%88%90%E5%8A%9F.png">
+</li>
+<li><img src="1.2.4_3%E6%88%90%E5%8A%9F%E8%BF%9B%E5%85%A5%E7%B3%BB%E7%BB%9F.png"></li>
+</ol>
+</div>
+</div>
+</main>
+<footer class="ft">迁移自 blog-hexo-Melody-old · 2022-05-21</footer>
+</body>
+</html>

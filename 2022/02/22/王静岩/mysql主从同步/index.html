@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mysql主从同步</title>
+<style>
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;max-width:860px;margin:0 auto;padding:0 1.2rem;color:#2c3e50;line-height:1.8;background:#fff}
+a{color:#0070c9;text-decoration:none}a:hover{text-decoration:underline}
+header.nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;border-bottom:1px solid #eee;margin-bottom:1.5rem}
+header.nav .site{font-weight:600}
+h1.ptitle{font-size:1.7rem;margin:.2rem 0 1rem}
+img{max-width:100%;height:auto}
+pre{background:#f6f8fa;padding:1rem;border-radius:6px;overflow-x:auto;font-size:.85rem;line-height:1.5}
+code{background:#f0f2f4;padding:.1em .35em;border-radius:3px;font-size:.85em;font-family:Consolas,Monaco,monospace}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:1rem 0}th,td{border:1px solid #dfe2e5;padding:.4rem .7rem;text-align:left}th{background:#f6f8fa}
+blockquote{border-left:4px solid #42b983;margin:1rem 0;padding:.3rem 1rem;color:#555;background:#f8f9fa}
+footer.ft{margin:3rem 0 2rem;color:#999;font-size:.85rem;border-top:1px solid #eee;padding-top:1rem}
+
+</style>
+</head>
+<body>
+<header class="nav"><a href="/">&larr; 首页</a><span class="site">szjmhxd 的博客</span></header>
+<main>
+<h1 class="ptitle">mysql主从同步</h1>
+<div class="post">
+<p>配置mysql环境之前首先要配置好自己的系统环境以及mysql环境，mysql8.0版本配置主从同步。<span id="more"></span></p>
+<p>一、安装好linux环境，业务系统为centos7，所以我们的环境也必须为centos7版本，至于系统差了0.x的小版本，只要不差太多的话对之后的MySQL安装就没有什么太大的影响。</p>
+<p>1、配置linux环境，我的Linux环境为centos7版本，系统详情版本如下：</p>
+<p><img src="image-20220222084759809.png" alt="image-20220222084759809"></p>
+<p>二、安装MySQL。</p>
+<p>由于centos7的镜像源的问题，我们使用yum install命令下载的mysql并不是甲骨文官方的MySQL，而是由开源社区正在运营维护的mariadb数据库，而mariadb与MySQL在一些细节上还是有一些区别的，所以我们在这里配置MySQL主从同步的话还是去甲骨文官网下载比较好。当然也可以配置yum源，配置到甲骨文官网的mysql下载源。在这里我们主要讲解从甲骨文官网下载rpm包用WinScp上传到虚拟机里进行解压安装的方法。</p>
+<p>1、甲骨文官网下载MySQL的rpm包（对于一些计算机小白来讲，有关于rpm是什么的问题，请自觉动动你们的双手去百度上搜索一些相关信息查看了解一下比较好）。之后用winscp把windows物理机下载的MySQL的rpm包传输到指定ip下的以及安装</p>
+<p>1.1百度上搜索MySQL，根据红框里点进Downloads里面。</p>
+<p><img src="image-20220222090600505.png" alt="image-20220222090600505"></p>
+<p>1.2这时我们会来到甲骨文有关于MySQL的下载处，如果你只是研究测试MySQL的功能的话，在这里大部分程序员都会推荐你去下载社区版，下方图片红框处。</p>
+<p><img src="image-20220222090942090.png" alt="image-20220222090942090"></p>
+<p>1.3点进去之后我们会看到有许多MySQL的下载版本，在这里我们点进MySQL Community Server </p>
+<p><img src="image-20220222091256617.png" alt="image-20220222091256617"></p>
+<p>这时我们会跳转到社区版Mysql下载界面，在这里我们可以选择我们目前使用的操作系统是什么</p>
+<p><img src="image-20220222091543247.png" alt="image-20220222091543247"></p>
+<p>而我们使用的centos7是基于红帽公司的Redhat系统的基础上延伸出来的，所以有关于centos系统的MySQL下载都被甲骨文归档到了Redhat系统旗下，之后我们只要点进去即可，如下图红框所标</p>
+<p><img src="image-20220222091937163.png" alt="image-20220222091937163"></p>
+<p>之后我们会选择centos的子版本，也就是我们需要的centos的7的版本，其中又分为x86的系统架构与RAM系统架构（有关于这两个系统架构的详情请自觉百度），在这里我们的系统架构为x86架构，如下图红框所示</p>
+<p><img src="image-20220222092540441.png" alt="image-20220222092540441"></p>
+<p>到这里以后会让我们选择MySQL8.0的子版本，这里因为我之前自己下载了一个最新的RPM Bundle的8.0.28版本的包，下载之后在centos进行解压安装，遇到了一系列不必要的麻烦后，我果断去看b站视频找到了一个8.0.22不会出错的安装方式进行安装。（忘记是哪位大佬的视频了。。。）</p>
+<p>按着顺序点击下方两张图片的红框处</p>
+<p><img src="image-20220222100414822.png" alt="image-20220222100414822"></p>
+<p><img src="image-20220222100447841.png" alt="image-20220222100447841"></p>
+<p>之后我们选择一个RPM Bundle整合包进行下载，这里面包含了MySQL server、MySQL client等一系列的MySQL服务程序。如下图所示，点击Download即可下载</p>
+<p><img src="image-20220222101034412.png" alt="image-20220222101034412"></p>
+<p><img src="image-20220222101046166.png" alt="image-20220222101046166"></p>
+<p>下载完以后找到我们下载的rpm包，打开winscp进行sftp协议的远程链接操作（有关于winscp下载与安装请百度，如果有更好的网络传输文件或者实现两端传输文件的方法，可以在讨论区里进行讨论），这里就不说明怎么查看主机ip了。</p>
+<p><img src="image-20220222104249735.png" alt="image-20220222104249735"></p>
+<p>下图所示已经连接成功，左边为我目前使用的笔记本，右边为我要把rpm包传输过去的主机</p>
+<p><img src="image-20220222105852307.png" alt="image-20220222105852307"></p>
+<p>之后在传输之前我们需要在要传输的主机上的根目录下的&#x2F;usr&#x2F;local&#x2F;目录下创建一个mysql目录。具体操作如下</p>
+<p>cd &#x2F;usr&#x2F;local&#x2F;</p>
+<p>mkdir mysql</p>
+<p><img src="image-20220222110201479.png" alt="image-20220222110201479"></p>
+<p>之后我们开始将rpm包传输到我们创建好的mysql目录之下。鼠标右键选中rpm包拖动过去即可。</p>
+<p><img src="image-20220222110603404.png" alt="image-20220222110603404"></p>
+<p>这是传输完成的样子</p>
+<p><img src="image-20220222110719305.png" alt="image-20220222110719305"></p>
+<p>2、安装解压rpm包安装MySQL各项服务</p>
+<p>2.1在安装rpm包之前，我们需要查看一下安装centos7的镜像里有没有预装好的mysql数据库，可能因为某些世界性的大厂之间的竞争，甲骨文收购了mysql的公司以后，开源社区的大佬们怕甲骨文展开闭源操作，特此弄了一个mariadb数据库，防止闭源的风险出现。也因此我们需要检查一下系统里有没有预装的mariadb。</p>
+<p>通过rpm -qa | grep mariadb可以查看有没有预装的软件</p>
+<p><img src="image-20220222111932468.png" alt="image-20220222111932468"></p>
+<p>之后我们将其卸载</p>
+<p>rpm -e –nodeps mariadb-libs</p>
+<p><img src="image-20220222112116938.png" alt="image-20220222112116938"></p>
+<p>卸载完以后我们便可以安装我们的mysql了</p>
+<p>利用tar命令进行解压目录下的.tar压缩包。</p>
+<p>tar -xvf mysql-8.0.22-1.el7.aarch64.rpm-bundle.tar</p>
+<p>之后我们只要rpm安装四个.rpm文件即可</p>
+<p><img src="image-20220222112436127.png" alt="image-20220222112436127"></p>
+<p>安装命令如下</p>
+<p>rpm -ivh mysql-community-common-8.0.22-1.el7.x86_64.rpm –nodeps –force<br>rpm -ivh mysql-community-libs-8.0.22-1.el7.x86_64.rpm –nodeps –force<br>rpm -ivh mysql-community-client-8.0.22-1.el7.x86_64.rpm –nodeps –force<br>rpm -ivh mysql-community-server-8.0.22-1.el7.x86_64.rpm –nodeps –force</p>
+<p>如下图</p>
+<p><img src="image-20220222112930515.png" alt="image-20220222112930515"></p>
+<p><img src="image-20220222113106539.png" alt="image-20220222113106539"></p>
+<p><img src="image-20220222113235702.png" alt="image-20220222113235702"></p>
+<p><img src="image-20220222113601615.png" alt="image-20220222113601615"></p>
+<p>至此MySQL已经安装完毕，接下来就是登录用户操作，由于不是yum下载安装的，mysql的root账号密码已经创建好了，并不会像yum一样提供让设置root密码的操作。不要担心，我们还是能够通过linux查看日志的办法知道已经创建好的root账号密码。</p>
+<p>首先让我们先启动mysql服务载入到linux系统的service中如下图</p>
+<p>mysqld –initialize</p>
+<p>chown mysql:mysql &#x2F;var&#x2F;lib&#x2F;mysql -R</p>
+<p><img src="image-20220222114126446.png" alt="image-20220222114126446"></p>
+<p>之后运行mysql服务程序，如下图</p>
+<p>systemctl start mysqld.service</p>
+<p><img src="image-20220222114317519.png" alt="image-20220222114317519"></p>
+<p>在这里，服务启动以后查看root账户的密码</p>
+<p>cat &#x2F;var&#x2F;log&#x2F;mysqld.log | grep password</p>
+<p><img src="image-20220222114459210.png" alt="image-20220222114459210"></p>
+<p>在这里，最后的一串特殊字符便是我们的root账户密码，复制好。</p>
+<p>登录数据库，粘贴复制好的密码即可</p>
+<p>mysql -u root -p</p>
+<p><img src="image-20220222114717593.png" alt="image-20220222114717593"></p>
+<p>登录成功之后，我们便可以在mysql命令行里进行root用户密码的修改(有些笨比)</p>
+<p>alter user ‘root‘@’localhost’ identified by ‘wjy’;</p>
+<p><img src="image-20220222115245425.png" alt="image-20220222115245425"></p>
+<p>之后退出数据库再用我们修改好的密码登陆一次看看</p>
+<p><img src="image-20220222115503729.png" alt="image-20220222115503729"></p>
+<p>之后开启我们的主从备份操作！</p>
+<p>（#记得关闭主库从库防火墙）</p>
+<p>关闭防火墙命令</p>
+<p>systemctl stop firewalld.service</p>
+<p>查看防火墙状态</p>
+<p>firewall-cmd –state</p>
+<p>永久关闭防火墙（实验可以这么做，但是业务中不推荐）</p>
+<p>systemctl disable firewalld.service</p>
+<p>三、主从备份，主要修改centos7下的&#x2F;etc&#x2F;目录下的my.cnf文件。如果是按着这个文档来的话，my.cnf一定在&#x2F;etc&#x2F;目录之下。</p>
+<p>1配置主机的my.cnf</p>
+<p>1.1打开你的主机，找到主机下的&#x2F;etc&#x2F;my.cnf文件</p>
+<p>vi my.cnf</p>
+<p><img src="image-20220222134115597.png" alt="image-20220222134115597"></p>
+<p>在文件里添加的mysqld标签下添加以下红框圈中的三条</p>
+<p><img src="image-20220222134355827.png" alt="image-20220222134355827"></p>
+<p>保存好以后重启mysql服务</p>
+<p><img src="image-20220222134536717.png" alt="image-20220222134536717"></p>
+<p>之后再次进入主机的mysql数据库中创建一个用于远程连接的mysql用户，并分配这个用户被远程连接的权限以及对数据库增删改查权限（为了以防外一出现一堆不知名error，在这里我建议直接给所有权限，确保能主从备份之后再根据需求给用户删减权限）</p>
+<p>create user ‘wjy‘@’%’ identified with mysql_native_password by ‘wjy’;</p>
+<p>而由于mysql8.0版本的原因，创建账户的命令进行了简化，如下图所示，所以使用以下语句即可</p>
+<p>create user ‘wjy‘@’%’ identified by ‘wjy’;</p>
+<p><img src="image-20220222140135484.png" alt="image-20220222140135484"></p>
+<p>之后赋予远程连接权限</p>
+<p>grant replication slave on *.*to ‘wjy‘@’%’;</p>
+<p><img src="image-20220222140758558.png" alt="image-20220222140758558"></p>
+<p>以防万一我们给这个账户对所有库的所有权限</p>
+<p>grant all privileges on <em>.</em> to ‘wjy‘@’%’;</p>
+<p><img src="image-20220222141059253.png" alt="image-20220222141059253"></p>
+<p>刷新权限</p>
+<p>flush privileges;</p>
+<p><img src="image-20220222141200495.png" alt="image-20220222141200495"></p>
+<p>至此主数据库已经配置成功，可以用以下命令查看主机的主从备份的数据</p>
+<p>show master status;</p>
+<p>在这里需要注意下File 和 Position两个字段里的数据，由于我之前已经配了一次的原因，这两个字段跟初次配置的字段有些许不同，初次应该是mysql-bin.000005和1，如果与我的不匹配也没有关系，继续向下操作就行了。</p>
+<p><img src="image-20220222141411537.png" alt="image-20220222141411537"></p>
+<p>我们开始配置从数据库的备份，与上面的操作一样，在从机的&#x2F;etc&#x2F;目录下配置my.cnf文件</p>
+<p><img src="image-20220222141851836.png" alt="image-20220222141851836"></p>
+<p>在mysqld标签下添加</p>
+<p>server-id&#x3D;2</p>
+<p>保存并退出</p>
+<p><img src="image-20220222142101597.png" alt="image-20220222142101597"></p>
+<p>我们登录从数据库中，也创建一个与主数据库同样的账户（为了以防万一，因为我第一次做的时候从库给我来了一个没有该账户的error，并且主库从库没有达成链接）创建用户命令和主库相同</p>
+<p><img src="image-20220222143111399.png" alt="image-20220222143111399"></p>
+<p>之后配置从库链接到主库的wjy账户下，在这里我们就用到了主库查看的File和Position两个字段了，具体命令如下</p>
+<p>CHANGE MASTER TO<br>MASTER_HOST&#x3D;’192.168.101.206’,<br>MASTER_USER&#x3D;’wjy’,<br>MASTER_PASSWORD&#x3D;’wjy’,<br>MASTER_LOG_FILE&#x3D;’mysql-bin.000005’,<br>MASTER_LOG_POS&#x3D;1352;</p>
+<p><img src="image-20220222144121271.png" alt="image-20220222144121271"></p>
+<p>开启slave从机线程服务并查看从机线程</p>
+<p><img src="image-20220222144346550.png" alt="image-20220222144346550"></p>
+<p>这里我建议各位下载navicat这个软件进行操作，不然就有点看不懂数据了。出现以下两条就说明我们成功了！</p>
+<p><img src="image-20220222145023079.png" alt="image-20220222145023079"></p>
+<p>四、再创建数据库的时候一定要确保主库从库都有同样的库同样的表和同样的字段！或者用mysql命令行创建，不然从数据库会宕机！以下是我在主库中创建了一个test2库，同时他在从库中也出现了，就证明我们成功了！</p>
+<p><img src="image-20220222150244195.png" alt="image-20220222150244195"></p>
+<p>感谢各位观看！</p>
+</div>
+</div>
+</main>
+<footer class="ft">迁移自 blog-hexo-Melody-old · 2022-02-22</footer>
+</body>
+</html>
