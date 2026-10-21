@@ -1,0 +1,31 @@
+# 血星 hexo 编辑容器 —— 云服务器/NAS 用（容器内 hexo server，本机 7800 -> 容器 4000）
+# 本机无 Docker：用 npm 装 hexo-cli 后在源码工程里 `hexo server` 本地预览
+version: '3'
+services:
+  hexo:
+    container_name: hexo
+    image: bloodstar/hexo:latest
+    hostname: hexo
+    ports:
+      - "7800:4000"
+    volumes:
+      - /data/hexo/blog:/app
+      - /root/.ssh:/root/.ssh
+
+    env_file:
+      - .env  # 加载.env文件中的环境变量
+    environment:
+      PUID: ${PUID}       # 注意这里用冒号分隔，而非短横线+等号
+      PGID: ${PGID}
+      TZ: ${TZ}
+      GIT_USER: ${GIT_USER}
+      GIT_EMAIL: ${GIT_EMAIL}
+    restart: always  # Copy this file to .env before building the container.
+# Put any local modifications here.
+
+GIT_USER=szjmhxd
+GIT_EMAIL=1554764876@qq.com
+PUID=1000
+PGID=1000
+TZ="Asia/Shanghai"
+USERDIR="/share/Container"
