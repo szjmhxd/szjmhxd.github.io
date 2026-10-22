@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="690" viewBox="0 0 960 690" font-family="Microsoft YaHei, PingFang SC, Hiragino Sans GB, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#7b93ad"/>
+    </marker>
+  </defs>
+  <rect width="960" height="690" fill="#ffffff"/>
+  <text x="480" y="38" text-anchor="middle" font-size="21" font-weight="bold" fill="#2c3e50">jypt-server-php 部署架构</text>
+  <text x="480" y="62" text-anchor="middle" font-size="12.5" fill="#8894a0">1Panel 面板 + Docker + OpenResty + PHP-FPM</text>
+
+  <rect x="36" y="86" width="888" height="584" rx="12" fill="#fbfcfd" stroke="#b9c6d4" stroke-width="2" stroke-dasharray="9 7"/>
+  <text x="56" y="114" font-size="14" font-weight="bold" fill="#4a6fa5">宿主机 szjm-ubu22 · Ubuntu 22.04</text>
+  <text x="56" y="136" font-size="12.5" fill="#c25b5b">只有 Docker：没有 php 命令、没有 /www 目录、没有 www 用户</text>
+
+  <rect x="64" y="152" width="832" height="54" rx="8" fill="#eaf1f9" stroke="#9db7d6"/>
+  <text x="82" y="176" font-size="14.5" font-weight="bold" fill="#33507a">1Panel 面板</text>
+  <text x="186" y="176" font-size="12.5" fill="#5a6b7d">创建容器、配置站点与伪静态、管理 PHP 环境</text>
+  <text x="82" y="196" font-size="11.5" fill="#7b8794">artisan / composer 全部在容器内执行，宿主机不装这些工具</text>
+
+  <rect x="64" y="218" width="832" height="392" rx="10" fill="#f4f7fb" stroke="#c6d4e3"/>
+  <text x="82" y="243" font-size="13.5" font-weight="bold" fill="#4a6fa5">Docker Engine</text>
+
+  <rect x="88" y="256" width="368" height="132" rx="8" fill="#ffffff" stroke="#7fa3cc" stroke-width="1.6"/>
+  <text x="106" y="281" font-size="14" font-weight="bold" fill="#33507a">OpenResty 容器</text>
+  <text x="106" y="301" font-size="11.5" fill="#7b8794">1Panel-openresty-gw6h</text>
+  <text x="106" y="324" font-size="12" fill="#4a5a6a">反向代理 · 伪静态 · 静态资源</text>
+  <text x="106" y="345" font-size="12" fill="#4a5a6a">容器内路径 /www/sites/…</text>
+  <text x="106" y="370" font-size="11.5" fill="#c25b5b">软链进容器必断链，须 bind mount</text>
+
+  <rect x="504" y="256" width="368" height="132" rx="8" fill="#ffffff" stroke="#7fa3cc" stroke-width="1.6"/>
+  <text x="522" y="281" font-size="14" font-weight="bold" fill="#33507a">PHP-FPM 容器</text>
+  <text x="522" y="301" font-size="11.5" fill="#7b8794">php8335 · 1panel-php-fpm:8.3.35</text>
+  <text x="522" y="324" font-size="12" fill="#4a5a6a">Laravel 11.46 · PHP 8.3.35 · Composer 2.10.3</text>
+  <text x="522" y="345" font-size="12" fill="#4a5a6a">artisan / composer 在容器内执行</text>
+  <text x="522" y="370" font-size="11.5" fill="#c25b5b">FPM 身份 www-data(uid=1000)，CLI 默认 root</text>
+
+  <line x1="458" y1="314" x2="498" y2="314" stroke="#7b93ad" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="498" y1="338" x2="458" y2="338" stroke="#7b93ad" stroke-width="1.8" marker-end="url(#arr)"/>
+  <text x="478" y="306" text-anchor="middle" font-size="10" fill="#8894a0">fastcgi</text>
+
+  <rect x="88" y="404" width="784" height="62" rx="8" fill="#fff8e8" stroke="#e0c88a"/>
+  <text x="106" y="428" font-size="13" font-weight="bold" fill="#8a6d1f">挂载点：两个容器都挂 /opt/1panel/www → /www</text>
+  <text x="106" y="450" font-size="11" fill="#9a7f30">docker inspect --format '{{range .Mounts}}{{.Source}} -&gt; {{.Destination}}{{end}}' 可确认</text>
+
+  <rect x="88" y="480" width="784" height="112" rx="8" fill="#ffffff" stroke="#9db7d6"/>
+  <text x="106" y="504" font-size="13" font-weight="bold" fill="#33507a">站点目录（同一套代码，两处部署）</text>
+  <text x="106" y="528" font-size="11.5" fill="#4a5a6a">① /www/sites/bgpt_python/index/jypt_laravel_server_2.0 —— 原始部署</text>
+  <text x="106" y="550" font-size="11.5" fill="#4a5a6a">② /www/sites/bgpt_laravel/index/jypt_laravel_server_2.0 —— 复制部署（8900 端口，⑧⑨⑩ 轮排障）</text>
+  <text x="106" y="574" font-size="11" fill="#c25b5b">复制部署会丢 bootstrap/cache 与 storage/oauth-*.key（git 不跟踪空目录与被忽略文件）</text>
+</svg>

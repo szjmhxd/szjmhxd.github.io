@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="720" viewBox="0 0 1000 720" font-family="Microsoft YaHei, PingFang SC, Hiragino Sans GB, sans-serif">
+  <defs>
+    <marker id="c1" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#8a97a4"/>
+    </marker>
+    <marker id="c2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#c25b5b"/>
+    </marker>
+    <marker id="c3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#c9a83a"/>
+    </marker>
+    <marker id="c4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#52a675"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="720" fill="#ffffff"/>
+  <text x="500" y="38" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">一条假线索如何盖住真因：view does not exist</text>
+  <text x="500" y="62" text-anchor="middle" font-size="12.5" fill="#8894a0">bootstrap/cache 缺失引发的级联崩溃链</text>
+
+  <rect x="250" y="84" width="500" height="60" rx="8" fill="#fff8e8" stroke="#e0c88a" stroke-width="1.8"/>
+  <text x="500" y="108" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#8a6d1f">① bootstrap/cache 目录不存在</text>
+  <text x="500" y="130" text-anchor="middle" font-size="11.5" fill="#9a7f30">站点目录是复制/打包来的；git 不跟踪空目录</text>
+  <line x1="500" y1="144" x2="500" y2="170" stroke="#8a97a4" stroke-width="1.8" marker-end="url(#c1)"/>
+
+  <rect x="250" y="172" width="500" height="60" rx="8" fill="#ffffff" stroke="#9db7d6" stroke-width="1.6"/>
+  <text x="500" y="196" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#33507a">② PackageManifest 写 packages.php 失败</text>
+  <text x="500" y="218" text-anchor="middle" font-size="11.5" fill="#4a5a6a">The …/bootstrap/cache directory must be present and writable.</text>
+  <line x1="500" y1="232" x2="500" y2="258" stroke="#8a97a4" stroke-width="1.8" marker-end="url(#c1)"/>
+
+  <rect x="250" y="260" width="500" height="60" rx="8" fill="#ffffff" stroke="#9db7d6" stroke-width="1.6"/>
+  <text x="500" y="284" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#33507a">③ 异常抛出在「注册服务提供者」阶段</text>
+  <text x="500" y="306" text-anchor="middle" font-size="11.5" fill="#4a5a6a">应用启动中断 —— view / config 等 binding 都还没注册</text>
+  <line x1="500" y1="320" x2="500" y2="346" stroke="#8a97a4" stroke-width="1.8" marker-end="url(#c1)"/>
+
+  <rect x="250" y="348" width="500" height="60" rx="8" fill="#ffffff" stroke="#9db7d6" stroke-width="1.6"/>
+  <text x="500" y="372" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#33507a">④ 异常处理器开始渲染错误响应</text>
+  <text x="500" y="394" text-anchor="middle" font-size="11.5" fill="#4a5a6a">Handler-&gt;render() → ResponseHelper::error()</text>
+  <line x1="500" y1="408" x2="500" y2="434" stroke="#8a97a4" stroke-width="1.8" marker-end="url(#c1)"/>
+
+  <rect x="250" y="436" width="500" height="62" rx="8" fill="#fff0f0" stroke="#dda3a3" stroke-width="1.8"/>
+  <text x="500" y="460" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#b34a4a">⑤ 渲染错误页时调用 view() → 二次崩溃</text>
+  <text x="500" y="482" text-anchor="middle" font-size="11.5" fill="#8a5a5a">BindingResolutionException: Target class [view] does not exist.</text>
+  <line x1="500" y1="498" x2="500" y2="524" stroke="#c25b5b" stroke-width="2" marker-end="url(#c2)"/>
+
+  <rect x="250" y="526" width="500" height="60" rx="8" fill="#f5eaea" stroke="#c99999" stroke-width="1.8"/>
+  <text x="500" y="550" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#9b3b3b">⑥ 客户端只收到 5 字节裸响应 "500 "</text>
+  <text x="500" y="572" text-anchor="middle" font-size="11.5" fill="#8a5a5a">连 Laravel 的 JSON 错误体都没有，错误页也渲染不出来</text>
+
+  <rect x="36" y="436" width="188" height="150" rx="8" fill="#fffbe6" stroke="#e6d78a" stroke-width="1.8"/>
+  <text x="130" y="462" text-anchor="middle" font-size="12" font-weight="bold" fill="#8a6d1f">⚠ 假线索</text>
+  <text x="54" y="486" font-size="10.8" fill="#9a7f30">日志里刷的全是</text>
+  <text x="54" y="505" font-size="10.8" fill="#9a7f30">「view does not</text>
+  <text x="54" y="524" font-size="10.8" fill="#9a7f30">   exist」</text>
+  <text x="54" y="550" font-size="10.5" fill="#b34a4a">它是二次崩溃的</text>
+  <text x="54" y="568" font-size="10.5" fill="#b34a4a">产物，真因被盖住</text>
+  <line x1="226" y1="462" x2="246" y2="462" stroke="#c9a83a" stroke-width="1.6" marker-end="url(#c3)"/>
+
+  <rect x="776" y="436" width="188" height="150" rx="8" fill="#eefaf2" stroke="#a8d0b6" stroke-width="1.8"/>
+  <text x="870" y="462" text-anchor="middle" font-size="12" font-weight="bold" fill="#2f7a4d">✓ 怎么一秒定位</text>
+  <text x="794" y="486" font-size="10.8" fill="#3f6b52">容器内直接跑：</text>
+  <text x="794" y="506" font-size="10.3" font-family="Consolas, monospace" fill="#2f7a4d">php artisan --version</text>
+  <text x="794" y="530" font-size="10.5" fill="#3f6b52">启动失败会把真因</text>
+  <text x="794" y="548" font-size="10.5" fill="#3f6b52">直接打屏</text>
+  <text x="794" y="570" font-size="10.5" fill="#3f6b52">比翻日志快得多</text>
+  <line x1="754" y1="462" x2="774" y2="462" stroke="#52a675" stroke-width="1.6" marker-end="url(#c4)"/>
+
+  <rect x="250" y="612" width="500" height="76" rx="8" fill="#eefaf2" stroke="#a8d0b6" stroke-width="1.8"/>
+  <text x="500" y="636" text-anchor="middle" font-size="13" font-weight="bold" fill="#2f7a4d">解法：把 ① 补回去，整条链自然不再触发</text>
+  <text x="500" y="659" text-anchor="middle" font-size="11" font-family="Consolas, monospace" fill="#3f6b52">mkdir -p bootstrap/cache storage/framework/{sessions,views,cache}</text>
+  <text x="500" y="677" text-anchor="middle" font-size="11" font-family="Consolas, monospace" fill="#3f6b52">chown -R www-data:www-data … &amp;&amp; php artisan package:discover</text>
+</svg>
