@@ -1,0 +1,630 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Windows 更新无法使用：CBS 服务栈损坏修复记录 | 十早九木のBlog</title><meta name="author" content="十早九木"><meta name="copyright" content="十早九木"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="问题描述之前可能用过某些工具关闭了系统更新，现在想恢复遇到了问题，错误码 0x800700c1。  系统版本：Windows 10 1809（Build 10.0.17763.379） 故障现象：Windows Update 完全无法工作，DISM 秒报错误 193 持续时间：2026-03-19 ~ 2026-06-04（约 3 个月） 根因：CBS 服务栈核心 DLL 损坏，错误码 0x800">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows 更新无法使用：CBS 服务栈损坏修复记录">
+<meta property="og:url" content="https://szjmhxd.github.io/posts/6b96b6d7/index.html">
+<meta property="og:site_name" content="十早九木のBlog">
+<meta property="og:description" content="问题描述之前可能用过某些工具关闭了系统更新，现在想恢复遇到了问题，错误码 0x800700c1。  系统版本：Windows 10 1809（Build 10.0.17763.379） 故障现象：Windows Update 完全无法工作，DISM 秒报错误 193 持续时间：2026-03-19 ~ 2026-06-04（约 3 个月） 根因：CBS 服务栈核心 DLL 损坏，错误码 0x800">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://szjmhxd.github.io/img/default-cover.jpg">
+<meta property="article:published_time" content="2026-06-05T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-22T06:11:52.620Z">
+<meta property="article:author" content="十早九木">
+<meta property="article:tag" content="CBS">
+<meta property="article:tag" content="DISM">
+<meta property="article:tag" content="WinSxS">
+<meta property="article:tag" content="Windows更新">
+<meta property="article:tag" content="系统修复">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://szjmhxd.github.io/img/default-cover.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Windows 更新无法使用：CBS 服务栈损坏修复记录",
+  "url": "https://szjmhxd.github.io/posts/6b96b6d7/",
+  "image": "https://szjmhxd.github.io/img/default-cover.jpg",
+  "datePublished": "2026-06-05T02:00:00.000Z",
+  "dateModified": "2026-10-22T06:11:52.620Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "十早九木",
+      "url": "https://szjmhxd.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://szjmhxd.github.io/posts/6b96b6d7/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        const data = { value }
+
+        if (ttl != null) {
+          data.expiry = Date.now() + ttl * 86400000
+        }
+
+        localStorage.setItem(key, JSON.stringify(data))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Windows 更新无法使用：CBS 服务栈损坏修复记录',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="十早九木のBlog" type="application/atom+xml">
+</head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/default-cover.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">Windows 更新无法使用：CBS 服务栈损坏修复记录</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Windows 更新无法使用：CBS 服务栈损坏修复记录</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-06-05T02:00:00.000Z" title="发表于 2026-06-05 10:00:00">2026-06-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-22T06:11:52.620Z" title="更新于 2026-10-22 14:11:52">2026-10-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Windows/">Windows</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>之前可能用过某些工具关闭了系统更新，现在想恢复遇到了问题，错误码 <code>0x800700c1</code>。</p>
+<ul>
+<li><strong>系统版本</strong>：Windows 10 1809（Build 10.0.17763.379）</li>
+<li><strong>故障现象</strong>：Windows Update 完全无法工作，DISM 秒报错误 193</li>
+<li><strong>持续时间</strong>：2026-03-19 ~ 2026-06-04（约 3 个月）</li>
+<li><strong>根因</strong>：CBS 服务栈核心 DLL 损坏，错误码 <code>0x800700c1</code>（ERROR_BAD_EXE_FORMAT）</li>
+</ul>
+<h2 id="排查与修复流程"><a href="#排查与修复流程" class="headerlink" title="排查与修复流程"></a>排查与修复流程</h2><pre class="mermaid">flowchart TD
+    A[问题发现] --> B{DISM 报错 193?}
+    B -->|是| C[分析 CBS.log]
+    C --> D[定位损坏文件]
+    D --> E[搜索 WinSxS 替代版本]
+    E --> F{找到可用版本?}
+    F -->|否| G[原地升级修复]
+    F -->|是| H[获取文件所有权]
+    H --> I[批量替换 DLL]
+    I --> J[重启系统]
+    J --> K[验证 DISM]
+    K --> L{DISM 成功?}
+    L -->|否| M[安全模式替换]
+    M --> J
+    L -->|是| N[执行修复]
+    N --> O[Windows Update]
+    O --> P[修复完成]
+    G --> P</pre>
+
+<h2 id="解决步骤"><a href="#解决步骤" class="headerlink" title="解决步骤"></a>解决步骤</h2><h3 id="第一步：分析-CBS-log-日志"><a href="#第一步：分析-CBS-log-日志" class="headerlink" title="第一步：分析 CBS.log 日志"></a>第一步：分析 CBS.log 日志</h3><p>检查 <code>CBS.log</code>，发现 <code>cbscore.dll</code> 加载失败，错误重复出现 <strong>14,409 次</strong>。</p>
+<h3 id="第二步：尝试-DISM-在线修复（失败）"><a href="#第二步：尝试-DISM-在线修复（失败）" class="headerlink" title="第二步：尝试 DISM 在线修复（失败）"></a>第二步：尝试 DISM 在线修复（失败）</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DISM /Online /Cleanup<span class="literal">-Image</span> /RestoreHealth</span><br></pre></td></tr></table></figure>
+
+<p>结果：<strong>错误 193</strong>。</p>
+<h3 id="第三步：搜索-WinSxS-中可用的-DLL-版本"><a href="#第三步：搜索-WinSxS-中可用的-DLL-版本" class="headerlink" title="第三步：搜索 WinSxS 中可用的 DLL 版本"></a>第三步：搜索 WinSxS 中可用的 DLL 版本</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-ChildItem</span> <span class="literal">-Path</span> C:\WINDOWS\WinSxS <span class="literal">-Recurse</span> <span class="literal">-Filter</span> cbscore.dll</span><br></pre></td></tr></table></figure>
+
+<p>找到 <code>10.0.17763.164</code>（可用版本）。</p>
+<h3 id="第四步：获取-164-版本完整路径"><a href="#第四步：获取-164-版本完整路径" class="headerlink" title="第四步：获取 .164 版本完整路径"></a>第四步：获取 .164 版本完整路径</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-ChildItem</span> C:\WINDOWS\WinSxS\amd64_microsoft<span class="literal">-windows-servicingstack_</span>*<span class="number">10.0</span>.<span class="number">17763.164</span>* `</span><br><span class="line">  <span class="literal">-Filter</span> cbscore.dll <span class="literal">-Recurse</span> | <span class="built_in">Select-Object</span> <span class="literal">-ExpandProperty</span> FullName</span><br></pre></td></tr></table></figure>
+
+<h3 id="第五步：获取目录权限"><a href="#第五步：获取目录权限" class="headerlink" title="第五步：获取目录权限"></a>第五步：获取目录权限</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">takeown /F C:\WINDOWS\WinSxS\...<span class="number">10.0</span>.<span class="number">17763.503</span>_... /A /<span class="built_in">R</span></span><br><span class="line">icacls C:\WINDOWS\WinSxS\...<span class="number">10.0</span>.<span class="number">17763.503</span>_... /grant Administrators:F /T</span><br></pre></td></tr></table></figure>
+
+<h3 id="第六步：批量替换所有-DLL"><a href="#第六步：批量替换所有-DLL" class="headerlink" title="第六步：批量替换所有 DLL"></a>第六步：批量替换所有 DLL</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$src</span> = <span class="string">&quot;C:\WINDOWS\WinSxS\...10.0.17763.164_...&quot;</span></span><br><span class="line"><span class="variable">$dst</span> = <span class="string">&quot;C:\WINDOWS\WinSxS\...10.0.17763.503_...&quot;</span></span><br><span class="line"><span class="built_in">Get-ChildItem</span> <span class="variable">$src</span> <span class="operator">-File</span> | <span class="built_in">ForEach-Object</span> &#123;</span><br><span class="line">    <span class="variable">$target</span> = <span class="built_in">Join-Path</span> <span class="variable">$dst</span> <span class="variable">$_</span>.Name</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">Test-Path</span> <span class="variable">$target</span>) &#123; <span class="built_in">Copy-Item</span> <span class="variable">$_</span>.FullName <span class="variable">$target</span> <span class="literal">-Force</span> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="第七步：重启后替换剩余锁定文件"><a href="#第七步：重启后替换剩余锁定文件" class="headerlink" title="第七步：重启后替换剩余锁定文件"></a>第七步：重启后替换剩余锁定文件</h3><p>重启系统后<strong>立即</strong>再次执行替换脚本——被系统占用的 DLL 只有开机瞬间才能写。</p>
+<h3 id="第八步：验证-DISM"><a href="#第八步：验证-DISM" class="headerlink" title="第八步：验证 DISM"></a>第八步：验证 DISM</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DISM /Online /Cleanup<span class="literal">-Image</span> /ScanHealth</span><br></pre></td></tr></table></figure>
+
+<p>结果：<strong>操作成功完成</strong>。</p>
+<h3 id="第九步：执行-DISM-修复"><a href="#第九步：执行-DISM-修复" class="headerlink" title="第九步：执行 DISM 修复"></a>第九步：执行 DISM 修复</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DISM /Online /Cleanup<span class="literal">-Image</span> /RestoreHealth</span><br></pre></td></tr></table></figure>
+
+<h3 id="第十步：运行-sfc-修复"><a href="#第十步：运行-sfc-修复" class="headerlink" title="第十步：运行 sfc 修复"></a>第十步：运行 sfc 修复</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sfc /scannow</span><br></pre></td></tr></table></figure>
+
+<h3 id="第十一步：Windows-Update-彻底修复"><a href="#第十一步：Windows-Update-彻底修复" class="headerlink" title="第十一步：Windows Update 彻底修复"></a>第十一步：Windows Update 彻底修复</h3><p>通过 Windows Update 下载最新的 Servicing Stack Update。</p>
+<h2 id="关键知识点"><a href="#关键知识点" class="headerlink" title="关键知识点"></a>关键知识点</h2><ol>
+<li>错误码 <code>0x800700c1</code> &#x3D; DLL 文件损坏（不是权限问题、不是网络问题）</li>
+<li><code>WinSxS</code> 目录需要 <code>takeown</code> 获取权限后才能替换</li>
+<li>被锁定的 DLL 需要<strong>重启后立即</strong>替换</li>
+<li>CBS 服务栈损坏会导致 DISM &#x2F; sfc &#x2F; Windows Update <strong>全部失效</strong></li>
+<li>同一 Build 分支内不同修订版的 DLL 可以互替</li>
+</ol>
+<hr>
+<blockquote>
+<p>原文发布于掘金：<a target="_blank" rel="noopener" href="https://juejin.cn/post/7647438845004365859">Windows无法更新 CBS 服务栈损坏修复记录</a></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://szjmhxd.github.io">十早九木</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://szjmhxd.github.io/posts/6b96b6d7/">https://szjmhxd.github.io/posts/6b96b6d7/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://szjmhxd.github.io" target="_blank">十早九木のBlog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Windows%E6%9B%B4%E6%96%B0/">Windows更新</a><a class="post-meta__tags" href="/tags/CBS/">CBS</a><a class="post-meta__tags" href="/tags/DISM/">DISM</a><a class="post-meta__tags" href="/tags/WinSxS/">WinSxS</a><a class="post-meta__tags" href="/tags/%E7%B3%BB%E7%BB%9F%E4%BF%AE%E5%A4%8D/">系统修复</a></div><div class="post-share"><div class="social-share" data-image="/img/default-cover.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/fa14f175/" title="美化 Win11 任务栏：徽标靠左、图标居中、Win10 全屏磁贴"><img class="cover" src="/img/default-cover.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">美化 Win11 任务栏：徽标靠左、图标居中、Win10 全屏磁贴</div></div><div class="info-2"><div class="info-item-1">系统版本：Windows 11 25H2（Build 26200） 最终效果【效果 1】任务栏：最左侧为 Windows 徽标，程序图标整体居中   【效果 2】开始菜单：Win10 风格全屏磁贴   实现方式：**StartAllBack + ExplorerPatcher 同时安装，分工使用。**未编写自定义代码，未依赖独立脚本注入。    软件 职责    StartAllBack 任务栏与托盘：徽标靠左、图标居中   ExplorerPatcher 仅负责开始菜单：Win10 全屏磁贴   目标 Windows 徽标（开始按钮）靠左 程序图标整体居中 开始菜单为 Win10 全屏磁贴 尽量保留较好的任务栏视觉效果  前两项属于任务栏，第三项属于开始菜单，二者可以分开实现。 过程概述阶段一：确认系统能力边界Windows 11 原生开始菜单没有全屏模式。任务栏对齐只有「靠左」与「整体居中」；选择居中时，开始按钮会与图标绑在一起，无法单独靠左。 因此，仅通过系统设置无法同时满足「徽标靠左 + 图标居中 + 全屏磁贴」。 阶段二：分别评估第三方工具StartAllBack：可实...</div></div></div></a><a class="pagination-related" href="/posts/f5ee144a/" title="Fail2Ban 规则字段详解"><img class="cover" src="/img/default-cover.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Fail2Ban 规则字段详解</div></div><div class="info-2"><div class="info-item-1">一、全局 DEFAULT 字段说明1. 封禁时间 bantime1bantime = 24h  IP 被封禁多久。常见值：10m（10 分钟）、1h、24h、7d、365d。 2. 统计时间窗口 findtime1findtime = 24h  在这个时间范围内统计失败次数。例如「24 小时内失败 3 次 → 封禁」。 3. 最大失败次数 maxretry1maxretry = 3  触发封禁的失败次数。 4. 封禁方式 banaction（关键）1banaction = iptables-allports  封禁这个 IP 的所有端口。对比：    值 作用    iptables-multiport 只封指定端口   iptables-allports 全端口封禁   5. 执行动作模板 action1action = %(action_)s  使用默认封禁动作（写 iptables 规则）。常见变体：    值 说明    action_mw 发邮件 + whois   action_mwl 邮件 + whois + 日志   action_ 仅封禁   6. 递增封禁（核...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">十早九木</div><div class="author-info-description">个人博客 · 技术笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">30</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">问题描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%92%E6%9F%A5%E4%B8%8E%E4%BF%AE%E5%A4%8D%E6%B5%81%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">排查与修复流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%AD%A5%E9%AA%A4"><span class="toc-number">3.</span> <span class="toc-text">解决步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%88%86%E6%9E%90-CBS-log-%E6%97%A5%E5%BF%97"><span class="toc-number">3.1.</span> <span class="toc-text">第一步：分析 CBS.log 日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E5%B0%9D%E8%AF%95-DISM-%E5%9C%A8%E7%BA%BF%E4%BF%AE%E5%A4%8D%EF%BC%88%E5%A4%B1%E8%B4%A5%EF%BC%89"><span class="toc-number">3.2.</span> <span class="toc-text">第二步：尝试 DISM 在线修复（失败）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E6%90%9C%E7%B4%A2-WinSxS-%E4%B8%AD%E5%8F%AF%E7%94%A8%E7%9A%84-DLL-%E7%89%88%E6%9C%AC"><span class="toc-number">3.3.</span> <span class="toc-text">第三步：搜索 WinSxS 中可用的 DLL 版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E8%8E%B7%E5%8F%96-164-%E7%89%88%E6%9C%AC%E5%AE%8C%E6%95%B4%E8%B7%AF%E5%BE%84"><span class="toc-number">3.4.</span> <span class="toc-text">第四步：获取 .164 版本完整路径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%9A%E8%8E%B7%E5%8F%96%E7%9B%AE%E5%BD%95%E6%9D%83%E9%99%90"><span class="toc-number">3.5.</span> <span class="toc-text">第五步：获取目录权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E6%AD%A5%EF%BC%9A%E6%89%B9%E9%87%8F%E6%9B%BF%E6%8D%A2%E6%89%80%E6%9C%89-DLL"><span class="toc-number">3.6.</span> <span class="toc-text">第六步：批量替换所有 DLL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E6%AD%A5%EF%BC%9A%E9%87%8D%E5%90%AF%E5%90%8E%E6%9B%BF%E6%8D%A2%E5%89%A9%E4%BD%99%E9%94%81%E5%AE%9A%E6%96%87%E4%BB%B6"><span class="toc-number">3.7.</span> <span class="toc-text">第七步：重启后替换剩余锁定文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%85%AB%E6%AD%A5%EF%BC%9A%E9%AA%8C%E8%AF%81-DISM"><span class="toc-number">3.8.</span> <span class="toc-text">第八步：验证 DISM</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B9%9D%E6%AD%A5%EF%BC%9A%E6%89%A7%E8%A1%8C-DISM-%E4%BF%AE%E5%A4%8D"><span class="toc-number">3.9.</span> <span class="toc-text">第九步：执行 DISM 修复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E6%AD%A5%EF%BC%9A%E8%BF%90%E8%A1%8C-sfc-%E4%BF%AE%E5%A4%8D"><span class="toc-number">3.10.</span> <span class="toc-text">第十步：运行 sfc 修复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E4%B8%80%E6%AD%A5%EF%BC%9AWindows-Update-%E5%BD%BB%E5%BA%95%E4%BF%AE%E5%A4%8D"><span class="toc-number">3.11.</span> <span class="toc-text">第十一步：Windows Update 彻底修复</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E7%9F%A5%E8%AF%86%E7%82%B9"><span class="toc-number">4.</span> <span class="toc-text">关键知识点</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/5cd620c1/" title="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）"/></a><div class="content"><a class="title" href="/posts/5cd620c1/" title="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）">jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）</a><time datetime="2026-10-21T08:00:37.000Z" title="发表于 2026-10-21 16:00:37">2026-10-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/425b83a5/" title="Ubuntu 22.04 Samba 共享配置与踩坑实录"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ubuntu 22.04 Samba 共享配置与踩坑实录"/></a><div class="content"><a class="title" href="/posts/425b83a5/" title="Ubuntu 22.04 Samba 共享配置与踩坑实录">Ubuntu 22.04 Samba 共享配置与踩坑实录</a><time datetime="2026-10-21T03:51:25.000Z" title="发表于 2026-10-21 11:51:25">2026-10-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dcc80514/" title="用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区"/></a><div class="content"><a class="title" href="/posts/dcc80514/" title="用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区">用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区</a><time datetime="2026-10-20T03:39:24.000Z" title="发表于 2026-10-20 11:39:24">2026-10-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/fa14f175/" title="美化 Win11 任务栏：徽标靠左、图标居中、Win10 全屏磁贴"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="美化 Win11 任务栏：徽标靠左、图标居中、Win10 全屏磁贴"/></a><div class="content"><a class="title" href="/posts/fa14f175/" title="美化 Win11 任务栏：徽标靠左、图标居中、Win10 全屏磁贴">美化 Win11 任务栏：徽标靠左、图标居中、Win10 全屏磁贴</a><time datetime="2026-09-15T08:26:50.000Z" title="发表于 2026-09-15 16:26:50">2026-09-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/6b96b6d7/" title="Windows 更新无法使用：CBS 服务栈损坏修复记录"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows 更新无法使用：CBS 服务栈损坏修复记录"/></a><div class="content"><a class="title" href="/posts/6b96b6d7/" title="Windows 更新无法使用：CBS 服务栈损坏修复记录">Windows 更新无法使用：CBS 服务栈损坏修复记录</a><time datetime="2026-06-05T02:00:00.000Z" title="发表于 2026-06-05 10:00:00">2026-06-05</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 十早九木</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.0</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.0"></script><script src="/js/main.js?v=5.7.0"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.innerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+
+    setTimeout(() => URL.revokeObjectURL(url), 5000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    // Clean up previous event listeners and pending frames
+    if (wrap.__mermaidAbortController) {
+      wrap.__mermaidAbortController.abort()
+      if (wrap.__mermaidRafId) cancelAnimationFrame(wrap.__mermaidRafId)
+    }
+    const ac = new AbortController()
+    wrap.__mermaidAbortController = ac
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+    // Disable default gestures to prevent scroll chaining and pinch-zoom penetration in Chrome
+    svg.style.touchAction = 'none'
+
+    // Cache BoundingClientRect, throttled on scroll to reduce reflow
+    let cachedRect = svg.getBoundingClientRect()
+    let rectDirty = false
+    const markRectDirty = () => { rectDirty = true }
+    window.addEventListener('resize', markRectDirty, { signal: ac.signal })
+    window.addEventListener('scroll', markRectDirty, { signal: ac.signal, capture: true })
+    const getRect = () => {
+      if (rectDirty) {
+        cachedRect = svg.getBoundingClientRect()
+        rectDirty = false
+      }
+      return cachedRect
+    }
+
+    // Precompute clamp bounds from initial viewBox
+    const minW = initVb[2] * 0.1
+    const maxW = initVb[2] * 10
+    const minH = initVb[3] * 0.1
+    const maxH = initVb[3] * 10
+    const clampVb = vb => {
+      const out = vb.slice()
+      out[2] = clamp(out[2], minW, maxW)
+      out[3] = clamp(out[3], minH, maxH)
+      return out
+    }
+
+    // Throttle DOM updates using requestAnimationFrame
+    let pendingVb = null
+    let rafId = null
+    const applyVb = () => {
+      if (pendingVb) {
+        wrap.__mermaidCurViewBox = pendingVb
+        setSvgViewBox(svg, pendingVb)
+        pendingVb = null
+      }
+      rafId = null
+      wrap.__mermaidRafId = null
+    }
+    const setCurVb = vb => {
+      pendingVb = clampVb(vb)
+      if (!rafId) {
+        rafId = requestAnimationFrame(applyVb)
+        wrap.__mermaidRafId = rafId
+      }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      lastPointerX: 0,
+      lastPointerY: 0
+    }
+
+    const onPointerDown = e => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      const curVb = wrap.__mermaidCurViewBox
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      if (state.pointers.size === 1) {
+        state.startVb = curVb.slice()
+        state.lastPointerX = e.clientX
+        state.lastPointerY = e.clientY
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = curVb.slice()
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      const curVb = wrap.__mermaidCurViewBox
+      const rect = getRect()
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = state.pointers.values().next().value
+        const dxClient = p.x - state.lastPointerX
+        const dyClient = p.y - state.lastPointerY
+        state.lastPointerX = p.x
+        state.lastPointerY = p.y
+        const dx = dxClient * (curVb[2] / rect.width)
+        const dy = dyClient * (curVb[3] / rect.height)
+        setCurVb([curVb[0] - dx, curVb[1] - dy, curVb[2], curVb[3]])
+        return
+      }
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const px = curVb[0] + (cx - rect.left) * (curVb[2] / rect.width)
+        const py = curVb[1] + (cy - rect.top) * (curVb[3] / rect.height)
+        setCurVb(zoomAtPoint(state.startVb, factor, px, py))
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      // Release PointerCapture to avoid event capture anomalies
+      if (svg.hasPointerCapture && svg.hasPointerCapture(e.pointerId)) {
+        svg.releasePointerCapture(e.pointerId)
+      }
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+      } else if (state.pointers.size === 1) {
+        const p = state.pointers.values().next().value
+        state.lastPointerX = p.x
+        state.lastPointerY = p.y
+      }
+    }
+
+    const onWheel = e => {
+      // Prevent event bubbling from triggering external scroll
+      e.preventDefault()
+      e.stopPropagation()
+      // Normalize deltaY across deltaMode (Chrome uses pixels, Safari uses lines)
+      let delta = e.deltaY
+      if (e.deltaMode === 1) delta *= 16
+      else if (e.deltaMode === 2) delta *= 400
+
+      // Continuous zoom factor: smoother than fixed 1.1/0.9 steps
+      const zoomFactor = Math.pow(1.001, delta)
+
+      const curVb = wrap.__mermaidCurViewBox
+      const rect = getRect()
+      const px = curVb[0] + (e.clientX - rect.left) * (curVb[2] / rect.width)
+      const py = curVb[1] + (e.clientY - rect.top) * (curVb[3] / rect.height)
+      setCurVb(zoomAtPoint(curVb, zoomFactor, px, py))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (init) setCurVb(init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown, { signal: ac.signal })
+    svg.addEventListener('pointermove', onPointerMove, { signal: ac.signal })
+    svg.addEventListener('pointerup', onPointerUpOrCancel, { signal: ac.signal })
+    svg.addEventListener('pointercancel', onPointerUpOrCancel, { signal: ac.signal })
+    svg.addEventListener('wheel', onWheel, { passive: false, signal: ac.signal })
+    svg.addEventListener('dblclick', onDblClick, { signal: ac.signal })
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      // Clean up event listeners before removing old SVG
+      if (item.__mermaidAbortController) {
+        item.__mermaidAbortController.abort()
+      }
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      let config = {}
+      try {
+        config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      } catch (e) {
+        console.warn('[mermaid] failed to parse dataset.config:', e)
+      }
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+      const handleError = err => {
+        console.error(`[mermaid] render failed for block #${index}:`, err)
+        const errorEl = document.createElement('div')
+        errorEl.className = 'mermaid-error'
+        errorEl.textContent = `Mermaid render error: ${err.message || err}`
+        mermaidSrc.insertAdjacentElement('afterend', errorEl)
+      }
+
+      try {
+        const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+        // mermaid v9 and v10 compatibility
+        if (typeof renderFn === 'string') {
+          renderMermaid(renderFn)
+        } else {
+          renderFn.then(({ svg }) => renderMermaid(svg)).catch(handleError)
+        }
+      } catch (err) {
+        handleError(err)
+      }
+    })
+  }
+
+  const codeToMermaid = $article => {
+    const codeMermaidEle = $article.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    const $article = document.getElementById('article-container')
+    if (!$article) return
+
+    if (true) codeToMermaid($article)
+    const $mermaid = $article.querySelectorAll('.mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.16.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

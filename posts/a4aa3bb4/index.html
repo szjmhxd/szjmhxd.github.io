@@ -251,4 +251,366 @@
 <li><a target="_blank" rel="noopener" href="https://github.com/lejianwen/rustdesk-api">rustdesk-api GitHub仓库</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/lejianwen/rustdesk-api/wiki/Use-Docker-With-Rustdesk-Server-S6">使用Docker部署文档</a></li>
 </ul>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://szjmhxd.github.io">十早九木</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://szjmhxd.github.io/posts/a4aa3bb4/">https://szjmhxd.github.io/posts/a4aa3bb4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://szjmhxd.github.io" target="_blank">十早九木のBlog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Docker/">Docker</a><a class="post-meta__tags" href="/tags/RustDesk/">RustDesk</a><a class="post-meta__tags" href="/tags/%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/">远程桌面</a></div><div class="post-share"><div class="social-share" data-image="/img/default-cover.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/dcc80514/" title="用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区"><img class="cover" src="/img/default-cover.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区</div></div><div class="info-2"><div class="info-item-1"> 适用场景：工程代码放在局域网另一台机器的共享盘上（如 \\192.168.2.46\szjm-doc，映射为 P:），DSH Desktop 选工作区时弹「NTFS 不能安全用作 DSH Desktop 工作区」拒绝登记。本文方法已在 Windows 11 + DSH Desktop 2.0.17 实测走通。   一、快速使用（三步）123456:: ① 建目录符号链接（普通权限即可，需已开启&quot;开发者模式&quot;）mklink /D &quot;E:\ws\jypt_worker&quot; &quot;P:\jypt_laravel_server_2.0_python_worker&quot;:: ② DSH 设置 → 文件访问策略 → 切到 Full access（danger-full-access）:: ③ DSH「选择工作区目录」→ 定位到 E:\ws → 单击选中 jypt_worker（不要双击进入！）→ 选择文件夹  第 ③ 步是最容易做错的一步：双击进入链接后，Windows 文件夹对话框返回的是解析后的真实路径 P:\...，DSH 会再次拒绝...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/5cd620c1/" title="jypt-server-php 部署排障记录（Docker&#x2F;1Panel&#x2F;OpenResty）"><img class="cover" src="/img/default-cover.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-21</div><div class="info-item-2">jypt-server-php 部署排障记录（Docker&#x2F;1Panel&#x2F;OpenResty）</div></div><div class="info-2"><div class="info-item-1"> 环境：1Panel 面板 + Docker「php8335」（1panel-php-fpm:8.3.35）+ OpenResty（1Panel-openresty-gw6h）站点目录（同一套代码，两处部署）：  bgpt_python/index/jypt_laravel_server_2.0（原始部署） bgpt_laravel/index/jypt_laravel_server_2.0（复制部署，8900 端口，⑧⑨⑩ 三轮排障都在这套）  Laravel 11.46 &#x2F; PHP 8.3.35 &#x2F; Composer 2.10.3。artisan&#x2F;openresty 命令都在 docker 容器里执行，宿主机（szjm-ubu22）无 php、无 /www/sites 目录。   一、结论速览（问题的完整链条）      阶段 报错 根因 解法 ✅    ① composer install 平台不兼容，缺扩展 PHP 容器缺 bcmath/gd/sockets/sodium 逐个补扩展（sodium 需重建镜像）   ② composer in...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">十早九木</div><div class="author-info-description">个人博客 · 技术笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">1.</span> <span class="toc-text">一、准备工作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%8E%AF%E5%A2%83%E8%A6%81%E6%B1%82"><span class="toc-number">1.1.</span> <span class="toc-text">1. 环境要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%9B%B8%E5%85%B3%E8%B5%84%E6%BA%90"><span class="toc-number">1.2.</span> <span class="toc-text">2. 相关资源</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%83%A8%E7%BD%B2%E6%AD%A5%E9%AA%A4"><span class="toc-number">2.</span> <span class="toc-text">二、部署步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BADocker-Compose%E6%96%87%E4%BB%B6"><span class="toc-number">2.1.</span> <span class="toc-text">1. 创建Docker Compose文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97"><span class="toc-number">3.</span> <span class="toc-text">三、使用指南</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%BF%9E%E6%8E%A5"><span class="toc-number">3.1.</span> <span class="toc-text">1. 客户端连接</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AE%BE%E7%BD%AE"><span class="toc-number">3.1.1.</span> <span class="toc-text">客户端设置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%99%BB%E5%BD%95"><span class="toc-number">3.2.</span> <span class="toc-text">2. 登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-CLI%E8%AE%BE%E7%BD%AE"><span class="toc-number">3.3.</span> <span class="toc-text">3. CLI设置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E5%91%98%E5%AF%86%E7%A0%81"><span class="toc-number">3.3.1.</span> <span class="toc-text">重置管理员密码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%AE%E5%8A%A9%E4%BF%A1%E6%81%AF"><span class="toc-number">3.3.2.</span> <span class="toc-text">帮助信息</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%A4%87%E4%BB%BD%E7%AD%96%E7%95%A5"><span class="toc-number">4.</span> <span class="toc-text">四、备份策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">五、总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/5cd620c1/" title="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）"/></a><div class="content"><a class="title" href="/posts/5cd620c1/" title="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）">jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）</a><time datetime="2026-10-21T08:00:37.000Z" title="发表于 2026-10-21 16:00:37">2026-10-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/425b83a5/" title="Ubuntu 22.04 Samba 共享配置与踩坑实录"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ubuntu 22.04 Samba 共享配置与踩坑实录"/></a><div class="content"><a class="title" href="/posts/425b83a5/" title="Ubuntu 22.04 Samba 共享配置与踩坑实录">Ubuntu 22.04 Samba 共享配置与踩坑实录</a><time datetime="2026-10-21T03:51:25.000Z" title="发表于 2026-10-21 11:51:25">2026-10-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dcc80514/" title="用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区"/></a><div class="content"><a class="title" href="/posts/dcc80514/" title="用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区">用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区</a><time datetime="2026-10-20T03:39:24.000Z" title="发表于 2026-10-20 11:39:24">2026-10-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/a4aa3bb4/" title="使用Docker部署RustDesk服务器"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用Docker部署RustDesk服务器"/></a><div class="content"><a class="title" href="/posts/a4aa3bb4/" title="使用Docker部署RustDesk服务器">使用Docker部署RustDesk服务器</a><time datetime="2025-12-23T02:57:29.000Z" title="发表于 2025-12-23 10:57:29">2025-12-23</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 十早九木</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.0</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.0"></script><script src="/js/main.js?v=5.7.0"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://szjmhxd.github.io">十早九木</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://szjmhxd.github.io/posts/a4aa3bb4/">https://szjmhxd.github.io/posts/a4aa3bb4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://szjmhxd.github.io" target="_blank">十早九木のBlog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Docker/">Docker</a><a class="post-meta__tags" href="/tags/RustDesk/">RustDesk</a><a class="post-meta__tags" href="/tags/%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/">远程桌面</a></div><div class="post-share"><div class="social-share" data-image="/img/default-cover.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/f5ee144a/" title="Fail2Ban 规则字段详解"><img class="cover" src="/img/default-cover.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Fail2Ban 规则字段详解</div></div><div class="info-2"><div class="info-item-1">一、全局 DEFAULT 字段说明1. 封禁时间 bantime1bantime = 24h  IP 被封禁多久。常见值：10m（10 分钟）、1h、24h、7d、365d。 2. 统计时间窗口 findtime1findtime = 24h  在这个时间范围内统计失败次数。例如「24 小时内失败 3 次 → 封禁」。 3. 最大失败次数 maxretry1maxretry = 3  触发封禁的失败次数。 4. 封禁方式 banaction（关键）1banaction = iptables-allports  封禁这个 IP 的所有端口。对比：    值 作用    iptables-multiport 只封指定端口   iptables-allports 全端口封禁   5. 执行动作模板 action1action = %(action_)s  使用默认封禁动作（写 iptables 规则）。常见变体：    值 说明    action_mw 发邮件 + whois   action_mwl 邮件 + whois + 日志   action_ 仅封禁   6. 递增封禁（核...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/5cd620c1/" title="jypt-server-php 部署排障记录（Docker&#x2F;1Panel&#x2F;OpenResty）"><img class="cover" src="/img/default-cover.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-21</div><div class="info-item-2">jypt-server-php 部署排障记录（Docker&#x2F;1Panel&#x2F;OpenResty）</div></div><div class="info-2"><div class="info-item-1"> 环境：1Panel 面板 + Docker「php8335」（1panel-php-fpm:8.3.35）+ OpenResty（1Panel-openresty-gw6h）站点目录（同一套代码，两处部署）：  bgpt_python/index/jypt_laravel_server_2.0（原始部署） bgpt_laravel/index/jypt_laravel_server_2.0（复制部署，8900 端口，⑧⑨⑩ 三轮排障都在这套）  Laravel 11.46 &#x2F; PHP 8.3.35 &#x2F; Composer 2.10.3。artisan&#x2F;openresty 命令都在 docker 容器里执行，宿主机（szjm-ubu22）无 php、无 /www/sites 目录。   一、结论速览（问题的完整链条）      阶段 报错 根因 解法 ✅    ① composer install 平台不兼容，缺扩展 PHP 容器缺 bcmath/gd/sockets/sodium 逐个补扩展（sodium 需重建镜像）   ② composer in...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">十早九木</div><div class="author-info-description">个人博客 · 技术笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">30</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">1.</span> <span class="toc-text">一、准备工作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%8E%AF%E5%A2%83%E8%A6%81%E6%B1%82"><span class="toc-number">1.1.</span> <span class="toc-text">1. 环境要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%9B%B8%E5%85%B3%E8%B5%84%E6%BA%90"><span class="toc-number">1.2.</span> <span class="toc-text">2. 相关资源</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%83%A8%E7%BD%B2%E6%AD%A5%E9%AA%A4"><span class="toc-number">2.</span> <span class="toc-text">二、部署步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BADocker-Compose%E6%96%87%E4%BB%B6"><span class="toc-number">2.1.</span> <span class="toc-text">1. 创建Docker Compose文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97"><span class="toc-number">3.</span> <span class="toc-text">三、使用指南</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%BF%9E%E6%8E%A5"><span class="toc-number">3.1.</span> <span class="toc-text">1. 客户端连接</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AE%BE%E7%BD%AE"><span class="toc-number">3.1.1.</span> <span class="toc-text">客户端设置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%99%BB%E5%BD%95"><span class="toc-number">3.2.</span> <span class="toc-text">2. 登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-CLI%E8%AE%BE%E7%BD%AE"><span class="toc-number">3.3.</span> <span class="toc-text">3. CLI设置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E5%91%98%E5%AF%86%E7%A0%81"><span class="toc-number">3.3.1.</span> <span class="toc-text">重置管理员密码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%AE%E5%8A%A9%E4%BF%A1%E6%81%AF"><span class="toc-number">3.3.2.</span> <span class="toc-text">帮助信息</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%A4%87%E4%BB%BD%E7%AD%96%E7%95%A5"><span class="toc-number">4.</span> <span class="toc-text">四、备份策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">五、总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/5cd620c1/" title="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）"/></a><div class="content"><a class="title" href="/posts/5cd620c1/" title="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）">jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）</a><time datetime="2026-10-21T08:00:37.000Z" title="发表于 2026-10-21 16:00:37">2026-10-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/425b83a5/" title="Ubuntu 22.04 Samba 共享配置与踩坑实录"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ubuntu 22.04 Samba 共享配置与踩坑实录"/></a><div class="content"><a class="title" href="/posts/425b83a5/" title="Ubuntu 22.04 Samba 共享配置与踩坑实录">Ubuntu 22.04 Samba 共享配置与踩坑实录</a><time datetime="2026-10-21T03:51:25.000Z" title="发表于 2026-10-21 11:51:25">2026-10-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/dcc80514/" title="用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区"/></a><div class="content"><a class="title" href="/posts/dcc80514/" title="用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区">用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区</a><time datetime="2026-10-20T03:39:24.000Z" title="发表于 2026-10-20 11:39:24">2026-10-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/fa14f175/" title="美化 Win11 任务栏：徽标靠左、图标居中、Win10 全屏磁贴"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="美化 Win11 任务栏：徽标靠左、图标居中、Win10 全屏磁贴"/></a><div class="content"><a class="title" href="/posts/fa14f175/" title="美化 Win11 任务栏：徽标靠左、图标居中、Win10 全屏磁贴">美化 Win11 任务栏：徽标靠左、图标居中、Win10 全屏磁贴</a><time datetime="2026-09-15T08:26:50.000Z" title="发表于 2026-09-15 16:26:50">2026-09-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/6b96b6d7/" title="Windows 更新无法使用：CBS 服务栈损坏修复记录"><img src="/img/default-cover.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows 更新无法使用：CBS 服务栈损坏修复记录"/></a><div class="content"><a class="title" href="/posts/6b96b6d7/" title="Windows 更新无法使用：CBS 服务栈损坏修复记录">Windows 更新无法使用：CBS 服务栈损坏修复记录</a><time datetime="2026-06-05T02:00:00.000Z" title="发表于 2026-06-05 10:00:00">2026-06-05</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 十早九木</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.0</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.0"></script><script src="/js/main.js?v=5.7.0"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.innerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+
+    setTimeout(() => URL.revokeObjectURL(url), 5000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    // Clean up previous event listeners and pending frames
+    if (wrap.__mermaidAbortController) {
+      wrap.__mermaidAbortController.abort()
+      if (wrap.__mermaidRafId) cancelAnimationFrame(wrap.__mermaidRafId)
+    }
+    const ac = new AbortController()
+    wrap.__mermaidAbortController = ac
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+    // Disable default gestures to prevent scroll chaining and pinch-zoom penetration in Chrome
+    svg.style.touchAction = 'none'
+
+    // Cache BoundingClientRect, throttled on scroll to reduce reflow
+    let cachedRect = svg.getBoundingClientRect()
+    let rectDirty = false
+    const markRectDirty = () => { rectDirty = true }
+    window.addEventListener('resize', markRectDirty, { signal: ac.signal })
+    window.addEventListener('scroll', markRectDirty, { signal: ac.signal, capture: true })
+    const getRect = () => {
+      if (rectDirty) {
+        cachedRect = svg.getBoundingClientRect()
+        rectDirty = false
+      }
+      return cachedRect
+    }
+
+    // Precompute clamp bounds from initial viewBox
+    const minW = initVb[2] * 0.1
+    const maxW = initVb[2] * 10
+    const minH = initVb[3] * 0.1
+    const maxH = initVb[3] * 10
+    const clampVb = vb => {
+      const out = vb.slice()
+      out[2] = clamp(out[2], minW, maxW)
+      out[3] = clamp(out[3], minH, maxH)
+      return out
+    }
+
+    // Throttle DOM updates using requestAnimationFrame
+    let pendingVb = null
+    let rafId = null
+    const applyVb = () => {
+      if (pendingVb) {
+        wrap.__mermaidCurViewBox = pendingVb
+        setSvgViewBox(svg, pendingVb)
+        pendingVb = null
+      }
+      rafId = null
+      wrap.__mermaidRafId = null
+    }
+    const setCurVb = vb => {
+      pendingVb = clampVb(vb)
+      if (!rafId) {
+        rafId = requestAnimationFrame(applyVb)
+        wrap.__mermaidRafId = rafId
+      }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      lastPointerX: 0,
+      lastPointerY: 0
+    }
+
+    const onPointerDown = e => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      const curVb = wrap.__mermaidCurViewBox
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      if (state.pointers.size === 1) {
+        state.startVb = curVb.slice()
+        state.lastPointerX = e.clientX
+        state.lastPointerY = e.clientY
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = curVb.slice()
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      const curVb = wrap.__mermaidCurViewBox
+      const rect = getRect()
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = state.pointers.values().next().value
+        const dxClient = p.x - state.lastPointerX
+        const dyClient = p.y - state.lastPointerY
+        state.lastPointerX = p.x
+        state.lastPointerY = p.y
+        const dx = dxClient * (curVb[2] / rect.width)
+        const dy = dyClient * (curVb[3] / rect.height)
+        setCurVb([curVb[0] - dx, curVb[1] - dy, curVb[2], curVb[3]])
+        return
+      }
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const px = curVb[0] + (cx - rect.left) * (curVb[2] / rect.width)
+        const py = curVb[1] + (cy - rect.top) * (curVb[3] / rect.height)
+        setCurVb(zoomAtPoint(state.startVb, factor, px, py))
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      // Release PointerCapture to avoid event capture anomalies
+      if (svg.hasPointerCapture && svg.hasPointerCapture(e.pointerId)) {
+        svg.releasePointerCapture(e.pointerId)
+      }
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+      } else if (state.pointers.size === 1) {
+        const p = state.pointers.values().next().value
+        state.lastPointerX = p.x
+        state.lastPointerY = p.y
+      }
+    }
+
+    const onWheel = e => {
+      // Prevent event bubbling from triggering external scroll
+      e.preventDefault()
+      e.stopPropagation()
+      // Normalize deltaY across deltaMode (Chrome uses pixels, Safari uses lines)
+      let delta = e.deltaY
+      if (e.deltaMode === 1) delta *= 16
+      else if (e.deltaMode === 2) delta *= 400
+
+      // Continuous zoom factor: smoother than fixed 1.1/0.9 steps
+      const zoomFactor = Math.pow(1.001, delta)
+
+      const curVb = wrap.__mermaidCurViewBox
+      const rect = getRect()
+      const px = curVb[0] + (e.clientX - rect.left) * (curVb[2] / rect.width)
+      const py = curVb[1] + (e.clientY - rect.top) * (curVb[3] / rect.height)
+      setCurVb(zoomAtPoint(curVb, zoomFactor, px, py))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (init) setCurVb(init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown, { signal: ac.signal })
+    svg.addEventListener('pointermove', onPointerMove, { signal: ac.signal })
+    svg.addEventListener('pointerup', onPointerUpOrCancel, { signal: ac.signal })
+    svg.addEventListener('pointercancel', onPointerUpOrCancel, { signal: ac.signal })
+    svg.addEventListener('wheel', onWheel, { passive: false, signal: ac.signal })
+    svg.addEventListener('dblclick', onDblClick, { signal: ac.signal })
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      // Clean up event listeners before removing old SVG
+      if (item.__mermaidAbortController) {
+        item.__mermaidAbortController.abort()
+      }
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      let config = {}
+      try {
+        config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      } catch (e) {
+        console.warn('[mermaid] failed to parse dataset.config:', e)
+      }
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+      const handleError = err => {
+        console.error(`[mermaid] render failed for block #${index}:`, err)
+        const errorEl = document.createElement('div')
+        errorEl.className = 'mermaid-error'
+        errorEl.textContent = `Mermaid render error: ${err.message || err}`
+        mermaidSrc.insertAdjacentElement('afterend', errorEl)
+      }
+
+      try {
+        const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+        // mermaid v9 and v10 compatibility
+        if (typeof renderFn === 'string') {
+          renderMermaid(renderFn)
+        } else {
+          renderFn.then(({ svg }) => renderMermaid(svg)).catch(handleError)
+        }
+      } catch (err) {
+        handleError(err)
+      }
+    })
+  }
+
+  const codeToMermaid = $article => {
+    const codeMermaidEle = $article.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    const $article = document.getElementById('article-container')
+    if (!$article) return
+
+    if (true) codeToMermaid($article)
+    const $mermaid = $article.querySelectorAll('.mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.16.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
