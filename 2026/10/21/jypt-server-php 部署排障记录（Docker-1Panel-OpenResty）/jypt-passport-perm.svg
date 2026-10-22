@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="640" viewBox="0 0 1080 640" font-family="Microsoft YaHei, PingFang SC, Hiragino Sans GB, sans-serif">
+  <rect width="1080" height="640" fill="#ffffff"/>
+  <text x="540" y="36" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">Passport 密钥权限：root 生成 vs 交给 www-data</text>
+  <text x="540" y="60" text-anchor="middle" font-size="12.5" fill="#8894a0">同一对密钥文件，属主不同 → 一个报错一个能读</text>
+
+  <!-- LEFT -->
+  <rect x="24" y="80" width="512" height="536" rx="10" fill="#1e2126" stroke="#444b54" stroke-width="1.5"/>
+  <rect x="24" y="80" width="512" height="30" rx="10" fill="#2c3138"/>
+  <circle cx="44" cy="95" r="5" fill="#ff5f56"/>
+  <circle cx="62" cy="95" r="5" fill="#ffbd2e"/>
+  <circle cx="80" cy="95" r="5" fill="#27c93f"/>
+  <text x="280" y="100" text-anchor="middle" font-size="11.5" fill="#a8b3c0">✗ 密钥由 root 生成（默认 docker exec）</text>
+
+  <text x="42" y="134" font-size="11.5" font-family="Consolas, monospace" fill="#7fb3d5">szjm@szjm-ubu22:~$ sudo docker exec -it php8335 \</text>
+  <text x="42" y="153" font-size="11.5" font-family="Consolas, monospace" fill="#7fb3d5">  bash -c 'cd /www/sites/…/jypt_laravel_server_2.0 &amp;&amp; \</text>
+  <text x="42" y="172" font-size="11.5" font-family="Consolas, monospace" fill="#7fb3d5">  php artisan passport:keys --force &amp;&amp; ls -la storage/*oauth*'</text>
+
+  <text x="42" y="200" font-size="11.5" font-family="Consolas, monospace" fill="#d8dee6">   INFO  Encryption keys generated successfully.</text>
+
+  <text x="42" y="228" font-size="11.5" font-family="Consolas, monospace" fill="#e5c07b">-rw------- 1 root root 3322 Oct 20 02:48 storage/oauth-private.key</text>
+  <text x="42" y="247" font-size="11.5" font-family="Consolas, monospace" fill="#e5c07b">-rw-rw---- 1 root root  812 Oct 20 02:48 storage/oauth-public.key</text>
+
+  <text x="42" y="280" font-size="11" font-family="Consolas, monospace" fill="#8894a0">↑ 属主 root，私钥 600 → 只有 root 能读</text>
+
+  <text x="42" y="312" font-size="11.5" font-family="Consolas, monospace" fill="#7fb3d5">szjm@szjm-ubu22:~$ curl -s -X POST http://192.168.2.46:…/api/login</text>
+
+  <rect x="42" y="326" width="476" height="150" rx="6" fill="#2a1f22" stroke="#8b4049"/>
+  <text x="54" y="348" font-size="11" font-family="Consolas, monospace" fill="#e06c75">{</text>
+  <text x="66" y="368" font-size="11" font-family="Consolas, monospace" fill="#e06c75">"success": false,</text>
+  <text x="66" y="388" font-size="11" font-family="Consolas, monospace" fill="#e06c75">"code": 40000,</text>
+  <text x="66" y="408" font-size="11" font-family="Consolas, monospace" fill="#e06c75">"message": "Key path \"file:///www/sites/…/storage/oauth-</text>
+  <text x="66" y="426" font-size="11" font-family="Consolas, monospace" fill="#e06c75">  private.key\" does not exist or is not readable.</text>
+  <text x="66" y="444" font-size="11" font-family="Consolas, monospace" fill="#e06c75">  &amp;&amp; Wrong file: in …/CryptKey.php at 59 line",</text>
+  <text x="54" y="466" font-size="11" font-family="Consolas, monospace" fill="#e06c75">}</text>
+
+  <text x="42" y="504" font-size="11" font-family="Consolas, monospace" fill="#8894a0">文件明明存在，报的却是 "does not exist or is not</text>
+  <text x="42" y="522" font-size="11" font-family="Consolas, monospace" fill="#8894a0">readable" —— PHP-FPM 以 www-data 跑，读不了 root 的 600</text>
+
+  <rect x="42" y="546" width="476" height="52" rx="6" fill="#3a2a2d" stroke="#8b4049"/>
+  <text x="56" y="568" font-size="11.5" font-weight="bold" fill="#e06c75">✗ 症状：登录 500 / Invalid key supplied</text>
+  <text x="56" y="587" font-size="10.8" fill="#c98b93">密钥没错，权限错了 → 错误信息误导方向</text>
+
+  <!-- RIGHT -->
+  <rect x="544" y="80" width="512" height="536" rx="10" fill="#1e2126" stroke="#444b54" stroke-width="1.5"/>
+  <rect x="544" y="80" width="512" height="30" rx="10" fill="#2c3138"/>
+  <circle cx="564" cy="95" r="5" fill="#ff5f56"/>
+  <circle cx="582" cy="95" r="5" fill="#ffbd2e"/>
+  <circle cx="600" cy="95" r="5" fill="#27c93f"/>
+  <text x="800" y="100" text-anchor="middle" font-size="11.5" fill="#a8b3c0">✓ chown 给 www-data 之后</text>
+
+  <text x="562" y="134" font-size="11.5" font-family="Consolas, monospace" fill="#7fb3d5">szjm@szjm-ubu22:~$ sudo docker exec -it php8335 \</text>
+  <text x="562" y="153" font-size="11.5" font-family="Consolas, monospace" fill="#7fb3d5">  bash -c 'cd /www/sites/…/jypt_laravel_server_2.0 \</text>
+  <text x="562" y="172" font-size="11.5" font-family="Consolas, monospace" fill="#7fb3d5">  &amp;&amp; chown www-data:www-data storage/oauth-*.key \</text>
+  <text x="562" y="191" font-size="11.5" font-family="Consolas, monospace" fill="#7fb3d5">  &amp;&amp; chmod 600 storage/oauth-private.key \</text>
+  <text x="562" y="210" font-size="11.5" font-family="Consolas, monospace" fill="#7fb3d5">  &amp;&amp; chmod 644 storage/oauth-public.key \</text>
+  <text x="562" y="229" font-size="11.5" font-family="Consolas, monospace" fill="#7fb3d5">  &amp;&amp; ls -la storage/*oauth*'</text>
+
+  <text x="562" y="258" font-size="11.5" font-family="Consolas, monospace" fill="#98c379">-rw------- 1 www-data www-data 3322 Oct 20 02:48 storage/oauth-private.key</text>
+  <text x="562" y="277" font-size="11.5" font-family="Consolas, monospace" fill="#98c379">-rw-r--r-- 1 www-data www-data  812 Oct 20 02:48 storage/oauth-public.key</text>
+
+  <text x="562" y="308" font-size="11" font-family="Consolas, monospace" fill="#8894a0">↑ 属主改成 www-data，600 / 644 按官方建议</text>
+  <text x="562" y="330" font-size="11" font-family="Consolas, monospace" fill="#8894a0">  FPM 用户能读私钥 → OAuth 签名解密正常</text>
+
+  <rect x="562" y="346" width="476" height="96" rx="6" fill="#1f2a22" stroke="#4a7a55"/>
+  <text x="576" y="368" font-size="11.5" font-weight="bold" fill="#98c379">顺带确认 FPM 真身</text>
+  <text x="576" y="390" font-size="10.8" font-family="Consolas, monospace" fill="#8fbc9d">$ sudo docker exec php8335 sh -c 'id www-data'</text>
+  <text x="576" y="409" font-size="10.8" font-family="Consolas, monospace" fill="#8fbc9d">uid=1000(www-data) gid=1000(www-data)</text>
+  <text x="576" y="428" font-size="10.8" font-family="Consolas, monospace" fill="#8fbc9d">www.conf: user = www-data / group = www-data</text>
+
+  <text x="562" y="470" font-size="11" font-family="Consolas, monospace" fill="#8894a0">→ 与宿主机 szjm 的 uid 1000 恰好对齐，</text>
+  <text x="562" y="489" font-size="11" font-family="Consolas, monospace" fill="#8894a0">  所以 bind mount 的目录保持 szjm:szjm 即可</text>
+
+  <rect x="562" y="510" width="476" height="52" rx="6" fill="#1f2a22" stroke="#4a7a55"/>
+  <text x="576" y="532" font-size="11.5" font-weight="bold" fill="#98c379">✓ 结果：/api/login 正常颁发 token</text>
+  <text x="576" y="551" font-size="10.8" fill="#8fbc9d">chown 一致的还有 bootstrap/cache 与 storage/framework</text>
+
+  <text x="540" y="630" text-anchor="middle" font-size="10.8" fill="#8894a0">原始输出取自 2026-10-20 排障会话（szjm-ubu22 · php8335 / 1panel-php-fpm:8.3.35）</text>
+</svg>
