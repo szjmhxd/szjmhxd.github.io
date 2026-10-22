@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" font-family="Microsoft YaHei, PingFang SC, Hiragino Sans GB, sans-serif">
+  <defs>
+    <marker id="s1" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <path d="M0,0 L9,3.5 L0,7 z" fill="#8a97a4"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="560" fill="#ffffff"/>
+  <text x="500" y="36" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">Windows 连接 Samba：用户名写法的三种后果</text>
+  <text x="500" y="60" text-anchor="middle" font-size="12.5" fill="#8894a0">同一个密码，凭据框里用户名怎么写，决定 Samba 把你当成谁</text>
+
+  <!-- 公共起点 -->
+  <rect x="352" y="80" width="296" height="46" rx="7" fill="#eaf1f9" stroke="#9db7d6" stroke-width="1.6"/>
+  <text x="500" y="109" text-anchor="middle" font-size="13" font-weight="bold" fill="#33507a">\\192.168.2.46\szjmDoc</text>
+
+  <!-- 三条线 -->
+  <line x1="440" y1="126" x2="200" y2="176" stroke="#8a97a4" stroke-width="1.6" marker-end="url(#s1)"/>
+  <line x1="500" y1="126" x2="500" y2="176" stroke="#8a97a4" stroke-width="1.6" marker-end="url(#s1)"/>
+  <line x1="560" y1="126" x2="800" y2="176" stroke="#8a97a4" stroke-width="1.6" marker-end="url(#s1)"/>
+
+  <!-- 列 1：裸用户名 -->
+  <rect x="30" y="182" width="300" height="252" rx="9" fill="#fdf5f5" stroke="#ddacac" stroke-width="1.8"/>
+  <text x="180" y="208" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#b34a4a">✗ 只写 szjm（裸用户名）</text>
+  <text x="46" y="232" font-size="10.8" font-family="Consolas, monospace" fill="#8a5a5a">/user:szjm</text>
+
+  <text x="46" y="258" font-size="11.2" fill="#8a5a5a">Windows 当作「本机账号」</text>
+  <text x="46" y="278" font-size="11.2" fill="#8a5a5a">拿本机 NTLM 凭据去撞 Samba</text>
+
+  <rect x="46" y="292" width="268" height="60" rx="6" fill="#fff0f0" stroke="#dda3a3"/>
+  <text x="60" y="313" font-size="11" font-weight="bold" fill="#b34a4a">→ 认证失败</text>
+  <text x="60" y="333" font-size="10.5" fill="#8a5a5a">Samba map to guest 把你降级为来宾</text>
+  <text x="60" y="348" font-size="10.5" fill="#8a5a5a">触发 Win10/11「阻止不安全的来宾登录」策略</text>
+
+  <text x="46" y="375" font-size="10.5" fill="#7b8794">⚠ 此时去开「启用不安全的来宾登录」是</text>
+  <text x="46" y="392" font-size="10.5" fill="#7b8794">   错解法 —— 身份还是错的</text>
+
+  <rect x="46" y="404" width="268" height="24" rx="5" fill="#f7e6e6"/>
+  <text x="180" y="420" text-anchor="middle" font-size="10.5" fill="#9b3b3b">典型报错：组织的策略阻止来宾访问</text>
+
+  <!-- 列 2：IP\用户名 -->
+  <rect x="350" y="182" width="300" height="252" rx="9" fill="#f2fbf5" stroke="#a3d3b5" stroke-width="2"/>
+  <text x="500" y="208" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#2f7a4d">✓ 写 192.168.2.46\szjm</text>
+  <text x="366" y="232" font-size="10.8" font-family="Consolas, monospace" fill="#3f6b52">/user:192.168.2.46\szjm</text>
+
+  <text x="366" y="258" font-size="11.2" fill="#3f6b52">Windows 当作「服务器账号」</text>
+  <text x="366" y="278" font-size="11.2" fill="#3f6b52">强制走目标机身份，不做本机映射</text>
+
+  <rect x="366" y="292" width="268" height="60" rx="6" fill="#eefaf2" stroke="#a3d3b5"/>
+  <text x="380" y="313" font-size="11" font-weight="bold" fill="#2f7a4d">→ 认证通过</text>
+  <text x="380" y="333" font-size="10.5" fill="#3f6b52">Samba 视你为 szjm 本人</text>
+  <text x="380" y="348" font-size="10.5" fill="#3f6b52">valid users = szjm 放行</text>
+
+  <text x="366" y="375" font-size="10.5" fill="#4a7a5e">也可存进凭据管理器，免每次输入：</text>
+  <rect x="366" y="384" width="268" height="44" rx="5" fill="#f6fdf8" stroke="#cfe8d9"/>
+  <text x="378" y="402" font-size="10" font-family="Consolas, monospace" fill="#3f6b52">cmdkey /add:192.168.2.46 /user:192.168.2.46\szjm</text>
+  <text x="378" y="420" font-size="10" font-family="Consolas, monospace" fill="#3f6b52">  /pass:你的SMB密码</text>
+
+  <!-- 列 3：双击网络邻居 -->
+  <rect x="670" y="182" width="300" height="252" rx="9" fill="#fffdf2" stroke="#e0d08a" stroke-width="1.8"/>
+  <text x="820" y="208" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#8a6d1f">⚠ 从「网络」双击服务器图标</text>
+  <text x="686" y="232" font-size="10.8" fill="#9a7f30">Explorer 先做匿名 IPC$ 枚举</text>
+
+  <text x="686" y="258" font-size="11.2" fill="#9a7f30">map to guest = never 时匿名被拒</text>
+  <text x="686" y="278" font-size="11.2" fill="#9a7f30">→ 报「找不到路径 / 请检查名称拼写」</text>
+
+  <rect x="686" y="292" width="268" height="60" rx="6" fill="#fffbe6" stroke="#e0d08a"/>
+  <text x="700" y="313" font-size="11" font-weight="bold" fill="#8a6d1f">→ 但其实共享是通的</text>
+  <text x="700" y="333" font-size="10.5" fill="#9a7f30">命令行 dir \\192.168.2.46\szjmDoc</text>
+  <text x="700" y="348" font-size="10.5" fill="#9a7f30">完全正常，只是 Explorer 走了另一条路</text>
+
+  <text x="686" y="375" font-size="10.5" fill="#8a6d1f">解法：绕开枚举，用盘符打开 ——</text>
+  <rect x="686" y="384" width="268" height="44" rx="5" fill="#fffef7" stroke="#ece0b8"/>
+  <text x="698" y="402" font-size="10" font-family="Consolas, monospace" fill="#8a6d1f">net use P: \\192.168.2.46\szjmDoc</text>
+  <text x="698" y="420" font-size="10" font-family="Consolas, monospace" fill="#8a6d1f">  /user:192.168.2.46\szjm /persistent:yes</text>
+
+  <!-- 底部提示 -->
+  <rect x="30" y="452" width="940" height="84" rx="8" fill="#f4f7fb" stroke="#c6d4e3" stroke-width="1.5"/>
+  <text x="50" y="476" font-size="12.5" font-weight="bold" fill="#33507a">还有两个容易踩的尾巴</text>
+  <text x="50" y="498" font-size="11.2" fill="#4a5a6a">① 错误 1219 多重连接：Explorer 浏览网络邻居时已用 guest 身份建过会话 → 先 <tspan font-family="Consolas, monospace">net use * /delete /y</tspan> 再认证</text>
+  <text x="50" y="519" font-size="11.2" fill="#4a5a6a">② 映射盘命令行可见、资源管理器不可见：PowerShell 是管理员会话（UAC 双会话隔离）→ 用普通权限的窗口重新 net use</text>
+</svg>

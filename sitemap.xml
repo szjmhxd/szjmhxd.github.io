@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://szjmhxd.github.io/2026/10/20/%E7%94%A8%E8%BD%AF%E9%93%BE%E6%8E%A5%E8%AE%A9%20DSH%20Desktop%20%E4%BD%BF%E7%94%A8%E7%BD%91%E7%BB%9C%E6%8C%82%E8%BD%BD%E7%9B%98%EF%BC%88SMB%20%E5%85%B1%E4%BA%AB%EF%BC%89%E4%BD%9C%E5%B7%A5%E4%BD%9C%E5%8C%BA/</loc>
+    <loc>https://szjmhxd.github.io/posts/425b83a5/</loc>
     
     <lastmod>2026-10-22</lastmod>
     
@@ -11,7 +11,7 @@
   </url>
   
   <url>
-    <loc>https://szjmhxd.github.io/2026/10/21/jypt-server-php%20%E9%83%A8%E7%BD%B2%E6%8E%92%E9%9A%9C%E8%AE%B0%E5%BD%95%EF%BC%88Docker-1Panel-OpenResty%EF%BC%89/</loc>
+    <loc>https://szjmhxd.github.io/posts/5cd620c1/</loc>
     
     <lastmod>2026-10-22</lastmod>
     
@@ -20,7 +20,7 @@
   </url>
   
   <url>
-    <loc>https://szjmhxd.github.io/2026/10/21/Ubuntu%2022.04%20Samba%20%E5%85%B1%E4%BA%AB%E9%85%8D%E7%BD%AE%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/</loc>
+    <loc>https://szjmhxd.github.io/posts/dcc80514/</loc>
     
     <lastmod>2026-10-22</lastmod>
     
@@ -47,7 +47,7 @@
   </url>
   
   <url>
-    <loc>https://szjmhxd.github.io/2025/12/23/%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2RustDesk%E6%9C%8D%E5%8A%A1%E5%99%A8/</loc>
+    <loc>https://szjmhxd.github.io/posts/a4aa3bb4/</loc>
     
     <lastmod>2025-12-23</lastmod>
     
@@ -63,6 +63,41 @@
     <priority>1.0</priority>
   </url>
 
+  
+  <url>
+    <loc>https://szjmhxd.github.io/tags/Samba/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://szjmhxd.github.io/tags/SMB/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://szjmhxd.github.io/tags/Windows/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://szjmhxd.github.io/tags/%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://szjmhxd.github.io/tags/%E6%8E%92%E9%94%99/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
   
   <url>
     <loc>https://szjmhxd.github.io/tags/Docker/</loc>
@@ -114,13 +149,6 @@
   </url>
   
   <url>
-    <loc>https://szjmhxd.github.io/tags/%E6%8E%92%E9%94%99/</loc>
-    <lastmod>2026-10-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://szjmhxd.github.io/tags/DSH-Desktop/</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>weekly</changefreq>
@@ -135,21 +163,7 @@
   </url>
   
   <url>
-    <loc>https://szjmhxd.github.io/tags/SMB/</loc>
-    <lastmod>2026-10-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://szjmhxd.github.io/tags/%E6%B2%99%E7%AE%B1/</loc>
-    <lastmod>2026-10-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://szjmhxd.github.io/tags/Windows/</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -162,21 +176,14 @@
     <priority>0.2</priority>
   </url>
   
-  <url>
-    <loc>https://szjmhxd.github.io/tags/Samba/</loc>
-    <lastmod>2026-10-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://szjmhxd.github.io/tags/%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB/</loc>
-    <lastmod>2026-10-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
 
+  
+  <url>
+    <loc>https://szjmhxd.github.io/categories/Linux/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
   
   <url>
     <loc>https://szjmhxd.github.io/categories/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/</loc>
@@ -200,7 +207,7 @@
   </url>
   
   <url>
-    <loc>https://szjmhxd.github.io/categories/Linux/</loc>
+    <loc>https://szjmhxd.github.io/categories/Linux/Samba/</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -215,13 +222,6 @@
   
   <url>
     <loc>https://szjmhxd.github.io/categories/%E5%B7%A5%E5%85%B7/DSH/</loc>
-    <lastmod>2026-10-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://szjmhxd.github.io/categories/Linux/Samba/</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
