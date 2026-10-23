@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="400" viewBox="0 0 1600 400" font-family="Microsoft YaHei, PingFang SC, sans-serif">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0d1424"/>
-      <stop offset="100%" stop-color="#1a2547"/>
+      <stop offset="0%" stop-color="#0b1224"/>
+      <stop offset="100%" stop-color="#1a2a52"/>
     </linearGradient>
     <radialGradient id="glow" cx="76%" cy="45%" r="45%">
-      <stop offset="0%" stop-color="#4d6bfe" stop-opacity="0.20"/>
+      <stop offset="0%" stop-color="#4d6bfe" stop-opacity="0.18"/>
       <stop offset="100%" stop-color="#4d6bfe" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="1600" height="400" fill="url(#bg)"/>
   <rect width="1600" height="400" fill="url(#glow)"/>
-  <g stroke="#4d6bfe" stroke-opacity="0.045" stroke-width="1">
+  <g stroke="#4d6bfe" stroke-opacity="0.04" stroke-width="1">
     <line x1="0" y1="0" x2="0" y2="400"/>
     <line x1="100" y1="0" x2="100" y2="400"/>
     <line x1="200" y1="0" x2="200" y2="400"/>
@@ -29,11 +29,20 @@
     <line x1="1400" y1="0" x2="1400" y2="400"/>
     <line x1="1500" y1="0" x2="1500" y2="400"/>
   </g>
-<g transform="translate(1120.00,108.00) scale(1.7500)" opacity="0.95">
-  <g fill="none" stroke="#4d6bfe" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M14 28 A14 14 0 0 1 28 14 H72 A14 14 0 0 1 86 28 V56 A14 14 0 0 1 72 70 H46 L26 88 V70 A14 14 0 0 1 14 56 Z"/>
-    <path d="M34 32 H66"/>
-    <path d="M34 46 H56"/>
+<g transform="translate(1110.00,100.00) scale(1.8500)" opacity="0.95">
+  <g fill="#4d6bfe">
+    <path d="M14 58 C14 58 22 76 46 76 C66 76 78 68 84 58 Z"/>
+    <path d="M80 54 C86 46 94 46 97 52 C93 60 85 60 80 54 Z"/>
+    <path d="M30 52 A4 4 0 1 0 30 60 A4 4 0 1 0 30 52 Z"/>
+  </g>
+  <g fill="none" stroke="#4d6bfe" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M48 44 C48 36 52 30 58 26"/>
+    <path d="M48 44 C44 36 40 32 34 30"/>
+  </g>
+</g>
+<g transform="translate(1300.00,200.00) scale(1.0500)" opacity="0.92">
+  <g fill="#4d6bfe">
+    <path d="M8 22 A6 6 0 0 1 14 16 H38 L46 26 H86 A6 6 0 0 1 92 32 V78 A6 6 0 0 1 86 84 H14 A6 6 0 0 1 8 78 Z"/>
   </g>
 </g>
   <rect x="130" y="116" width="6" height="58" fill="#4d6bfe" rx="3"/>

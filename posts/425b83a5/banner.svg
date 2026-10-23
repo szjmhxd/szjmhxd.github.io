@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="400" viewBox="0 0 1600 400" font-family="Microsoft YaHei, PingFang SC, sans-serif">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1a1210"/>
-      <stop offset="100%" stop-color="#3d1f12"/>
+      <stop offset="0%" stop-color="#2a1108"/>
+      <stop offset="100%" stop-color="#4a1f0c"/>
     </linearGradient>
     <radialGradient id="glow" cx="76%" cy="45%" r="45%">
-      <stop offset="0%" stop-color="#e95420" stop-opacity="0.20"/>
+      <stop offset="0%" stop-color="#e95420" stop-opacity="0.18"/>
       <stop offset="100%" stop-color="#e95420" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="1600" height="400" fill="url(#bg)"/>
   <rect width="1600" height="400" fill="url(#glow)"/>
-  <g stroke="#e95420" stroke-opacity="0.045" stroke-width="1">
+  <g stroke="#e95420" stroke-opacity="0.04" stroke-width="1">
     <line x1="0" y1="0" x2="0" y2="400"/>
     <line x1="100" y1="0" x2="100" y2="400"/>
     <line x1="200" y1="0" x2="200" y2="400"/>
@@ -29,15 +29,27 @@
     <line x1="1400" y1="0" x2="1400" y2="400"/>
     <line x1="1500" y1="0" x2="1500" y2="400"/>
   </g>
-<g transform="translate(1120.00,108.00) scale(1.7500)" opacity="0.95">
+<g transform="translate(1110.00,100.00) scale(1.8500)" opacity="0.95">
   <g fill="#e95420">
-    <path d="M22 36 A15 15 0 1 0 22 66 A15 15 0 1 0 22 36 Z"/>
-    <path d="M78 12 A15 15 0 1 0 78 42 A15 15 0 1 0 78 12 Z"/>
-    <path d="M78 60 A15 15 0 1 0 78 90 A15 15 0 1 0 78 60 Z"/>
+    <path d="M50 32 A11 11 0 1 0 50 54 A11 11 0 1 0 50 32 Z"/>
+    <path d="M26 66 A11 11 0 1 0 26 88 A11 11 0 1 0 26 66 Z"/>
+    <path d="M74 66 A11 11 0 1 0 74 88 A11 11 0 1 0 74 66 Z"/>
   </g>
-  <g fill="none" stroke="#e95420" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M37 47 L63 32"/>
-    <path d="M37 55 L63 70"/>
+  <g fill="none" stroke="#e95420" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M50 6 A44 44 0 1 1 49.9 6"/>
+    <path d="M44 43 L32 62"/>
+    <path d="M56 43 L68 62"/>
+  </g>
+</g>
+<g transform="translate(1300.00,200.00) scale(1.0500)" opacity="0.92">
+  <g fill="#e95420">
+    <path d="M24 36 A14 14 0 1 0 24 64 A14 14 0 1 0 24 36 Z"/>
+    <path d="M76 12 A14 14 0 1 0 76 40 A14 14 0 1 0 76 12 Z"/>
+    <path d="M76 60 A14 14 0 1 0 76 88 A14 14 0 1 0 76 60 Z"/>
+  </g>
+  <g fill="none" stroke="#e95420" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M37 46 L63 31"/>
+    <path d="M37 54 L63 69"/>
   </g>
 </g>
   <rect x="130" y="116" width="6" height="58" fill="#e95420" rx="3"/>

@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="630" height="630" viewBox="0 0 630 630" font-family="Microsoft YaHei, PingFang SC, sans-serif">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0b1725"/>
-      <stop offset="100%" stop-color="#123049"/>
+      <stop offset="0%" stop-color="#0a1622"/>
+      <stop offset="100%" stop-color="#122c44"/>
     </linearGradient>
     <radialGradient id="glow" cx="68%" cy="40%" r="55%">
-      <stop offset="0%" stop-color="#00a4ef" stop-opacity="0.25"/>
-      <stop offset="100%" stop-color="#00a4ef" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#0078d4" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#0078d4" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="630" height="630" fill="url(#bg)"/>
   <rect width="630" height="630" fill="url(#glow)"/>
-  <g stroke="#00a4ef" stroke-opacity="0.055" stroke-width="1">
+  <g stroke="#0078d4" stroke-opacity="0.05" stroke-width="1">
     <line x1="0" y1="0" x2="0" y2="630"/>
     <line x1="100" y1="0" x2="100" y2="630"/>
     <line x1="200" y1="0" x2="200" y2="630"/>
@@ -20,21 +20,23 @@
     <line x1="500" y1="0" x2="500" y2="630"/>
     <line x1="600" y1="0" x2="600" y2="630"/>
   </g>
-<g transform="translate(380.00,150.00) scale(1.8000)" opacity="0.96">
-  <g fill="#00a4ef">
-    <path d="M6 16 L47 11 V47 H6 Z"/>
-    <path d="M53 10 L94 4 V47 H53 Z"/>
-    <path d="M6 53 H47 V89 L6 84 Z"/>
-    <path d="M53 53 H94 V96 L53 90 Z"/>
+<g transform="translate(370.00,140.00) scale(1.9000)" opacity="0.96">
+  <g fill="#0078d4">
+    <path d="M8 20 L46 14 V48 H8 Z"/>
+    <path d="M52 13 L92 7 V48 H52 Z"/>
+    <path d="M8 54 H46 V86 L8 80 Z"/>
+    <path d="M52 54 H92 V93 L52 87 Z"/>
   </g>
 </g>
-<g transform="translate(480.00,285.00) scale(1.0000)" opacity="0.78">
-  <g fill="#00a4ef" fill-rule="evenodd">
-    <path d="M44 4 h12 l3 12 9 4 10-7 9 9-7 10 4 9 12 3 v12 l-12 3-4 9 7 10-9 9-10-7-9 4-3 12 h-12 l-3-12-9-4-10 7-9-9 7-10-4-9-12-3 v-12 l12-3 4-9-7-10 9-9 10 7 9-4 z"/>
-    <path d="M50 33 A17 17 0 1 0 50 67 A17 17 0 1 0 50 33 Z"/>
+<g transform="translate(470.00,290.00) scale(1.0000)" opacity="0.9">
+  <g fill="none" stroke="#0078d4" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 44 A30 30 0 0 1 74 30"/>
+    <path d="M74 30 L74 14 M74 30 L58 30"/>
+    <path d="M78 56 A30 30 0 0 1 26 70"/>
+    <path d="M26 70 L26 86 M26 70 L42 70"/>
   </g>
 </g>
-  <rect x="58" y="368" width="6" height="62" fill="#00a4ef" rx="3"/>
-  <text x="82" y="416" font-size="50" font-weight="bold" fill="#ffffff">CBS 服务栈修复</text>
-  <text x="84" y="464" font-size="26" fill="#00a4ef" opacity="0.92">Windows Update 彻底失效</text>
+  <rect x="58" y="368" width="6" height="62" fill="#0078d4" rx="3"/>
+  <text x="82" y="416" font-size="48" font-weight="bold" fill="#ffffff">CBS 服务栈修复</text>
+  <text x="84" y="464" font-size="25" fill="#0078d4" opacity="0.92">Windows Update 彻底失效</text>
 </svg>

@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="630" height="630" viewBox="0 0 630 630" font-family="Microsoft YaHei, PingFang SC, sans-serif">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0a1926"/>
-      <stop offset="100%" stop-color="#0f3550"/>
+      <stop offset="0%" stop-color="#0c1a2b"/>
+      <stop offset="100%" stop-color="#132f4d"/>
     </linearGradient>
     <radialGradient id="glow" cx="68%" cy="40%" r="55%">
-      <stop offset="0%" stop-color="#0db7ed" stop-opacity="0.25"/>
-      <stop offset="100%" stop-color="#0db7ed" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#3fa9f5" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#3fa9f5" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="630" height="630" fill="url(#bg)"/>
   <rect width="630" height="630" fill="url(#glow)"/>
-  <g stroke="#0db7ed" stroke-opacity="0.055" stroke-width="1">
+  <g stroke="#3fa9f5" stroke-opacity="0.05" stroke-width="1">
     <line x1="0" y1="0" x2="0" y2="630"/>
     <line x1="100" y1="0" x2="100" y2="630"/>
     <line x1="200" y1="0" x2="200" y2="630"/>
@@ -20,28 +20,15 @@
     <line x1="500" y1="0" x2="500" y2="630"/>
     <line x1="600" y1="0" x2="600" y2="630"/>
   </g>
-<g transform="translate(380.00,173.40) scale(1.8000)" opacity="0.96">
-  <g fill="#0db7ed">
-    <path d="M2 44 C2 44 6 62 30 62 C52 62 68 56 76 44 Z"/>
-    <path d="M72 40 C78 32 88 32 92 40 C88 48 78 48 72 40 Z"/>
-    <path d="M6 40 h11 v-9 h-11 z"/>
-    <path d="M19 40 h11 v-9 h-11 z"/>
-    <path d="M32 40 h11 v-9 h-11 z"/>
-    <path d="M45 40 h11 v-9 h-11 z"/>
-    <path d="M58 40 h11 v-9 h-11 z"/>
-    <path d="M19 29 h11 v-9 h-11 z"/>
-    <path d="M32 29 h11 v-9 h-11 z"/>
-    <path d="M45 29 h11 v-9 h-11 z"/>
-    <path d="M45 18 h11 v-9 h-11 z"/>
+<g transform="translate(370.00,140.00) scale(1.9000)" opacity="0.96">
+  <g fill="none" stroke="#3fa9f5" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M50 6 L89 28 V72 L50 94 L11 72 V28 Z"/>
   </g>
+  <text x="50" y="66" text-anchor="middle" font-size="46" font-weight="bold" font-family="Arial, sans-serif" fill="#3fa9f5">1</text>
 </g>
-<g transform="translate(480.00,285.00) scale(1.0000)" opacity="0.78">
-  <g fill="#0db7ed" fill-rule="evenodd">
-    <path d="M44 4 h12 l3 12 9 4 10-7 9 9-7 10 4 9 12 3 v12 l-12 3-4 9 7 10-9 9-10-7-9 4-3 12 h-12 l-3-12-9-4-10 7-9-9 7-10-4-9-12-3 v-12 l12-3 4-9-7-10 9-9 10 7 9-4 z"/>
-    <path d="M50 33 A17 17 0 1 0 50 67 A17 17 0 1 0 50 33 Z"/>
-  </g>
-</g>
-  <rect x="58" y="368" width="6" height="62" fill="#0db7ed" rx="3"/>
-  <text x="82" y="416" font-size="50" font-weight="bold" fill="#ffffff">Laravel 部署排障</text>
-  <text x="84" y="464" font-size="26" fill="#0db7ed" opacity="0.92">Docker · 1Panel · OpenResty</text>
+<rect x="460" y="280" width="120" height="120" rx="28.000000000000004" fill="#ff2d20" fill-opacity="0.92"/>
+<text x="520" y="368" text-anchor="middle" font-size="82" font-weight="bold" font-family="Georgia, serif" fill="#ffffff" opacity="0.9">L</text>
+  <rect x="58" y="368" width="6" height="62" fill="#3fa9f5" rx="3"/>
+  <text x="82" y="416" font-size="48" font-weight="bold" fill="#ffffff">Laravel 部署排障</text>
+  <text x="84" y="464" font-size="25" fill="#3fa9f5" opacity="0.92">1Panel · OpenResty · Laravel 11</text>
 </svg>
