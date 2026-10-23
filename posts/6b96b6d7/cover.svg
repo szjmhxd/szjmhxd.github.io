@@ -1,17 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="630" height="630" viewBox="0 0 630 630" font-family="Microsoft YaHei, PingFang SC, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="630" height="487" viewBox="0 0 630 487" font-family="Microsoft YaHei, PingFang SC, sans-serif">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#0a1622"/>
       <stop offset="100%" stop-color="#122c44"/>
     </linearGradient>
-    <radialGradient id="glow" cx="68%" cy="40%" r="55%">
+    <radialGradient id="glow" cx="30%" cy="30%" r="60%">
       <stop offset="0%" stop-color="#0078d4" stop-opacity="0.22"/>
       <stop offset="100%" stop-color="#0078d4" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect width="630" height="630" fill="url(#bg)"/>
-  <rect width="630" height="630" fill="url(#glow)"/>
-<g transform="translate(385.00,60.00) scale(7.29167)" opacity="0.97">
+  <rect width="630" height="487" fill="url(#bg)"/>
+  <rect width="630" height="487" fill="url(#glow)"/>
+<g transform="translate(130.00,50.00) scale(7.29167)" opacity="0.97">
   <g fill="#0078d4">
     <path d="M2.5 4.5 L11 3.4 V11 H2.5 Z"/>
     <path d="M12.4 3.2 L21.5 2 V11 H12.4 Z"/>
@@ -19,12 +19,12 @@
     <path d="M12.4 12.2 H21.5 V21.3 L12.4 20.1 Z"/>
   </g>
 </g>
-<g transform="translate(500.00,220.00) scale(0.08594)" opacity="0.92">
+<g transform="translate(330.00,110.00) scale(0.09277)" opacity="0.92">
   <g fill="#0078d4">
     <path d="M537.6 104c96.64 0 187.84 33.6 259.84 92.544l35.712-36.672a32 32 0 0 1 54.656 18.048l0.256 2.368 9.728 162.816a32 32 0 0 1-32.256 33.92l-2.368-0.128-155.648-12.992a32 32 0 0 1-22.08-52.16l1.856-2.048 42.88-44.032A313.6 313.6 0 0 0 537.6 200C364.352 200 224 339.712 224 512s140.352 312 313.6 312a313.728 313.728 0 0 0 274.56-161.088l1.664-3.008 84.352 45.76A409.728 409.728 0 0 1 537.6 920C311.424 920 128 737.408 128 512s183.424-408 409.6-408z"/>
   </g>
 </g>
-  <rect x="58" y="368" width="6" height="62" fill="#0078d4" rx="3"/>
-  <text x="82" y="416" font-size="48" font-weight="bold" fill="#ffffff">CBS 服务栈修复</text>
-  <text x="84" y="464" font-size="25" fill="#0078d4" opacity="0.92">Windows Update 彻底失效</text>
+  <rect x="58" y="288" width="6" height="58" fill="#0078d4" rx="3"/>
+  <text x="82" y="332" font-size="46" font-weight="bold" fill="#ffffff">CBS 服务栈修复</text>
+  <text x="84" y="378" font-size="23" fill="#0078d4" opacity="0.92">Windows Update 彻底失效</text>
 </svg>

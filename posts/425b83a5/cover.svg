@@ -1,22 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="630" height="630" viewBox="0 0 630 630" font-family="Microsoft YaHei, PingFang SC, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="630" height="487" viewBox="0 0 630 487" font-family="Microsoft YaHei, PingFang SC, sans-serif">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#2a1108"/>
       <stop offset="100%" stop-color="#4a1f0c"/>
     </linearGradient>
-    <radialGradient id="glow" cx="68%" cy="40%" r="55%">
+    <radialGradient id="glow" cx="30%" cy="30%" r="60%">
       <stop offset="0%" stop-color="#e95420" stop-opacity="0.22"/>
       <stop offset="100%" stop-color="#e95420" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect width="630" height="630" fill="url(#bg)"/>
-  <rect width="630" height="630" fill="url(#glow)"/>
-<g transform="translate(385.00,60.00) scale(7.29167)" opacity="0.97">
+  <rect width="630" height="487" fill="url(#bg)"/>
+  <rect width="630" height="487" fill="url(#glow)"/>
+<g transform="translate(130.00,50.00) scale(7.29167)" opacity="0.97">
   <g fill="#e95420">
     <path d="M17.61.455a3.41 3.41 0 0 0-3.41 3.41 3.41 3.41 0 0 0 3.41 3.41 3.41 3.41 0 0 0 3.41-3.41 3.41 3.41 0 0 0-3.41-3.41zM12.92.8C8.923.777 5.137 2.941 3.148 6.451a4.5 4.5 0 0 1 .26-.007 4.92 4.92 0 0 1 2.585.737A8.316 8.316 0 0 1 12.688 3.6 4.944 4.944 0 0 1 13.723.834 11.008 11.008 0 0 0 12.92.8zm9.226 4.994a4.915 4.915 0 0 1-1.918 2.246 8.36 8.36 0 0 1-.273 8.303 4.89 4.89 0 0 1 1.632 2.54 11.156 11.156 0 0 0 .559-13.089zM3.41 7.932A3.41 3.41 0 0 0 0 11.342a3.41 3.41 0 0 0 3.41 3.409 3.41 3.41 0 0 0 3.41-3.41 3.41 3.41 0 0 0-3.41-3.41zm2.027 7.866a4.908 4.908 0 0 1-2.915.358 11.1 11.1 0 0 0 7.991 6.698 11.234 11.234 0 0 0 2.422.249 4.879 4.879 0 0 1-.999-2.85 8.484 8.484 0 0 1-.836-.136 8.304 8.304 0 0 1-5.663-4.32zm11.405.928a3.41 3.41 0 0 0-3.41 3.41 3.41 3.41 0 0 0 3.41 3.41 3.41 3.41 0 0 0 3.41-3.41 3.41 3.41 0 0 0-3.41-3.41z"/>
   </g>
 </g>
-<g transform="translate(500.00,220.00) scale(3.66667)" opacity="0.92">
+<g transform="translate(330.00,110.00) scale(3.95833)" opacity="0.92">
   <g fill="#e95420">
     <circle cx="6" cy="12" r="3.2"/>
     <circle cx="18" cy="6" r="3.2"/>
@@ -27,7 +27,7 @@
     <line x1="8.8" y1="13.4" x2="15.2" y2="16.6"/>
   </g>
 </g>
-  <rect x="58" y="368" width="6" height="62" fill="#e95420" rx="3"/>
-  <text x="82" y="416" font-size="48" font-weight="bold" fill="#ffffff">Samba 共享踩坑</text>
-  <text x="84" y="464" font-size="25" fill="#e95420" opacity="0.92">Ubuntu 22.04 · Windows 客户端</text>
+  <rect x="58" y="288" width="6" height="58" fill="#e95420" rx="3"/>
+  <text x="82" y="332" font-size="46" font-weight="bold" fill="#ffffff">Samba 共享踩坑</text>
+  <text x="84" y="378" font-size="23" fill="#e95420" opacity="0.92">Ubuntu 22.04 · Windows 客户端</text>
 </svg>
