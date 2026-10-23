@@ -1,40 +1,47 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="630" height="630" viewBox="0 0 630 630" font-family="Microsoft YaHei, PingFang SC, sans-serif">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#251a3a"/>
-      <stop offset="100%" stop-color="#3d2a5c"/>
+      <stop offset="0%" stop-color="#081420"/>
+      <stop offset="100%" stop-color="#0d2c42"/>
     </linearGradient>
-    <radialGradient id="glow" cx="68%" cy="30%" r="55%">
-      <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.30"/>
-      <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+    <radialGradient id="glow" cx="68%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#0db7ed" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#0db7ed" stop-opacity="0"/>
     </radialGradient>
   </defs>
-
   <rect width="630" height="630" fill="url(#bg)"/>
   <rect width="630" height="630" fill="url(#glow)"/>
-
-  <!-- 网格 -->
-  <g stroke="#a78bfa" stroke-opacity="0.08" stroke-width="1">
-    <line x1="0" y1="0" x2="0" y2="630"/><line x1="100" y1="0" x2="100" y2="630"/><line x1="200" y1="0" x2="200" y2="630"/><line x1="300" y1="0" x2="300" y2="630"/><line x1="400" y1="0" x2="400" y2="630"/><line x1="500" y1="0" x2="500" y2="630"/><line x1="600" y1="0" x2="600" y2="630"/>
-    <line x1="0" y1="0" x2="630" y2="0"/><line x1="0" y1="100" x2="630" y2="100"/><line x1="0" y1="200" x2="630" y2="200"/><line x1="0" y1="300" x2="630" y2="300"/><line x1="0" y1="400" x2="630" y2="400"/><line x1="0" y1="500" x2="630" y2="500"/><line x1="0" y1="600" x2="630" y2="600"/>
+  <g stroke="#0db7ed" stroke-opacity="0.055" stroke-width="1">
+    <line x1="0" y1="0" x2="0" y2="630"/>
+    <line x1="100" y1="0" x2="100" y2="630"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="300" y1="0" x2="300" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="500" y1="0" x2="500" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
   </g>
-
-  <!-- 装饰圆环（右上方，作背景） -->
-  <circle cx="500" cy="150" r="185" fill="none" stroke="#a78bfa" stroke-opacity="0.15" stroke-width="2"/>
-  <circle cx="500" cy="150" r="130" fill="none" stroke="#a78bfa" stroke-opacity="0.10" stroke-width="1.5"/>
-
-  <!-- 图标：右上 -->
-  <g transform="translate(438, 88) scale(2.5)" fill="none" stroke="#a78bfa" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.95">
-    <path d="M8 10 H40 V32 H8 Z M18 38 H30 M24 32 V38 M14 18 L20 23 L14 28 M24 28 H32"/>
+<g transform="translate(380.00,173.40) scale(1.8000)" opacity="0.96">
+  <g fill="#0db7ed">
+    <path d="M2 44 C2 44 6 62 30 62 C52 62 68 56 76 44 Z"/>
+    <path d="M72 40 C78 32 88 32 92 40 C88 48 78 48 72 40 Z"/>
+    <path d="M6 40 h11 v-9 h-11 z"/>
+    <path d="M19 40 h11 v-9 h-11 z"/>
+    <path d="M32 40 h11 v-9 h-11 z"/>
+    <path d="M45 40 h11 v-9 h-11 z"/>
+    <path d="M58 40 h11 v-9 h-11 z"/>
+    <path d="M19 29 h11 v-9 h-11 z"/>
+    <path d="M32 29 h11 v-9 h-11 z"/>
+    <path d="M45 29 h11 v-9 h-11 z"/>
+    <path d="M45 18 h11 v-9 h-11 z"/>
   </g>
-
-  <!-- 文字：左侧居中，字号加大 -->
-  <g>
-    <rect x="58" y="368" width="6" height="62" fill="#a78bfa" rx="3"/>
-    <text x="82" y="416" font-size="58" font-weight="bold" fill="#ffffff" letter-spacing="1">RustDesk</text>
-    <text x="84" y="468" font-size="34" fill="#a78bfa" opacity="0.92">Docker 部署</text>
+</g>
+<g transform="translate(480.00,285.00) scale(1.0000)" opacity="0.78">
+  <g fill="#0db7ed">
+    <path d="M50 6 A44 44 0 0 1 88.1 72 L72.3 63 A26 26 0 0 0 50 24 Z"/>
+    <path d="M50 94 A44 44 0 0 1 11.9 28 L27.7 37 A26 26 0 0 0 50 76 Z"/>
   </g>
-
-  <!-- 底部装饰线 -->
-  <line x1="58" y1="520" x2="572" y2="520" stroke="#a78bfa" stroke-opacity="0.28" stroke-width="1.5"/>
+</g>
+  <rect x="58" y="368" width="6" height="62" fill="#0db7ed" rx="3"/>
+  <text x="82" y="416" font-size="50" font-weight="bold" fill="#ffffff">Docker 部署 RustDesk</text>
+  <text x="84" y="464" font-size="26" fill="#0db7ed" opacity="0.92">自建远程桌面服务器</text>
 </svg>

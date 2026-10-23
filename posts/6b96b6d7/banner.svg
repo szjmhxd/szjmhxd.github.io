@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="400" viewBox="0 0 1600 400" font-family="Microsoft YaHei, PingFang SC, sans-serif">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0e1826"/>
-      <stop offset="100%" stop-color="#1e3a5f"/>
+      <stop offset="0%" stop-color="#0b1725"/>
+      <stop offset="100%" stop-color="#123049"/>
     </linearGradient>
-    <radialGradient id="glow" cx="78%" cy="38%" r="46%">
-      <stop offset="0%" stop-color="#4da6ff" stop-opacity="0.26"/>
-      <stop offset="100%" stop-color="#4da6ff" stop-opacity="0"/>
+    <radialGradient id="glow" cx="76%" cy="45%" r="45%">
+      <stop offset="0%" stop-color="#00a4ef" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#00a4ef" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="1600" height="400" fill="url(#bg)"/>
   <rect width="1600" height="400" fill="url(#glow)"/>
-  <g stroke="#4da6ff" stroke-opacity="0.06" stroke-width="1">
+  <g stroke="#00a4ef" stroke-opacity="0.045" stroke-width="1">
     <line x1="0" y1="0" x2="0" y2="400"/>
     <line x1="100" y1="0" x2="100" y2="400"/>
     <line x1="200" y1="0" x2="200" y2="400"/>
@@ -29,13 +29,22 @@
     <line x1="1400" y1="0" x2="1400" y2="400"/>
     <line x1="1500" y1="0" x2="1500" y2="400"/>
   </g>
-  <circle cx="1240" cy="150" r="185" fill="none" stroke="#4da6ff" stroke-opacity="0.14" stroke-width="2"/>
-  <circle cx="1240" cy="150" r="130" fill="none" stroke="#4da6ff" stroke-opacity="0.10" stroke-width="1.5"/>
-  <g transform="translate(1135, 92) scale(2.4)" fill="none" stroke="#4da6ff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.92">
-    <path d="M24 8 L24 14 M24 34 L24 40 M8 24 L14 24 M34 24 L40 24 M13 13 L17 17 M31 31 L35 35 M35 13 L31 17 M17 31 L13 35 M24 16 A8 8 0 1 0 24 32 A8 8 0 1 0 24 16"/>
+<g transform="translate(1120.00,108.00) scale(1.7500)" opacity="0.95">
+  <g fill="#00a4ef">
+    <path d="M6 16 L47 11 V47 H6 Z"/>
+    <path d="M53 10 L94 4 V47 H53 Z"/>
+    <path d="M6 53 H47 V89 L6 84 Z"/>
+    <path d="M53 53 H94 V96 L53 90 Z"/>
   </g>
-  <rect x="130" y="72" width="6" height="54" fill="#4da6ff" rx="3"/>
-  <text x="158" y="114" font-size="42" font-weight="bold" fill="#ffffff">CBS 服务栈损坏修复</text>
-  <text x="160" y="154" font-size="19" fill="#4da6ff" opacity="0.9">0x800700c1 · DISM 193 · WinSxS 替换</text>
-  <line x1="130" y1="200" x2="650" y2="200" stroke="#4da6ff" stroke-opacity="0.25" stroke-width="1.5"/>
+</g>
+<g transform="translate(1298.00,200.00) scale(1.0500)" opacity="0.8">
+  <g fill="#00a4ef" fill-rule="evenodd">
+    <path d="M44 4 h12 l3 12 9 4 10-7 9 9-7 10 4 9 12 3 v12 l-12 3-4 9 7 10-9 9-10-7-9 4-3 12 h-12 l-3-12-9-4-10 7-9-9 7-10-4-9-12-3 v-12 l12-3 4-9-7-10 9-9 10 7 9-4 z"/>
+    <path d="M50 33 A17 17 0 1 0 50 67 A17 17 0 1 0 50 33 Z"/>
+  </g>
+</g>
+  <rect x="130" y="116" width="6" height="58" fill="#00a4ef" rx="3"/>
+  <text x="158" y="160" font-size="44" font-weight="bold" fill="#ffffff">CBS 服务栈修复</text>
+  <text x="160" y="204" font-size="20" fill="#00a4ef" opacity="0.9">Windows Update 彻底失效</text>
+  <line x1="130" y1="252" x2="660" y2="252" stroke="#00a4ef" stroke-opacity="0.25" stroke-width="1.5"/>
 </svg>
