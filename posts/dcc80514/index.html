@@ -7,7 +7,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://blog.szjmhxd.online/posts/dcc80514/cover.svg">
 <meta property="article:published_time" content="2026-10-20T03:39:24.000Z">
-<meta property="article:modified_time" content="2026-10-23T01:58:47.674Z">
+<meta property="article:modified_time" content="2026-10-23T02:51:13.579Z">
 <meta property="article:author" content="十早九木">
 <meta property="article:tag" content="DSH Desktop">
 <meta property="article:tag" content="SMB">
@@ -23,7 +23,7 @@
   "url": "https://blog.szjmhxd.online/posts/dcc80514/",
   "image": "https://blog.szjmhxd.online/posts/dcc80514/cover.svg",
   "datePublished": "2026-10-20T03:39:24.000Z",
-  "dateModified": "2026-10-23T01:58:47.674Z",
+  "dateModified": "2026-10-23T02:51:13.579Z",
   "author": [
     {
       "@type": "Person",
@@ -207,7 +207,7 @@
   isToc: true,
   pageType: 'post'
 }</script><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="十早九木のBlog" type="application/atom+xml">
-</head><body><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-20T03:39:24.000Z" title="发表于 2026-10-20 11:39:24">2026-10-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-23T01:58:47.674Z" title="更新于 2026-10-23 09:58:47">2026-10-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7/DSH/">DSH</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><blockquote>
+</head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/blog-cover.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-20T03:39:24.000Z" title="发表于 2026-10-20 11:39:24">2026-10-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-23T02:51:13.579Z" title="更新于 2026-10-23 10:51:13">2026-10-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7/DSH/">DSH</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
 <p>适用场景：工程代码放在局域网另一台机器的共享盘上（如 <code>\\192.168.2.46\szjm-doc</code>，映射为 <code>P:</code>），<br>DSH Desktop 选工作区时弹「<strong>NTFS 不能安全用作 DSH Desktop 工作区</strong>」拒绝登记。<br>本文方法已在 Windows 11 + DSH Desktop 2.0.17 实测走通。</p>
 </blockquote>
 <hr>

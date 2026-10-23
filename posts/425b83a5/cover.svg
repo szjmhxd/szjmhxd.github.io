@@ -1,45 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500" font-family="Microsoft YaHei, PingFang SC, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="630" height="630" viewBox="0 0 630 630" font-family="Microsoft YaHei, PingFang SC, sans-serif">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#1a3028"/>
       <stop offset="100%" stop-color="#2a5245"/>
     </linearGradient>
-    <radialGradient id="glow" cx="78%" cy="30%" r="45%">
-      <stop offset="0%" stop-color="#5fd39c" stop-opacity="0.28"/>
+    <radialGradient id="glow" cx="68%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#5fd39c" stop-opacity="0.30"/>
       <stop offset="100%" stop-color="#5fd39c" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
-  <rect width="1200" height="500" fill="url(#bg)"/>
-  <rect width="1200" height="500" fill="url(#glow)"/>
+  <rect width="630" height="630" fill="url(#bg)"/>
+  <rect width="630" height="630" fill="url(#glow)"/>
 
-  <!-- 装饰网格 -->
-  <g stroke="#5fd39c" stroke-opacity="0.09" stroke-width="1">
-    <line x1="0" y1="0" x2="0" y2="500"/><line x1="100" y1="0" x2="100" y2="500"/><line x1="200" y1="0" x2="200" y2="500"/><line x1="300" y1="0" x2="300" y2="500"/><line x1="400" y1="0" x2="400" y2="500"/><line x1="500" y1="0" x2="500" y2="500"/><line x1="600" y1="0" x2="600" y2="500"/><line x1="700" y1="0" x2="700" y2="500"/><line x1="800" y1="0" x2="800" y2="500"/><line x1="900" y1="0" x2="900" y2="500"/><line x1="1000" y1="0" x2="1000" y2="500"/><line x1="1100" y1="0" x2="1100" y2="500"/>
-    <line x1="0" y1="0" x2="1200" y2="0"/><line x1="0" y1="100" x2="1200" y2="100"/><line x1="0" y1="200" x2="1200" y2="200"/><line x1="0" y1="300" x2="1200" y2="300"/><line x1="0" y1="400" x2="1200" y2="400"/>
+  <!-- 网格 -->
+  <g stroke="#5fd39c" stroke-opacity="0.08" stroke-width="1">
+    <line x1="0" y1="0" x2="0" y2="630"/><line x1="100" y1="0" x2="100" y2="630"/><line x1="200" y1="0" x2="200" y2="630"/><line x1="300" y1="0" x2="300" y2="630"/><line x1="400" y1="0" x2="400" y2="630"/><line x1="500" y1="0" x2="500" y2="630"/><line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="0" y1="0" x2="630" y2="0"/><line x1="0" y1="100" x2="630" y2="100"/><line x1="0" y1="200" x2="630" y2="200"/><line x1="0" y1="300" x2="630" y2="300"/><line x1="0" y1="400" x2="630" y2="400"/><line x1="0" y1="500" x2="630" y2="500"/><line x1="0" y1="600" x2="630" y2="600"/>
   </g>
 
-  <!-- 装饰圆环 -->
-  <circle cx="1000" cy="250" r="180" fill="none" stroke="#5fd39c" stroke-opacity="0.16" stroke-width="2"/>
-  <circle cx="1000" cy="250" r="130" fill="none" stroke="#5fd39c" stroke-opacity="0.1" stroke-width="1.5"/>
+  <!-- 装饰圆环（右上方，作背景） -->
+  <circle cx="500" cy="150" r="185" fill="none" stroke="#5fd39c" stroke-opacity="0.15" stroke-width="2"/>
+  <circle cx="500" cy="150" r="130" fill="none" stroke="#5fd39c" stroke-opacity="0.10" stroke-width="1.5"/>
 
-  <!-- 主图标 -->
-  <g transform="translate(880, 130) scale(3.1)" fill="none" stroke="#5fd39c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.92">
+  <!-- 图标：右上 -->
+  <g transform="translate(438, 88) scale(2.5)" fill="none" stroke="#5fd39c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.95">
     <path d="M16 20 L32 12 M16 28 L32 36 M12 24 A6 6 0 1 0 12 24.01 M36 12 A6 6 0 1 0 36 12.01 M36 36 A6 6 0 1 0 36 36.01"/>
   </g>
 
-  <!-- 文字区 -->
+  <!-- 文字：左侧居中，字号加大 -->
   <g>
-    <rect x="80" y="120" width="6" height="56" fill="#5fd39c" rx="3"/>
-    <text x="106" y="164" font-size="50" font-weight="bold" fill="#ffffff">Samba 共享</text>
-    <text x="108" y="212" font-size="23" fill="#5fd39c" opacity="0.88">Windows 身份语义的七个坑</text>
-
-    <g font-size="17" fill="#ffffff" opacity="0.55" font-family="Consolas, Monaco, monospace">
-      <text x="108" y="290">· smb.conf</text><text x="108" y="322">· net use</text><text x="108" y="354">· DRIVE_REMOTE</text>
-    </g>
+    <rect x="58" y="368" width="6" height="62" fill="#5fd39c" rx="3"/>
+    <text x="82" y="416" font-size="58" font-weight="bold" fill="#ffffff" letter-spacing="1">Samba</text>
+    <text x="84" y="468" font-size="34" fill="#5fd39c" opacity="0.92">共享踩坑</text>
   </g>
 
-  <!-- 底部标线 -->
-  <line x1="80" y1="430" x2="1120" y2="430" stroke="#5fd39c" stroke-opacity="0.22" stroke-width="1"/>
-  <text x="80" y="462" font-size="16" fill="#ffffff" opacity="0.4" font-family="Consolas, monospace">szjmhxd</text>
+  <!-- 底部装饰线 -->
+  <line x1="58" y1="520" x2="572" y2="520" stroke="#5fd39c" stroke-opacity="0.28" stroke-width="1.5"/>
 </svg>
