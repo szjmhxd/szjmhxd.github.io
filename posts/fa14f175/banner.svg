@@ -29,18 +29,18 @@
     <line x1="1400" y1="0" x2="1400" y2="400"/>
     <line x1="1500" y1="0" x2="1500" y2="400"/>
   </g>
-<g transform="translate(1110.00,100.00) scale(1.8500)" opacity="0.95">
+<g transform="translate(1110.00,100.00) scale(7.7083)" opacity="0.96">
   <g fill="#0078d4">
-    <path d="M10 12 H47 V47 H10 Z"/>
-    <path d="M53 12 H90 V47 H53 Z"/>
-    <path d="M10 53 H47 V88 H10 Z"/>
-    <path d="M53 53 H90 V88 H53 Z"/>
+    <path d="M2.5 4.5 L11 3.4 V11 H2.5 Z"/>
+    <path d="M12.4 3.2 L21.5 2 V11 H12.4 Z"/>
+    <path d="M2.5 12.2 H11 V19.8 L2.5 18.6 Z"/>
+    <path d="M12.4 12.2 H21.5 V21.3 L12.4 20.1 Z"/>
   </g>
 </g>
-<g transform="translate(1300.00,200.00) scale(1.0500)" opacity="0.92">
+<g transform="translate(1300.00,200.00) scale(4.3750)" opacity="0.94">
   <g fill="#0078d4">
-    <path d="M62 10 L90 38 L74 54 L46 26 Z"/>
-    <path d="M42 30 L70 58 L44 84 C34 92 20 92 12 84 C20 76 22 64 30 56 Z"/>
+    <path d="M15.5 2.5 L21.5 8.5 L17.5 12.5 L11.5 6.5 Z"/>
+    <path d="M10.2 7.8 L16.2 13.8 L10.5 20.2 C8.5 22.2 5 22.2 3.5 20.2 C5 18.5 5.5 15.8 7.2 14 Z"/>
   </g>
 </g>
   <rect x="130" y="116" width="6" height="58" fill="#0078d4" rx="3"/>
