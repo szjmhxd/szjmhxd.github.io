@@ -7,7 +7,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://blog.szjmhxd.online/posts/425b83a5/cover.svg">
 <meta property="article:published_time" content="2026-10-21T03:51:25.000Z">
-<meta property="article:modified_time" content="2026-10-23T02:51:13.572Z">
+<meta property="article:modified_time" content="2026-10-23T02:59:30.767Z">
 <meta property="article:author" content="十早九木">
 <meta property="article:tag" content="SMB">
 <meta property="article:tag" content="Samba">
@@ -22,7 +22,7 @@
   "url": "https://blog.szjmhxd.online/posts/425b83a5/",
   "image": "https://blog.szjmhxd.online/posts/425b83a5/cover.svg",
   "datePublished": "2026-10-21T03:51:25.000Z",
-  "dateModified": "2026-10-23T02:51:13.572Z",
+  "dateModified": "2026-10-23T02:59:30.767Z",
   "author": [
     {
       "@type": "Person",
@@ -206,7 +206,7 @@
   isToc: true,
   pageType: 'post'
 }</script><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="十早九木のBlog" type="application/atom+xml">
-</head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/blog-cover.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">Ubuntu 22.04 Samba 共享配置与踩坑实录</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Ubuntu 22.04 Samba 共享配置与踩坑实录</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-21T03:51:25.000Z" title="发表于 2026-10-21 11:51:25">2026-10-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-23T02:51:13.572Z" title="更新于 2026-10-23 10:51:13">2026-10-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/Samba/">Samba</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+</head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/posts/425b83a5/banner.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">Ubuntu 22.04 Samba 共享配置与踩坑实录</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Ubuntu 22.04 Samba 共享配置与踩坑实录</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-21T03:51:25.000Z" title="发表于 2026-10-21 11:51:25">2026-10-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-23T02:59:30.767Z" title="更新于 2026-10-23 10:59:30">2026-10-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/Samba/">Samba</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
 <p>场景：在 VMware 虚拟机 <code>szjm-ubu22</code>（Ubuntu 22.04，IP 192.168.2.46）上开启 SMB 共享，把 <code>~/Documents</code> 发布出去，Windows 端以映射盘方式访问。全程从”装个 samba”开始，一路踩了 dpkg 锁、Windows 来宾策略、1219 多重连接、匿名枚举、管理员会话盘符分裂等坑，本文按时间线记录问题、根因与解法。</p>
 </blockquote>
 <hr>

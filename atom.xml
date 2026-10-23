@@ -10,16 +10,16 @@
   <rights>All rights reserved 2026, 十早九木</rights>
   <subtitle>个人博客 · 技术笔记</subtitle>
   <title>十早九木のBlog</title>
-  <updated>2026-10-23T02:51:13.570Z</updated>
+  <updated>2026-10-23T02:59:30.765Z</updated>
   <entry>
     <author>
       <name>十早九木</name>
     </author>
     <category term="部署运维" scheme="https://blog.szjmhxd.online/categories/%E9%83%A8%E7%BD%B2%E8%BF%90%E7%BB%B4/"/>
     <category term="Laravel" scheme="https://blog.szjmhxd.online/categories/%E9%83%A8%E7%BD%B2%E8%BF%90%E7%BB%B4/Laravel/"/>
+    <category term="Docker" scheme="https://blog.szjmhxd.online/tags/Docker/"/>
     <category term="排错" scheme="https://blog.szjmhxd.online/tags/%E6%8E%92%E9%94%99/"/>
     <category term="Laravel" scheme="https://blog.szjmhxd.online/tags/Laravel/"/>
-    <category term="Docker" scheme="https://blog.szjmhxd.online/tags/Docker/"/>
     <category term="1Panel" scheme="https://blog.szjmhxd.online/tags/1Panel/"/>
     <category term="OpenResty" scheme="https://blog.szjmhxd.online/tags/OpenResty/"/>
     <category term="PHP" scheme="https://blog.szjmhxd.online/tags/PHP/"/>
@@ -34,7 +34,7 @@
 <p>环境：1Panel 面板 + Docker「php8335」（<code>1panel-php-fpm:8.3.35</code>）+ OpenResty（<code>1Panel-openresty-gw6h</code>）<br>站点目录（同一]]>
     </summary>
     <title>jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）</title>
-    <updated>2026-10-23T02:51:13.570Z</updated>
+    <updated>2026-10-23T02:59:30.765Z</updated>
   </entry>
   <entry>
     <author>
@@ -58,7 +58,7 @@
 <p>场景：在 VMware 虚拟机 <code>szjm-ubu22</code>（Ubuntu 22.04，IP 192.168.2.46）上开启 SMB 共享，把 <code>~/Documents</code> 发布出去，Windows 端以映射]]>
     </summary>
     <title>Ubuntu 22.04 Samba 共享配置与踩坑实录</title>
-    <updated>2026-10-23T02:51:13.572Z</updated>
+    <updated>2026-10-23T02:59:30.767Z</updated>
   </entry>
   <entry>
     <author>
@@ -83,7 +83,7 @@
 <p>适用场景：工程代码放在局域网另一台机器的共享盘上（如 <code>\\192.168.2.46\szjm-doc</code>，映射为 <code>P:</code>），<br>DSH Desktop 选工作区时弹「<strong>NTFS 不能安]]>
     </summary>
     <title>用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区</title>
-    <updated>2026-10-23T02:51:13.579Z</updated>
+    <updated>2026-10-23T02:59:30.770Z</updated>
   </entry>
   <entry>
     <author>
@@ -106,7 +106,7 @@
 <h2 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h2><p><strong>【效果 1】任务栏</st]]>
     </summary>
     <title>美化 Win11 任务栏：徽标靠左、图标居中、Win10 全屏磁贴</title>
-    <updated>2026-10-23T02:51:13.582Z</updated>
+    <updated>2026-10-23T02:59:30.772Z</updated>
   </entry>
   <entry>
     <author>
@@ -128,7 +128,7 @@
       <![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>之前可能用过某些工具关闭了系统更新，现在想恢复遇到了问题，错误码 <code>0x800700c1</code>。</p>]]>
     </summary>
     <title>Windows 更新无法使用：CBS 服务栈损坏修复记录</title>
-    <updated>2026-10-23T02:51:13.575Z</updated>
+    <updated>2026-10-23T02:59:30.768Z</updated>
   </entry>
   <entry>
     <author>
@@ -149,7 +149,7 @@
       <![CDATA[<h2 id="一、全局-DEFAULT-字段说明"><a href="#一、全局-DEFAULT-字段说明" class="headerlink" title="一、全局 DEFAULT 字段说明"></a>一、全局 DEFAULT 字段说明</h2><h3 id="1-封禁时]]>
     </summary>
     <title>Fail2Ban 规则字段详解</title>
-    <updated>2026-10-23T02:51:13.560Z</updated>
+    <updated>2026-10-23T02:59:30.756Z</updated>
   </entry>
   <entry>
     <author>
