@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500" font-family="Microsoft YaHei, PingFang SC, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a2437"/>
+      <stop offset="100%" stop-color="#2c3e5c"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="78%" cy="30%" r="45%">
+      <stop offset="0%" stop-color="#64d2ff" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#64d2ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="500" fill="url(#bg)"/>
+  <rect width="1200" height="500" fill="url(#glow)"/>
+
+  <!-- 装饰网格 -->
+  <g stroke="#64d2ff" stroke-opacity="0.09" stroke-width="1">
+    <line x1="0" y1="0" x2="0" y2="500"/><line x1="100" y1="0" x2="100" y2="500"/><line x1="200" y1="0" x2="200" y2="500"/><line x1="300" y1="0" x2="300" y2="500"/><line x1="400" y1="0" x2="400" y2="500"/><line x1="500" y1="0" x2="500" y2="500"/><line x1="600" y1="0" x2="600" y2="500"/><line x1="700" y1="0" x2="700" y2="500"/><line x1="800" y1="0" x2="800" y2="500"/><line x1="900" y1="0" x2="900" y2="500"/><line x1="1000" y1="0" x2="1000" y2="500"/><line x1="1100" y1="0" x2="1100" y2="500"/>
+    <line x1="0" y1="0" x2="1200" y2="0"/><line x1="0" y1="100" x2="1200" y2="100"/><line x1="0" y1="200" x2="1200" y2="200"/><line x1="0" y1="300" x2="1200" y2="300"/><line x1="0" y1="400" x2="1200" y2="400"/>
+  </g>
+
+  <!-- 装饰圆环 -->
+  <circle cx="1000" cy="250" r="180" fill="none" stroke="#64d2ff" stroke-opacity="0.16" stroke-width="2"/>
+  <circle cx="1000" cy="250" r="130" fill="none" stroke="#64d2ff" stroke-opacity="0.1" stroke-width="1.5"/>
+
+  <!-- 主图标 -->
+  <g transform="translate(880, 130) scale(3.1)" fill="none" stroke="#64d2ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.92">
+    <path d="M6 10 H42 V20 H6 Z M6 26 H18 V40 H6 Z M24 26 H42 V40 H24 Z"/>
+  </g>
+
+  <!-- 文字区 -->
+  <g>
+    <rect x="80" y="120" width="6" height="56" fill="#64d2ff" rx="3"/>
+    <text x="106" y="164" font-size="50" font-weight="bold" fill="#ffffff">Win11 任务栏美化</text>
+    <text x="108" y="212" font-size="23" fill="#64d2ff" opacity="0.88">StartAllBack + ExplorerPatcher</text>
+
+    <g font-size="17" fill="#ffffff" opacity="0.55" font-family="Consolas, Monaco, monospace">
+      <text x="108" y="290">· 图标居中</text><text x="108" y="322">· Win10 磁贴</text><text x="108" y="354">· 双软件分工</text>
+    </g>
+  </g>
+
+  <!-- 底部标线 -->
+  <line x1="80" y1="430" x2="1120" y2="430" stroke="#64d2ff" stroke-opacity="0.22" stroke-width="1"/>
+  <text x="80" y="462" font-size="16" fill="#ffffff" opacity="0.4" font-family="Consolas, monospace">szjmhxd</text>
+</svg>
