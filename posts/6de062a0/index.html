@@ -1,0 +1,768 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>KOOK「找不到语音频道」：同一个错误假设，我犯了三次 | 十早九木のBlog</title><meta name="author" content="十早九木"><meta name="copyright" content="十早九木"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="为了「试听时自动找到语音频道」这一件小事，我从 v0.5.6 修到 v0.5.9。三次根因其实是同一个——以为 KOOK 的接口会返回全量数据。这篇记录三个具体的坑、为什么「文字频道一直好使」把问题掩盖了，以及 43 项桩测试全过、真机全错的教训。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KOOK「找不到语音频道」：同一个错误假设，我犯了三次">
+<meta property="og:url" content="https://blog.szjmhxd.online/posts/6de062a0/">
+<meta property="og:site_name" content="十早九木のBlog">
+<meta property="og:description" content="为了「试听时自动找到语音频道」这一件小事，我从 v0.5.6 修到 v0.5.9。三次根因其实是同一个——以为 KOOK 的接口会返回全量数据。这篇记录三个具体的坑、为什么「文字频道一直好使」把问题掩盖了，以及 43 项桩测试全过、真机全错的教训。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.szjmhxd.online/posts/6de062a0/cover.svg">
+<meta property="article:published_time" content="2026-10-30T07:10:00.000Z">
+<meta property="article:modified_time" content="2026-10-30T07:10:00.000Z">
+<meta property="article:author" content="十早九木">
+<meta property="article:tag" content="API 排查">
+<meta property="article:tag" content="AstrBot">
+<meta property="article:tag" content="KOOK">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="插件开发">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.szjmhxd.online/posts/6de062a0/cover.svg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "KOOK「找不到语音频道」：同一个错误假设，我犯了三次",
+  "url": "https://blog.szjmhxd.online/posts/6de062a0/",
+  "image": "https://blog.szjmhxd.online/posts/6de062a0/cover.svg",
+  "datePublished": "2026-10-30T07:10:00.000Z",
+  "dateModified": "2026-10-30T07:10:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "十早九木",
+      "url": "https://blog.szjmhxd.online"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.szjmhxd.online/posts/6de062a0/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        const data = { value }
+
+        if (ttl != null) {
+          data.expiry = Date.now() + ttl * 86400000
+        }
+
+        localStorage.setItem(key, JSON.stringify(data))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'KOOK「找不到语音频道」：同一个错误假设，我犯了三次',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="十早九木のBlog" type="application/atom+xml">
+</head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/posts/6de062a0/banner.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">KOOK「找不到语音频道」：同一个错误假设，我犯了三次</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">KOOK「找不到语音频道」：同一个错误假设，我犯了三次</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-30T07:10:00.000Z" title="发表于 2026-10-30 15:10:00">2026-10-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-30T07:10:00.000Z" title="更新于 2026-10-30 15:10:00">2026-10-30</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/">折腾记录</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>我给 KOOK 写了一个语音欢迎插件：成员进语音频道，机器人自动加入，用 TTS 按昵称合成一句欢迎语，播完退出。</p>
+<p>功能本身早就跑通了。真正耗掉一天的是另一件看起来更小的事：<strong>在文字频道里发 <code>/语音欢迎试听</code>，让它自己找到语音频道</strong>。</p>
+<p>这一件事我改了四个版本，每次都觉得「这次肯定对了」。三次根因其实是同一个错误假设——<strong>以为 KOOK 的接口会返回我想要的那部分数据</strong>。</p>
+<span id="more"></span>
+
+<h2 id="0-三个坑，先给结果"><a href="#0-三个坑，先给结果" class="headerlink" title="0. 三个坑，先给结果"></a>0. 三个坑，先给结果</h2><p>如果你只想要结论，这张表就够了：</p>
+<table>
+<thead>
+<tr>
+<th>坑</th>
+<th>你看到的现象</th>
+<th>真实原因</th>
+<th>修于</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/guild/view</code> 的 <code>channels</code> 不含语音频道</td>
+<td>文字频道解析正常，语音频道「一个都没有」</td>
+<td>该字段只列文字频道，而代码只在它为空时才去查完整列表——它永远不空</td>
+<td>v0.5.7</td>
+</tr>
+<tr>
+<td><code>/channel/list</code> 的 <code>type</code> 默认是 1</td>
+<td>换用完整列表接口，结果还是「没有语音频道」</td>
+<td><code>type</code> 默认 1（文字），不传就只返回文字频道</td>
+<td>v0.5.8</td>
+</tr>
+<tr>
+<td><code>event.get_group_id()</code> 给的是频道 ID</td>
+<td>接口报 <code>code=40000: guild_id 不存在或者你没有权限操作</code></td>
+<td>KOOK 适配器把频道 ID 塞进了 <code>group_id</code>，服务器 ID 在里面根本不存在</td>
+<td>v0.5.9</td>
+</tr>
+</tbody></table>
+<p>三个坑的共同点：<strong>接口没有报错，它只是给了你一部分数据。</strong> 你在本地按「应该有」的假设做过滤，过滤完是空的，然后你以为服务器里没这个东西。</p>
+<hr>
+<h2 id="1-起因：先按官方文档做一次规范审查"><a href="#1-起因：先按官方文档做一次规范审查" class="headerlink" title="1. 起因：先按官方文档做一次规范审查"></a>1. 起因：先按官方文档做一次规范审查</h2><p>改这些之前，先做了一件更基础的事：把插件对着 AstrBot 官方插件开发文档逐项体检。</p>
+<p>结论不客气：15 项问题，其中 2 项是会出事的那种。</p>
+<p><strong>第一项：用了已废弃的 <code>@register</code> 装饰器。</strong> AstrBot 源码里 <code>register_star</code> 的 docstring 写着 <code>[DEPRECATED]</code>，明说将在未来版本移除。更要紧的是它现在<strong>完全不产生作用</strong>——插件加载顺序是先 import <code>main.py</code>（此时 <code>@register</code> 写一遍元数据），再用 <code>metadata.yaml</code> 逐字段覆盖，源码注释写的是「yaml 文件的元数据优先」。等于花一行代码做了一次无效写入，还给自己埋了个「哪天官方删了导出就 ImportError」的雷。</p>
+<p>删掉，改成纯 <code>metadata.yaml</code> 声明：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 之前</span></span><br><span class="line"><span class="keyword">from</span> astrbot.api.star <span class="keyword">import</span> Context, Star, register</span><br><span class="line"></span><br><span class="line"><span class="meta">@register(<span class="params">PLUGIN_NAME, <span class="string">&quot;szjm&quot;</span>, <span class="string">&quot;成员进入 KOOK 语音频道时…&quot;</span>, PLUGIN_VERSION</span>)</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">KookTtsWelcomePlugin</span>(...):</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line"><span class="comment"># 之后</span></span><br><span class="line"><span class="keyword">from</span> astrbot.api.star <span class="keyword">import</span> Context, Star</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">KookTtsWelcomePlugin</span>(...):</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二项：事件处理器必须写在 <code>main.py</code> 里。</strong> 这一条不是风格问题，是静默失效。AstrBot 的 <code>StarHandlerRegistry</code> 归集 handler 时用的是精确相等：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">handler.handler_module_path == module_name   <span class="comment"># 不是 startswith，是 ==</span></span><br></pre></td></tr></table></figure>
+
+<p><code>handler_module_path</code> 取的是函数所在模块。所以 handler 一旦写在 <code>tts.py</code> 里，模块路径变成 <code>xxx.tts</code>，<code>star_map</code> 里没有这个键，handler 会被<strong>静默过滤</strong>——指令不响应、不报错、日志里连痕迹都没有。</p>
+<p>我的插件是个 7 层 Mixin 的结构，十几个指令装饰器全在 <code>main.py</code> 里才侥幸正常。这种结构最危险的地方不是现在错，而是<strong>下一个来改代码的人自然会想把某个 handler 挪到对应的 Mixin 文件里</strong>，挪完就哑了，还查不出来。</p>
+<p>没有重构（把 Mixin 改成组合式服务类的收益远小于没有测试兜底时的风险），但在文件头写了死约束，README 也加了一节。其余的 P1&#x2F;P2 问题——私有导入、手搓 provider、直连 HTTP 发消息、<code>create_task</code> 不保存引用、配置越界静默夹逼——一起处理掉，出了 v0.5.4。</p>
+<hr>
+<h2 id="2-插曲：指令被拦了，但插件没坏"><a href="#2-插曲：指令被拦了，但插件没坏" class="headerlink" title="2. 插曲：指令被拦了，但插件没坏"></a>2. 插曲：指令被拦了，但插件没坏</h2><p>装上新版本，发第一条管理指令，收到一句：</p>
+<blockquote>
+<p>您(ID: 2431745721)的权限不足以使用此指令。通过 &#x2F;sid 获取 ID 并请管理员添加。</p>
+</blockquote>
+<p>看着像插件报错，其实指令在框架层就被拦了，插件根本没被调用。</p>
+<p>AstrBot 的判定链只有三段，我逐段查了源码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 事件初始化时的默认值</span></span><br><span class="line"><span class="variable language_">self</span>.role = <span class="string">&quot;member&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. is_admin() 的全部实现</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">is_admin</span>(<span class="params">self</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">self</span>.role == <span class="string">&quot;admin&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 唯一把 role 改成 admin 的地方：core/pipeline/waking_check/stage.py</span></span><br><span class="line"><span class="keyword">for</span> admin_id <span class="keyword">in</span> <span class="variable language_">self</span>.ctx.astrbot_config[<span class="string">&quot;admins_id&quot;</span>]:</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">str</span>(event.get_sender_id()) == admin_id:</span><br><span class="line">        event.role = <span class="string">&quot;admin&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>而 KOOK 适配器构造发送者时是这样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">abm.sender = MessageMember(</span><br><span class="line">    user_id=author_id,</span><br><span class="line">    nickname=data.extra.author.username <span class="keyword">if</span> data.extra.author <span class="keyword">else</span> <span class="string">&quot;unknown&quot;</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><strong>没有 <code>role</code> 参数。</strong> 它在 KOOK 服务器里是服主也好、管理员也好，框架眼里永远是 <code>member</code>。只有被登记进全局 <code>admins_id</code> 的用户才会被改判。</p>
+<p>所以解法是配置，不是代码：把自己的 KOOK UID 加进「访问控制 → 管理员 ID」，纯数字，别写成 <code>kook:2431745721</code>。</p>
+<p>这件事本身没什么技术含量，但它给了个有用的分界：<strong>报错信息来自哪一层，决定你要去查代码还是查配置。</strong> 为了下次一眼看清，我在 <code>/语音欢迎</code> 的状态输出里加了两行自检——「你的权限：管理员 ✓ &#x2F; 普通成员 ✗」和「你的用户 ID」，加管理员时直接照抄，不用再发一次 <code>/sid</code>。这就是 v0.5.5 的全部内容。</p>
+<hr>
+<h2 id="3-坑一：-guild-view-的-channels-里没有语音频道"><a href="#3-坑一：-guild-view-的-channels-里没有语音频道" class="headerlink" title="3. 坑一：/guild/view 的 channels 里没有语音频道"></a>3. 坑一：<code>/guild/view</code> 的 channels 里没有语音频道</h2><p>真正开始修 bug，是在试听这个功能上。</p>
+<p><code>/语音欢迎试听</code> 是从<strong>文字频道</strong>发出的指令，事件里没有语音频道上下文，所以它需要一个兜底：服务器里只有一个语音频道，就直接用它。</p>
+<p>第一版实现复用了查文字频道的那段逻辑：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">guild = <span class="keyword">await</span> <span class="variable language_">self</span>._api.get_guild(token, guild_id)</span><br><span class="line">channels = guild.get(<span class="string">&quot;channels&quot;</span>)</span><br><span class="line">...</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> info[<span class="string">&quot;channels&quot;</span>]:          <span class="comment"># 只有为空才去查完整列表</span></span><br><span class="line">    info[<span class="string">&quot;channels&quot;</span>] = <span class="keyword">await</span> <span class="variable language_">self</span>._api.get_channels(token, guild_id)</span><br></pre></td></tr></table></figure>
+
+<p>结果回复是「这个服务器里没有语音频道」。可服务器里明明有一个叫「语音频道」的。</p>
+<p>原因很干脆：<code>/guild/view</code> 返回的 <code>channels</code> <strong>只包含文字频道</strong>。它不为空（有「文字频道」），所以那句兜底永远不会执行，完整列表接口一次都没被调用过。</p>
+<p>更难看的在后面：这个结果被写进了缓存，TTL 3600 秒。<strong>同一个错误答案会在接下来一小时里忠实地重复给你。</strong></p>
+<p>改法是彻底不用它——语音频道一律走 <code>/channel/list</code>，独立缓存，<code>/语音欢迎重载</code> 时清空。</p>
+<p>这里有个值得记的线索：<strong>文字播报从头到尾都正常，因为它要的正好就是文字频道。</strong> 一段代码给 A 用是好使的，把同一段代码给 B 用就坏了——这种不对称本身就是最强的提示，说明问题在「这段代码假设了什么」，而不是「B 不存在」。</p>
+<hr>
+<h2 id="4-坑二：-channel-list-的-type-默认是-1"><a href="#4-坑二：-channel-list-的-type-默认是-1" class="headerlink" title="4. 坑二：/channel/list 的 type 默认是 1"></a>4. 坑二：<code>/channel/list</code> 的 <code>type</code> 默认是 1</h2><p>换成 <code>/channel/list</code> 之后，回复变成了「接口正常但没有语音频道」。</p>
+<p>于是我第一次去认真读 KOOK 的接口文档，参数表是这样的：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>guild_id</code></td>
+<td>是</td>
+<td>服务器 id</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>否</td>
+<td>频道类型，<code>1</code> 为文字，<code>2</code> 为语音，<strong>默认为 <code>1</code></strong></td>
+</tr>
+</tbody></table>
+<p>最后那个「默认为 1」就是答案。我这样调用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">await</span> <span class="variable language_">self</span>.request(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;/channel/list&quot;</span>, token,</span><br><span class="line">                   params=&#123;<span class="string">&quot;guild_id&quot;</span>: guild_id&#125;)   <span class="comment"># 没有 type</span></span><br></pre></td></tr></table></figure>
+
+<p>拿回来的只有文字频道。再按 <code>type == 2</code> 过滤，结果必然是空列表。接口没报错，它严格按默认值执行了。</p>
+<p>修法两句话：查语音频道<strong>显式传</strong> <code>type=2</code>；顺手把分页补上（返回里带 <code>meta.page_total</code>，默认每页 50 条，原来只取第一页，频道多了会静默截断）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">get_channels</span>(<span class="params">self, token, guild_id, channel_type=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params">                       page_size=<span class="number">50</span>, max_pages=<span class="number">5</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;⚠️ /channel/list 的 type 默认是 1（文字频道）。</span></span><br><span class="line"><span class="string">    不传 type 只会拿回文字频道，语音频道永远查不到。</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>顺手把这段坑写进了 docstring。注释不是写给现在的自己看的，是写给三个月后那个又一次想当然的人看的。</p>
+<hr>
+<h2 id="5-坑三：get-group-id-给的是频道-ID，不是服务器-ID"><a href="#5-坑三：get-group-id-给的是频道-ID，不是服务器-ID" class="headerlink" title="5. 坑三：get_group_id() 给的是频道 ID，不是服务器 ID"></a>5. 坑三：<code>get_group_id()</code> 给的是频道 ID，不是服务器 ID</h2><p>前两个坑修完，回复变成了：</p>
+<blockquote>
+<p>未指定（查询频道列表失败：KOOK 接口 &#x2F;channel&#x2F;list 调用失败（code&#x3D;40000）：guild_id 不存在或者你没有权限操作）</p>
+</blockquote>
+<p><code>40000</code> 是好东西——它说明这次不是默认值问题，是我传了一个<strong>根本不属于这个参数的 ID</strong>。</p>
+<p>去翻 AstrBot 的 KOOK 适配器，<code>convert_message</code> 里是这样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> KookChannelType.GROUP:</span><br><span class="line">    session_id = data.target_id <span class="keyword">or</span> <span class="string">&quot;unknown&quot;</span>      <span class="comment"># target_id = 频道 ID</span></span><br><span class="line">    abm.<span class="built_in">type</span> = MessageType.GROUP_MESSAGE</span><br><span class="line">    abm.group = Group(</span><br><span class="line">        group_id=session_id,                      <span class="comment"># ← 频道 ID 塞进了 group_id</span></span><br><span class="line">        group_name=data.extra.channel_name <span class="keyword">or</span> <span class="literal">None</span>,</span><br><span class="line">    )</span><br><span class="line">    abm.session_id = session_id</span><br></pre></td></tr></table></figure>
+
+<p>而我的代码写的是：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">guild_id = <span class="built_in">str</span>(<span class="built_in">getattr</span>(event, <span class="string">&quot;get_group_id&quot;</span>, <span class="keyword">lambda</span>: <span class="string">&quot;&quot;</span>)() <span class="keyword">or</span> <span class="string">&quot;&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>group_id</code> 里装的是 <code>5787454453386653</code>（频道），我把它当 <code>1005678330577681</code>（服务器）用。拿频道 ID 去查 <code>guild_id</code>，KOOK 只能回你「不存在或没权限」。</p>
+<p><strong>连带还有一个更隐蔽的 bug。</strong> <code>/语音欢迎目标频道</code> 绑定时走的是另一条路径（能从频道反推真实服务器 ID），存进去的是对的 ID；但试听时用 <code>_target_channel_for(频道ID)</code> 去查，永远查不到。也就是说<strong>手动绑定目标频道也一直是失效的</strong>，只是没人发现——因为自动识别刚好在前一个版本被修好了，把这个问题盖住了。</p>
+<p>修法：先 <code>/channel/view</code> 从当前文字频道反推 <code>guild_id</code>，再拿它去查列表。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">channel = <span class="keyword">await</span> <span class="variable language_">self</span>._api.get_channel(token, text_channel_id)</span><br><span class="line">resolved = to_text(channel.get(<span class="string">&quot;guild_id&quot;</span>))</span><br></pre></td></tr></table></figure>
+
+<p>顺带发现 <code>/channel/view</code> 的参数名也写错了：文档要求 <code>target_id</code>，我写的是 <code>channel_id</code>。改成 <code>target_id</code> 优先、失败退回旧写法。</p>
+<p>然后是兜底链，任一环成功就停：</p>
+<ol>
+<li><code>/channel/view(当前文字频道)</code> → 反推真实 <code>guild_id</code> → <code>/channel/list?type=2</code></li>
+<li>调用方传进来的 <code>guild_id</code>（万一它本来就是对的）</li>
+<li><code>/guild/list</code>——机器人已加入的服务器，只有一个就直接用</li>
+<li><code>/channel/list</code> 失败时退回 <code>/guild/view</code> 的 <code>channels</code> 过滤 <code>type == 2</code></li>
+<li>本次会话里<strong>最近一次真实事件</strong>用过的语音频道</li>
+</ol>
+<p>第 5 条听着像作弊，但它恰恰最可靠：真实进房事件的语音频道 ID 来自网关事件本身，不查任何接口。只要之前有人进过语音频道，这条一定命中。</p>
+<p>另外把「异常吞掉返回空列表」这个写法也删了。原来的 <code>_list_voice_channels</code> 出错就 <code>return []</code>，于是「Token 失效」「网络异常」「权限不足」「服务器真的没有语音频道」在回复里长得一模一样——<strong>这正是我被误导两次的直接原因</strong>。现在异常向上抛，回复里带原始错误码。</p>
+<p>这一版是 v0.5.9。装上去，试听出声了。</p>
+<hr>
+<h2 id="6-43-项桩测试全过，真机全错"><a href="#6-43-项桩测试全过，真机全错" class="headerlink" title="6. 43 项桩测试全过，真机全错"></a>6. 43 项桩测试全过，真机全错</h2><p>这条最值得写，因为它是这次唯一让我改变工作方式的教训。</p>
+<p>AstrBot 没装在这台机器上，所以我用桩（stub）模块顶替 <code>astrbot.*</code>，写了个冒烟测试，覆盖指令参数剥离、配置夹逼告警、后台任务登记与回收、TTS Provider 取值、框架发送的三条路径（成功 &#x2F; 返回 False &#x2F; 抛异常）、HTTP 回退、事件解析、<code>initialize</code> → <code>terminate</code> 往返。</p>
+<p>随着每个 bug 出现，我加一条回归用例。数量是这么长的：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>用例数</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>v0.5.4 规范整改后</td>
+<td>25</td>
+<td>全过</td>
+</tr>
+<tr>
+<td>v0.5.6 自动选频道</td>
+<td>30</td>
+<td>全过</td>
+</tr>
+<tr>
+<td>v0.5.7 改走 <code>/channel/list</code></td>
+<td>32</td>
+<td>全过</td>
+</tr>
+<tr>
+<td>v0.5.8 补 <code>type=2</code> 与分页</td>
+<td>36</td>
+<td>全过</td>
+</tr>
+<tr>
+<td>v0.5.9 反推 guild_id</td>
+<td>43</td>
+<td>全过</td>
+</tr>
+</tbody></table>
+<p><strong>每一次都是全过，每一次真机都是错的。</strong></p>
+<p>原因不难想，但当时确实没意识到：桩模块把我的假设一起 stub 掉了。我假设 <code>/channel/list</code> 返回全部频道，我的假接口就返回全部频道；我假设 <code>get_group_id()</code> 是服务器 ID，我的假事件就给它一个服务器 ID。测试验证的是「我的逻辑在我的世界观里自洽」——而 bug 全部长在「我的世界观」本身。</p>
+<p>所以桩测试的边界要说清楚：</p>
+<ul>
+<li>它能验证：分支覆盖、时序、异常路径、状态机、卸载是否干净。这些确实抓到了 <code>create_task</code> 不保存引用、<code>terminate</code> 漏取消之类的问题。</li>
+<li>它不能验证：<strong>你对外部世界的契约理解对不对</strong>。接口的默认值、字段的真实含义、ID 到底是哪个 ID —— 这些只能来自文档和真机。</li>
+</ul>
+<p>反过来，如果这个插件有真机集成测试（起一个 KOOK 沙箱服务器，发真请求），三个坑会在半小时内暴露。成本高，但对着「摸黑连修四版」的代价，未必不划算。</p>
+<hr>
+<h2 id="7-收尾：tag、Release，和一次小的自我校验"><a href="#7-收尾：tag、Release，和一次小的自我校验" class="headerlink" title="7. 收尾：tag、Release，和一次小的自我校验"></a>7. 收尾：tag、Release，和一次小的自我校验</h2><p>功能通了的当天就打标签发版。</p>
+<p>这个仓库此前<strong>一个 tag 都没有</strong>，所以 v0.5.9 是第一个：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git tag -a v0.5.9 -m <span class="string">&quot;规范整改 + KOOK 语音频道解析修复&quot;</span></span><br><span class="line">git push origin v0.5.9</span><br><span class="line"></span><br><span class="line">gh release create v0.5.9 ../astrbot_plugin_kook_tts_welcome_v0.5.9.zip \</span><br><span class="line">  --title <span class="string">&quot;v0.5.9 — 规范整改 + KOOK 语音频道解析修复&quot;</span> \</span><br><span class="line">  --notes-file ../_release_notes_v0.5.9.md \</span><br><span class="line">  --latest</span><br></pre></td></tr></table></figure>
+
+<p>上传资产前做了一件事：<strong>把 zip 里每个文件和当前工作树逐文件比对 sha256</strong>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> name <span class="keyword">in</span> zipfile.ZipFile(zip_path).namelist():</span><br><span class="line">    <span class="keyword">assert</span> sha256(zf.read(name)) == sha256(Path(name).read_bytes())</span><br></pre></td></tr></table></figure>
+
+<p>理由很简单：在这之前我已经连续打过好几个 zip，很容易把 v0.5.8 的包挂到 v0.5.9 的 Release 上——版本号在文件名里，内容在包里，两者不一致的时候没有任何东西会报警，除了你自己比一遍。</p>
+<p>现在插件在 v1.0.0（只是加了 logo、升了版本号，功能冻结，从 v0.5.9 升级不用改任何配置），两个 Release 都在：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/szjmhxd/astrbot_plugin_kook_tts_welcome">https://github.com/szjmhxd/astrbot_plugin_kook_tts_welcome</a></li>
+</ul>
+<hr>
+<h2 id="8-四条能直接拿去用的"><a href="#8-四条能直接拿去用的" class="headerlink" title="8. 四条能直接拿去用的"></a>8. 四条能直接拿去用的</h2><p><strong>一、接口文档里最贵的字是「默认值」。</strong> 参数表里那个「默认为 1」我读过两遍都没看见，因为我在找「支持什么」，没在找「不给会怎样」。凡是带 <code>type</code>、<code>page</code>、<code>state</code> 这类枚举或分页参数的接口，都要主动问一句：不传的时候它给我什么？</p>
+<p><strong>二、一个能力好用一个不好用，先比代码差异。</strong> 文字频道一直正常、语音频道一直为空，这两个功能在同一段代码里——不对称不是巧合，它就是线索。它精确地指出了「这段代码假设了什么」。</p>
+<p><strong>三、错误信息必须能区分「没有数据」和「查不到数据」。</strong> 我把异常吞成 <code>[]</code>，让四种完全不同的故障显示成同一句话，代价是自己被误导两个版本。宁可让用户看到 <code>code=40000</code>，也不要给他一句体面但没用的「没有语音频道」。</p>
+<p><strong>四、ID 的语义要写进代码注释，不能只活在你脑子里。</strong> <code>group_id</code> 在 KOOK 下就是频道 ID，<code>session_id</code> 也是频道 ID，服务器 ID 只能从 <code>/channel/view.guild_id</code>、网关事件的 <code>extra.guild_id</code> 或 <code>/guild/list</code> 拿。这件事我在 v0.5.1 已经因为「把频道 ID 填进目标服务器」踩过一次，然后在 v0.5.9 用另一种形式又踩了一次——同一个概念错误，两次都是因为没把它写进代码里。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.szjmhxd.online">十早九木</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.szjmhxd.online/posts/6de062a0/">https://blog.szjmhxd.online/posts/6de062a0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.szjmhxd.online" target="_blank">十早九木のBlog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/KOOK/">KOOK</a><a class="post-meta__tags" href="/tags/AstrBot/">AstrBot</a><a class="post-meta__tags" href="/tags/%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/">插件开发</a><a class="post-meta__tags" href="/tags/API-%E6%8E%92%E6%9F%A5/">API 排查</a><a class="post-meta__tags" href="/tags/Python/">Python</a></div><div class="post-share"><div class="social-share" data-image="/posts/6de062a0/cover.svg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/14f6182/" title="KOOK 机器人为什么看不到群友在玩什么"><img class="cover" src="/posts/14f6182/cover.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">KOOK 机器人为什么看不到群友在玩什么</div></div><div class="info-2"><div class="info-item-1">写 KOOK 语音欢迎插件的时候冒出一个想法：成员进语音频道，机器人合成欢迎语，如果能顺口带一句「他正在玩《英雄联盟》」，这个体验会比干巴巴的「欢迎 xxx」有意思得多。 于是我花了点时间确认这件事到底能不能做。结论是不能——但不是查一眼文档就下的判断。这篇记录完整的过程：文档怎么排除、客户端的「在玩」状态从哪来、以及最后怎么用实测把「读不到」这件事钉死。 如果你只是想拿结论：KOOK 开放平台不向机器人下发任何用户的「正在玩 &#x2F; 正在听」状态，也没有任何查询他人活动的接口。 客户端能看到，是因为客户端用的是用户身份加本地进程 hook，与 API 无关。   0. 先看清「能看见」是谁在报刚开始想这件事的时候，我先去看了 KOOK 客户端的实际表现：某个用户的个人资料卡上确实写着「正在玩 Warframe」。 但这句话不是服务器算出来的，是那台 PC 上的 KOOK 客户端报上去的。整条链路是： 123456789游戏进程启动   ↓KOOK 客户端（kmhook）扫描本机进程   ↓与官方游戏库比对（按 process_name 匹配）   ↓命中 → 用「当前登录...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/14f6182/" title="KOOK 机器人为什么看不到群友在玩什么"><img class="cover" src="/posts/14f6182/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-30</div><div class="info-item-2">KOOK 机器人为什么看不到群友在玩什么</div></div><div class="info-2"><div class="info-item-1">写 KOOK 语音欢迎插件的时候冒出一个想法：成员进语音频道，机器人合成欢迎语，如果能顺口带一句「他正在玩《英雄联盟》」，这个体验会比干巴巴的「欢迎 xxx」有意思得多。 于是我花了点时间确认这件事到底能不能做。结论是不能——但不是查一眼文档就下的判断。这篇记录完整的过程：文档怎么排除、客户端的「在玩」状态从哪来、以及最后怎么用实测把「读不到」这件事钉死。 如果你只是想拿结论：KOOK 开放平台不向机器人下发任何用户的「正在玩 &#x2F; 正在听」状态，也没有任何查询他人活动的接口。 客户端能看到，是因为客户端用的是用户身份加本地进程 hook，与 API 无关。   0. 先看清「能看见」是谁在报刚开始想这件事的时候，我先去看了 KOOK 客户端的实际表现：某个用户的个人资料卡上确实写着「正在玩 Warframe」。 但这句话不是服务器算出来的，是那台 PC 上的 KOOK 客户端报上去的。整条链路是： 123456789游戏进程启动   ↓KOOK 客户端（kmhook）扫描本机进程   ↓与官方游戏库比对（按 process_name 匹配）   ↓命中 → 用「当前登录...</div></div></div></a><a class="pagination-related" href="/posts/b28f908e/" title="给 AstrBot 写一个天气推送插件：12 次提交、6 个坑"><img class="cover" src="/posts/b28f908e/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-30</div><div class="info-item-2">给 AstrBot 写一个天气推送插件：12 次提交、6 个坑</div></div><div class="info-2"><div class="info-item-1">起因每天早上出门前都要查一次天气：今天会不会下雨、要不要带伞、外面几度。手机上点开 App——开屏广告、定位授权、切城市，一套流程走下来十几秒，天天重复。 干脆让机器人自己推。目标很简单：工作日早上推一份当日天气，晚上推一份明天和后天，下雨下雪之前提前叫我一声，有气象预警也告诉我。 AstrBot 是个能接 QQ &#x2F; 微信 &#x2F; 飞书等平台的聊天机器人框架，写插件就是写个 Python 类。本来以为两三天能搞定，结果从 v1.0.0 磨到 v1.5.4，12 次提交。这篇把过程里值得记的东西写下来。   先看成品的输出： 12345678【天气｜公司｜示例市·示例区｜10-30 08:00】实况：晴 21.8°C　体感 16.8°C西 4 级　湿度 15%　气压 1015hPa　能见度 22.1km今天：7°~21°　晴明天：6°~15°　晴间多云转多云后天：8°~16°　少云转晴日出 06:36　日落 17:13空气：AQI 102 轻度污染（首要 PM10）  1234⚠️ 【公司·示例区】橙色大雾预警（↑ 黄色→橙色）发布时间：10-30 07:40内容：...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">十早九木</div><div class="author-info-description">个人博客 · 技术笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">36</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-%E4%B8%89%E4%B8%AA%E5%9D%91%EF%BC%8C%E5%85%88%E7%BB%99%E7%BB%93%E6%9E%9C"><span class="toc-number">1.</span> <span class="toc-text">0. 三个坑，先给结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%B5%B7%E5%9B%A0%EF%BC%9A%E5%85%88%E6%8C%89%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%E5%81%9A%E4%B8%80%E6%AC%A1%E8%A7%84%E8%8C%83%E5%AE%A1%E6%9F%A5"><span class="toc-number">2.</span> <span class="toc-text">1. 起因：先按官方文档做一次规范审查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%8F%92%E6%9B%B2%EF%BC%9A%E6%8C%87%E4%BB%A4%E8%A2%AB%E6%8B%A6%E4%BA%86%EF%BC%8C%E4%BD%86%E6%8F%92%E4%BB%B6%E6%B2%A1%E5%9D%8F"><span class="toc-number">3.</span> <span class="toc-text">2. 插曲：指令被拦了，但插件没坏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%9D%91%E4%B8%80%EF%BC%9A-guild-view-%E7%9A%84-channels-%E9%87%8C%E6%B2%A1%E6%9C%89%E8%AF%AD%E9%9F%B3%E9%A2%91%E9%81%93"><span class="toc-number">4.</span> <span class="toc-text">3. 坑一：&#x2F;guild&#x2F;view 的 channels 里没有语音频道</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%9D%91%E4%BA%8C%EF%BC%9A-channel-list-%E7%9A%84-type-%E9%BB%98%E8%AE%A4%E6%98%AF-1"><span class="toc-number">5.</span> <span class="toc-text">4. 坑二：&#x2F;channel&#x2F;list 的 type 默认是 1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%9D%91%E4%B8%89%EF%BC%9Aget-group-id-%E7%BB%99%E7%9A%84%E6%98%AF%E9%A2%91%E9%81%93-ID%EF%BC%8C%E4%B8%8D%E6%98%AF%E6%9C%8D%E5%8A%A1%E5%99%A8-ID"><span class="toc-number">6.</span> <span class="toc-text">5. 坑三：get_group_id() 给的是频道 ID，不是服务器 ID</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-43-%E9%A1%B9%E6%A1%A9%E6%B5%8B%E8%AF%95%E5%85%A8%E8%BF%87%EF%BC%8C%E7%9C%9F%E6%9C%BA%E5%85%A8%E9%94%99"><span class="toc-number">7.</span> <span class="toc-text">6. 43 项桩测试全过，真机全错</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%94%B6%E5%B0%BE%EF%BC%9Atag%E3%80%81Release%EF%BC%8C%E5%92%8C%E4%B8%80%E6%AC%A1%E5%B0%8F%E7%9A%84%E8%87%AA%E6%88%91%E6%A0%A1%E9%AA%8C"><span class="toc-number">8.</span> <span class="toc-text">7. 收尾：tag、Release，和一次小的自我校验</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%9B%9B%E6%9D%A1%E8%83%BD%E7%9B%B4%E6%8E%A5%E6%8B%BF%E5%8E%BB%E7%94%A8%E7%9A%84"><span class="toc-number">9.</span> <span class="toc-text">8. 四条能直接拿去用的</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/6de062a0/" title="KOOK「找不到语音频道」：同一个错误假设，我犯了三次"><img src="/posts/6de062a0/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="KOOK「找不到语音频道」：同一个错误假设，我犯了三次"/></a><div class="content"><a class="title" href="/posts/6de062a0/" title="KOOK「找不到语音频道」：同一个错误假设，我犯了三次">KOOK「找不到语音频道」：同一个错误假设，我犯了三次</a><time datetime="2026-10-30T07:10:00.000Z" title="发表于 2026-10-30 15:10:00">2026-10-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/14f6182/" title="KOOK 机器人为什么看不到群友在玩什么"><img src="/posts/14f6182/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="KOOK 机器人为什么看不到群友在玩什么"/></a><div class="content"><a class="title" href="/posts/14f6182/" title="KOOK 机器人为什么看不到群友在玩什么">KOOK 机器人为什么看不到群友在玩什么</a><time datetime="2026-10-30T06:46:07.000Z" title="发表于 2026-10-30 14:46:07">2026-10-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/b28f908e/" title="给 AstrBot 写一个天气推送插件：12 次提交、6 个坑"><img src="/posts/b28f908e/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="给 AstrBot 写一个天气推送插件：12 次提交、6 个坑"/></a><div class="content"><a class="title" href="/posts/b28f908e/" title="给 AstrBot 写一个天气推送插件：12 次提交、6 个坑">给 AstrBot 写一个天气推送插件：12 次提交、6 个坑</a><time datetime="2026-10-30T05:40:00.000Z" title="发表于 2026-10-30 13:40:00">2026-10-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3658fd19/" title="博客重建全程复盘：从 61 篇旧站到个人技术博客"><img src="/posts/3658fd19/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="博客重建全程复盘：从 61 篇旧站到个人技术博客"/></a><div class="content"><a class="title" href="/posts/3658fd19/" title="博客重建全程复盘：从 61 篇旧站到个人技术博客">博客重建全程复盘：从 61 篇旧站到个人技术博客</a><time datetime="2026-10-23T10:30:00.000Z" title="发表于 2026-10-23 18:30:00">2026-10-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/5cd620c1/" title="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）"><img src="/posts/5cd620c1/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）"/></a><div class="content"><a class="title" href="/posts/5cd620c1/" title="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）">jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）</a><time datetime="2026-10-21T08:00:37.000Z" title="发表于 2026-10-21 16:00:37">2026-10-21</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 十早九木</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.0</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.0"></script><script src="/js/main.js?v=5.7.0"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.innerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+
+    setTimeout(() => URL.revokeObjectURL(url), 5000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    // Clean up previous event listeners and pending frames
+    if (wrap.__mermaidAbortController) {
+      wrap.__mermaidAbortController.abort()
+      if (wrap.__mermaidRafId) cancelAnimationFrame(wrap.__mermaidRafId)
+    }
+    const ac = new AbortController()
+    wrap.__mermaidAbortController = ac
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+    // Disable default gestures to prevent scroll chaining and pinch-zoom penetration in Chrome
+    svg.style.touchAction = 'none'
+
+    // Cache BoundingClientRect, throttled on scroll to reduce reflow
+    let cachedRect = svg.getBoundingClientRect()
+    let rectDirty = false
+    const markRectDirty = () => { rectDirty = true }
+    window.addEventListener('resize', markRectDirty, { signal: ac.signal })
+    window.addEventListener('scroll', markRectDirty, { signal: ac.signal, capture: true })
+    const getRect = () => {
+      if (rectDirty) {
+        cachedRect = svg.getBoundingClientRect()
+        rectDirty = false
+      }
+      return cachedRect
+    }
+
+    // Precompute clamp bounds from initial viewBox
+    const minW = initVb[2] * 0.1
+    const maxW = initVb[2] * 10
+    const minH = initVb[3] * 0.1
+    const maxH = initVb[3] * 10
+    const clampVb = vb => {
+      const out = vb.slice()
+      out[2] = clamp(out[2], minW, maxW)
+      out[3] = clamp(out[3], minH, maxH)
+      return out
+    }
+
+    // Throttle DOM updates using requestAnimationFrame
+    let pendingVb = null
+    let rafId = null
+    const applyVb = () => {
+      if (pendingVb) {
+        wrap.__mermaidCurViewBox = pendingVb
+        setSvgViewBox(svg, pendingVb)
+        pendingVb = null
+      }
+      rafId = null
+      wrap.__mermaidRafId = null
+    }
+    const setCurVb = vb => {
+      pendingVb = clampVb(vb)
+      if (!rafId) {
+        rafId = requestAnimationFrame(applyVb)
+        wrap.__mermaidRafId = rafId
+      }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      lastPointerX: 0,
+      lastPointerY: 0
+    }
+
+    const onPointerDown = e => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      const curVb = wrap.__mermaidCurViewBox
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      if (state.pointers.size === 1) {
+        state.startVb = curVb.slice()
+        state.lastPointerX = e.clientX
+        state.lastPointerY = e.clientY
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = curVb.slice()
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      const curVb = wrap.__mermaidCurViewBox
+      const rect = getRect()
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = state.pointers.values().next().value
+        const dxClient = p.x - state.lastPointerX
+        const dyClient = p.y - state.lastPointerY
+        state.lastPointerX = p.x
+        state.lastPointerY = p.y
+        const dx = dxClient * (curVb[2] / rect.width)
+        const dy = dyClient * (curVb[3] / rect.height)
+        setCurVb([curVb[0] - dx, curVb[1] - dy, curVb[2], curVb[3]])
+        return
+      }
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const px = curVb[0] + (cx - rect.left) * (curVb[2] / rect.width)
+        const py = curVb[1] + (cy - rect.top) * (curVb[3] / rect.height)
+        setCurVb(zoomAtPoint(state.startVb, factor, px, py))
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      // Release PointerCapture to avoid event capture anomalies
+      if (svg.hasPointerCapture && svg.hasPointerCapture(e.pointerId)) {
+        svg.releasePointerCapture(e.pointerId)
+      }
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+      } else if (state.pointers.size === 1) {
+        const p = state.pointers.values().next().value
+        state.lastPointerX = p.x
+        state.lastPointerY = p.y
+      }
+    }
+
+    const onWheel = e => {
+      // Prevent event bubbling from triggering external scroll
+      e.preventDefault()
+      e.stopPropagation()
+      // Normalize deltaY across deltaMode (Chrome uses pixels, Safari uses lines)
+      let delta = e.deltaY
+      if (e.deltaMode === 1) delta *= 16
+      else if (e.deltaMode === 2) delta *= 400
+
+      // Continuous zoom factor: smoother than fixed 1.1/0.9 steps
+      const zoomFactor = Math.pow(1.001, delta)
+
+      const curVb = wrap.__mermaidCurViewBox
+      const rect = getRect()
+      const px = curVb[0] + (e.clientX - rect.left) * (curVb[2] / rect.width)
+      const py = curVb[1] + (e.clientY - rect.top) * (curVb[3] / rect.height)
+      setCurVb(zoomAtPoint(curVb, zoomFactor, px, py))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (init) setCurVb(init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown, { signal: ac.signal })
+    svg.addEventListener('pointermove', onPointerMove, { signal: ac.signal })
+    svg.addEventListener('pointerup', onPointerUpOrCancel, { signal: ac.signal })
+    svg.addEventListener('pointercancel', onPointerUpOrCancel, { signal: ac.signal })
+    svg.addEventListener('wheel', onWheel, { passive: false, signal: ac.signal })
+    svg.addEventListener('dblclick', onDblClick, { signal: ac.signal })
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      // Clean up event listeners before removing old SVG
+      if (item.__mermaidAbortController) {
+        item.__mermaidAbortController.abort()
+      }
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      let config = {}
+      try {
+        config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      } catch (e) {
+        console.warn('[mermaid] failed to parse dataset.config:', e)
+      }
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+      const handleError = err => {
+        console.error(`[mermaid] render failed for block #${index}:`, err)
+        const errorEl = document.createElement('div')
+        errorEl.className = 'mermaid-error'
+        errorEl.textContent = `Mermaid render error: ${err.message || err}`
+        mermaidSrc.insertAdjacentElement('afterend', errorEl)
+      }
+
+      try {
+        const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+        // mermaid v9 and v10 compatibility
+        if (typeof renderFn === 'string') {
+          renderMermaid(renderFn)
+        } else {
+          renderFn.then(({ svg }) => renderMermaid(svg)).catch(handleError)
+        }
+      } catch (err) {
+        handleError(err)
+      }
+    })
+  }
+
+  const codeToMermaid = $article => {
+    const codeMermaidEle = $article.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    const $article = document.getElementById('article-container')
+    if (!$article) return
+
+    if (true) codeToMermaid($article)
+    const $mermaid = $article.querySelectorAll('.mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.16.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="/js/dynamic-post-link.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

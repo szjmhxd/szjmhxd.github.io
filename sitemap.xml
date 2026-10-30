@@ -2,6 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.szjmhxd.online/posts/b28f908e/</loc>
+    
+    <lastmod>2026-10-30</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/posts/6de062a0/</loc>
+    
+    <lastmod>2026-10-30</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/posts/14f6182/</loc>
+    
+    <lastmod>2026-10-30</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/posts/3658fd19/</loc>
+    
+    <lastmod>2026-10-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://blog.szjmhxd.online/posts/fa14f175/</loc>
     
     <lastmod>2026-10-23</lastmod>
@@ -76,190 +112,260 @@
 
   <url>
     <loc>https://blog.szjmhxd.online/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   
   <url>
-    <loc>https://blog.szjmhxd.online/tags/Windows%E6%9B%B4%E6%96%B0/</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.szjmhxd.online/tags/CBS/</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.szjmhxd.online/tags/DISM/</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.szjmhxd.online/tags/WinSxS/</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.szjmhxd.online/tags/%E7%B3%BB%E7%BB%9F%E4%BF%AE%E5%A4%8D/</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.szjmhxd.online/tags/Laravel/</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.szjmhxd.online/tags/Docker/</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.szjmhxd.online/tags/1Panel/</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.szjmhxd.online/tags/OpenResty/</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.szjmhxd.online/tags/PHP/</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.szjmhxd.online/tags/%E6%8E%92%E9%94%99/</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://blog.szjmhxd.online/tags/Samba/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.szjmhxd.online/tags/SMB/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.szjmhxd.online/tags/Windows/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.szjmhxd.online/tags/%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://blog.szjmhxd.online/tags/Windows11/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <loc>https://blog.szjmhxd.online/tags/%E6%8E%92%E9%94%99/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://blog.szjmhxd.online/tags/StartAllBack/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <loc>https://blog.szjmhxd.online/tags/Windows%E6%9B%B4%E6%96%B0/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://blog.szjmhxd.online/tags/ExplorerPatcher/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <loc>https://blog.szjmhxd.online/tags/CBS/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://blog.szjmhxd.online/tags/%E4%BB%BB%E5%8A%A1%E6%A0%8F%E7%BE%8E%E5%8C%96/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <loc>https://blog.szjmhxd.online/tags/DISM/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://blog.szjmhxd.online/tags/%E7%A3%81%E8%B4%B4/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <loc>https://blog.szjmhxd.online/tags/WinSxS/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://blog.szjmhxd.online/tags/DSH-Desktop/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <loc>https://blog.szjmhxd.online/tags/%E7%B3%BB%E7%BB%9F%E4%BF%AE%E5%A4%8D/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://blog.szjmhxd.online/tags/%E7%AC%A6%E5%8F%B7%E9%93%BE%E6%8E%A5/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <loc>https://blog.szjmhxd.online/tags/KOOK/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://blog.szjmhxd.online/tags/%E6%B2%99%E7%AE%B1/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <loc>https://blog.szjmhxd.online/tags/AstrBot/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://blog.szjmhxd.online/tags/mklink/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <loc>https://blog.szjmhxd.online/tags/%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/API-%E6%8E%92%E6%9F%A5/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/Python/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/%E5%92%8C%E9%A3%8E%E5%A4%A9%E6%B0%94/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/Laravel/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/Docker/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/1Panel/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/OpenResty/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/PHP/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.szjmhxd.online/tags/RustDesk/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.szjmhxd.online/tags/%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/Hexo/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/Butterfly/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/GitHub-Pages/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/%E5%A4%8D%E7%9B%98/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/Windows11/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/StartAllBack/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/ExplorerPatcher/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/%E4%BB%BB%E5%8A%A1%E6%A0%8F%E7%BE%8E%E5%8C%96/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/%E7%A3%81%E8%B4%B4/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/DSH-Desktop/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/%E7%AC%A6%E5%8F%B7%E9%93%BE%E6%8E%A5/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/%E6%B2%99%E7%AE%B1/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/mklink/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -267,57 +373,78 @@
 
   
   <url>
-    <loc>https://blog.szjmhxd.online/categories/Windows/</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.szjmhxd.online/categories/%E9%83%A8%E7%BD%B2%E8%BF%90%E7%BB%B4/</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://blog.szjmhxd.online/categories/Linux/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://blog.szjmhxd.online/categories/%E5%B7%A5%E5%85%B7/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <loc>https://blog.szjmhxd.online/categories/Windows/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://blog.szjmhxd.online/categories/%E9%83%A8%E7%BD%B2%E8%BF%90%E7%BB%B4/Laravel/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <loc>https://blog.szjmhxd.online/categories/%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://blog.szjmhxd.online/categories/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <loc>https://blog.szjmhxd.online/categories/%E6%8A%98%E8%85%BE/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.szjmhxd.online/categories/Linux/Samba/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/categories/%E9%83%A8%E7%BD%B2%E8%BF%90%E7%BB%B4/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/categories/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/categories/%E5%8D%9A%E5%AE%A2/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/categories/%E5%B7%A5%E5%85%B7/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/categories/%E9%83%A8%E7%BD%B2%E8%BF%90%E7%BB%B4/Laravel/</loc>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.szjmhxd.online/categories/%E5%B7%A5%E5%85%B7/DSH/</loc>
-    <lastmod>2026-10-23</lastmod>
+    <lastmod>2026-10-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>

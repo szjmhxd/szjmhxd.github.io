@@ -1,0 +1,671 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>KOOK 机器人为什么看不到群友在玩什么 | 十早九木のBlog</title><meta name="author" content="十早九木"><meta name="copyright" content="十早九木"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="想在 KOOK 语音欢迎语里带上「新成员正在玩的游戏」，结果从文档读到实测，一路证明这条路不存在。附两条顺带完成的事：不用 Pillow 纯 Python 画插件 logo，以及 push 被代理挡住时用 Git Data API 提交。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KOOK 机器人为什么看不到群友在玩什么">
+<meta property="og:url" content="https://blog.szjmhxd.online/posts/14f6182/">
+<meta property="og:site_name" content="十早九木のBlog">
+<meta property="og:description" content="想在 KOOK 语音欢迎语里带上「新成员正在玩的游戏」，结果从文档读到实测，一路证明这条路不存在。附两条顺带完成的事：不用 Pillow 纯 Python 画插件 logo，以及 push 被代理挡住时用 Git Data API 提交。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.szjmhxd.online/posts/14f6182/cover.svg">
+<meta property="article:published_time" content="2026-10-30T06:46:07.000Z">
+<meta property="article:modified_time" content="2026-10-30T06:46:07.000Z">
+<meta property="article:author" content="十早九木">
+<meta property="article:tag" content="API 排查">
+<meta property="article:tag" content="AstrBot">
+<meta property="article:tag" content="KOOK">
+<meta property="article:tag" content="插件开发">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.szjmhxd.online/posts/14f6182/cover.svg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "KOOK 机器人为什么看不到群友在玩什么",
+  "url": "https://blog.szjmhxd.online/posts/14f6182/",
+  "image": "https://blog.szjmhxd.online/posts/14f6182/cover.svg",
+  "datePublished": "2026-10-30T06:46:07.000Z",
+  "dateModified": "2026-10-30T06:46:07.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "十早九木",
+      "url": "https://blog.szjmhxd.online"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.szjmhxd.online/posts/14f6182/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        const data = { value }
+
+        if (ttl != null) {
+          data.expiry = Date.now() + ttl * 86400000
+        }
+
+        localStorage.setItem(key, JSON.stringify(data))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'KOOK 机器人为什么看不到群友在玩什么',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="十早九木のBlog" type="application/atom+xml">
+</head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/posts/14f6182/banner.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">KOOK 机器人为什么看不到群友在玩什么</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">KOOK 机器人为什么看不到群友在玩什么</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-30T06:46:07.000Z" title="发表于 2026-10-30 14:46:07">2026-10-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-30T06:46:07.000Z" title="更新于 2026-10-30 14:46:07">2026-10-30</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/">折腾记录</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>写 KOOK 语音欢迎插件的时候冒出一个想法：成员进语音频道，机器人合成欢迎语，如果能顺口带一句「他正在玩《英雄联盟》」，这个体验会比干巴巴的「欢迎 xxx」有意思得多。</p>
+<p>于是我花了点时间确认这件事到底能不能做。结论是<strong>不能</strong>——但不是查一眼文档就下的判断。这篇记录完整的过程：文档怎么排除、客户端的「在玩」状态从哪来、以及最后怎么用实测把「读不到」这件事钉死。</p>
+<p>如果你只是想拿结论：<strong>KOOK 开放平台不向机器人下发任何用户的「正在玩 &#x2F; 正在听」状态，也没有任何查询他人活动的接口。</strong> 客户端能看到，是因为客户端用的是用户身份加本地进程 hook，与 API 无关。</p>
+<span id="more"></span>
+
+<h2 id="0-先看清「能看见」是谁在报"><a href="#0-先看清「能看见」是谁在报" class="headerlink" title="0. 先看清「能看见」是谁在报"></a>0. 先看清「能看见」是谁在报</h2><p>刚开始想这件事的时候，我先去看了 KOOK 客户端的实际表现：某个用户的个人资料卡上确实写着「正在玩 Warframe」。</p>
+<p>但这句话不是服务器算出来的，是<strong>那台 PC 上的 KOOK 客户端</strong>报上去的。整条链路是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">游戏进程启动</span><br><span class="line">   ↓</span><br><span class="line">KOOK 客户端（kmhook）扫描本机进程</span><br><span class="line">   ↓</span><br><span class="line">与官方游戏库比对（按 process_name 匹配）</span><br><span class="line">   ↓</span><br><span class="line">命中 → 用「当前登录用户的身份」调上报接口</span><br><span class="line">   ↓</span><br><span class="line">服务器记录，其他客户端可见</span><br></pre></td></tr></table></figure>
+
+<p>三个细节能佐证这个链路：</p>
+<ol>
+<li><code>object-game</code> 里有 <code>process_name</code> 和 <code>product_name</code> 两个数组，还有 <code>kmhook_admin</code>（是否以管理员权限启动 KOOK）。前两个是给客户端做本地进程匹配用的，最后那个说明部分游戏必须提权才能 hook 到。</li>
+<li>客户端设置里有「在个人动态中显示游戏动态」开关，关掉状态立刻消失——因为客户端停止上报了，服务端没数据。</li>
+<li>识别不到的游戏需要用户去官方「活动中心」的识别频道提交，官方把游戏加进游戏库后才会被识别。这说明是<strong>白名单匹配</strong>，不是通用进程嗅探。</li>
+</ol>
+<p>关键点在这里：<strong>上报的身份是用户自己</strong>。接口长这样：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST /api/v3/game/activity</span><br><span class="line">&#123;</span><br><span class="line">  &quot;id&quot;: 12345,</span><br><span class="line">  &quot;data_type&quot;: 1</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参数里没有 <code>user_id</code>。身份由 token 决定——用谁的 token，就改谁的显示状态。用机器人 token 调，只会让机器人自己显示「正在玩 XXX」。</p>
+<p>所以问题变成：机器人有没有<strong>读</strong>的入口？</p>
+<h2 id="1-文档里的四个出口，全堵"><a href="#1-文档里的四个出口，全堵" class="headerlink" title="1. 文档里的四个出口，全堵"></a>1. 文档里的四个出口，全堵</h2><p>把开放平台翻了一遍，所有可能携带活动状态的入口只有四类。</p>
+<p><strong>User 对象</strong>（<code>/user/view</code>、<code>/guild/user-list</code> 返回的那个）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">id, username, nickname, identify_num, online, bot, status,</span><br><span class="line">avatar, vip_avatar, mobile_verified, roles</span><br></pre></td></tr></table></figure>
+
+<p>没有 Discord 那种 <code>presence.activities</code>。只有 <code>online</code>（是否在线）和 <code>status</code>（在线状态）。</p>
+<p><strong>服务器成员事件</strong>：<code>joined_guild</code>、<code>exited_guild</code>、<code>updated_guild_member</code>、<code>guild_member_online</code>、<code>guild_member_offline</code>。这些事件带 <code>online</code>、<code>status</code>、昵称、角色，没有游戏。</p>
+<p><strong>用户事件</strong>：<code>joined_channel</code>、<code>exited_channel</code>、<code>user_updated</code>、<code>self_joined_guild</code>、<code>self_exited_guild</code>、<code>message_btn_click</code>。<code>user_updated</code> 只在改用户名和头像时推送，同样没有。</p>
+<p><strong>game 这一整章</strong>：只有 6 个接口——游戏列表、创建、更新、删除、上报活动、结束活动。<strong>其中没有一个用来读取别人的活动</strong>。</p>
+<p>到这一步其实可以下结论了。但「文档没写」和「实际没有」是两件事，KOOK 有过文档外字段的先例。所以还有必要实测。</p>
+<h2 id="2-不信文档，直接打接口"><a href="#2-不信文档，直接打接口" class="headerlink" title="2. 不信文档，直接打接口"></a>2. 不信文档，直接打接口</h2><p>写了个只读探测脚本，扫描返回体里有没有 <code>game</code> &#x2F; <code>activity</code> &#x2F; <code>playing</code> &#x2F; <code>music</code> &#x2F; <code>presence</code> 这类键，同时打印顶层字段清单。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">curl -s <span class="string">&quot;https://www.kookapp.cn/api/v3/user/me&quot;</span> \</span><br><span class="line">  -H <span class="string">&quot;Authorization: Bot <span class="variable">$KOOK_BOT_TOKEN</span>&quot;</span></span><br><span class="line"></span><br><span class="line">curl -s <span class="string">&quot;https://www.kookapp.cn/api/v3/guild/user-list?guild_id=<span class="variable">$GUILD_ID</span>&amp;page_size=5&quot;</span> \</span><br><span class="line">  -H <span class="string">&quot;Authorization: Bot <span class="variable">$KOOK_BOT_TOKEN</span>&quot;</span></span><br><span class="line"></span><br><span class="line">curl -s <span class="string">&quot;https://www.kookapp.cn/api/v3/user/view?user_id=<span class="variable">$USER_ID</span>&amp;guild_id=<span class="variable">$GUILD_ID</span>&quot;</span> \</span><br><span class="line">  -H <span class="string">&quot;Authorization: Bot <span class="variable">$KOOK_BOT_TOKEN</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>/user/me</code> 回来 27 个字段：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">avatar, banner, bot, bot_status, client_id, id, identify_num, intent,</span><br><span class="line">invited_count, is_sys, is_vip, kpm_vip, mobile, mobile_prefix,</span><br><span class="line">mobile_verified, nickname, official_guest_rank_top1, online, os, roles,</span><br><span class="line">status, tag_info, username, verified, vip_amp, vip_avatar, wealth_level</span><br></pre></td></tr></table></figure>
+
+<p><code>/user/view</code> 回来 21 个：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">active_time, avatar, banner, bot, id, identify_num, is_sys, is_vip,</span><br><span class="line">joined_at, kpm_vip, mobile_verified, nickname, official_guest_rank_top1,</span><br><span class="line">online, os, roles, status, username, vip_amp, vip_avatar, wealth_level</span><br></pre></td></tr></table></figure>
+
+<p>三个接口，<strong>没有一个出现活动相关键</strong>。</p>
+<p>为了排除「换个参数就能拿到」的可能，又给每个接口叠了几组猜测的开关参数：<code>with_activity</code>、<code>activity</code>、<code>include_activity</code>、<code>with_game</code>。五组跑完，返回字段<strong>一字不差</strong>。服务端直接忽略未知参数。</p>
+<h3 id="最有说服力的是反向证据"><a href="#最有说服力的是反向证据" class="headerlink" title="最有说服力的是反向证据"></a>最有说服力的是反向证据</h3><p><code>/user/view</code> 把 <code>os</code>（当前连接方式：PC &#x2F; 手机 &#x2F; WebSocket）、<code>wealth_level</code>、<code>kpm_vip</code>、<code>official_guest_rank_top1</code> 这种相当冷门的字段都下发给机器人了，<strong>唯独不下发「正在玩 Warframe」</strong>。</p>
+<p>一个字段如果是因为遗漏而缺失，冷门字段不会反而齐全。这是<strong>有意的字段隔离</strong>，不是 bug。</p>
+<p>另外 <code>/guild/user-list</code> 实际返回里还带着 <code>abbr</code>、<code>color</code>、<code>is_master</code> 这些文档里根本没写的字段——说明 KOOK 并不吝啬给机器人多发字段，唯独 activity 被明确排除在外。多给和少给同时存在，只能是主动筛过的。</p>
+<h2 id="3-OAuth2-能不能绕过去"><a href="#3-OAuth2-能不能绕过去" class="headerlink" title="3. OAuth2 能不能绕过去"></a>3. OAuth2 能不能绕过去</h2><p>有人会问：换成用户授权的 OAuth2 呢？</p>
+<p>也不行。OAuth2 全部 scope 只有两个：</p>
+<table>
+<thead>
+<tr>
+<th>scope</th>
+<th>能力</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>get_user_info</code></td>
+<td>只能读<strong>自己</strong>的基本信息</td>
+</tr>
+<tr>
+<td><code>get_user_guilds</code></td>
+<td>只能读<strong>自己</strong>加入的服务器列表</td>
+</tr>
+</tbody></table>
+<p>连别人的昵称都读不到。而且 OAuth 模式下 <code>/user/me</code> 返回的字段比 bot token 还少，文档原话是「当发生在 OAuth 访问时，仅返回用户基本信息」。</p>
+<p>这是官方唯一合法的用户授权通道，能力比 bot 还窄。</p>
+<h2 id="4-那功能到底怎么做"><a href="#4-那功能到底怎么做" class="headerlink" title="4. 那功能到底怎么做"></a>4. 那功能到底怎么做</h2><p>三条路，我的推荐顺序就是从上到下。</p>
+<p><strong>一、Steam Web API（首选，也是唯一能拿到真实数据的合法路径）</strong></p>
+<p><code>GetPlayerSummaries</code> 返回的 <code>gameextrainfo</code> 就是当前正在玩什么，<code>personastate</code> 是在线状态。只要对方用 <code>/steam 绑定</code> 把 SteamID 关联到 KOOK 账号，这条路就成立。</p>
+<p>两个坑：</p>
+<ul>
+<li><code>gameextrainfo</code> 只在「正在游戏中」才出现，而且受对方隐私设置影响。对方把「游戏详情」设成「仅好友」时，<code>personastate</code> 照常返回，<code>gameextrainfo</code> 和 <code>gameid</code> 会直接消失。<strong>所以不能把它当布尔判断</strong>，否则会把「在玩但看不到游戏名」误判成「不在玩」。</li>
+<li><code>personastate</code> 取值：0 离线 &#x2F; 1 在线 &#x2F; 2 忙碌 &#x2F; 3 离开 &#x2F; 4 打盹 &#x2F; 5 想交易 &#x2F; 6 想游戏。做「刚上线」推送时，不能只比对 <code>gameid</code>，还得看 <code>personastate</code> 是否从 0 跳变，否则重复进同一款游戏不会触发。</li>
+</ul>
+<p>主机平台就得看运气：PSN 要 npsso，Xbox 得靠 OpenXBL 这类第三方，Epic 和 Battle.net 没有公开接口。</p>
+<p><strong>二、用户自报。</strong> 加一条 <code>/我在玩 守望先锋</code>，bot 记下来做状态卡或排行榜。数据干净、不违规、还能覆盖主机玩家。缺点是靠自觉。</p>
+<p><strong>三、抓客户端 token 调内部接口。</strong> 技术上做得到——客户端就是这么干的。但路径和签名要从客户端逆向，token 还会轮换，任何一次改版全废；更别说违反用户协议，账号封禁是真实风险，插件也永远上不了市场。</p>
+<p><strong>不做。</strong></p>
+<h2 id="5-顺手做的两件事"><a href="#5-顺手做的两件事" class="headerlink" title="5. 顺手做的两件事"></a>5. 顺手做的两件事</h2><p>同一轮开发里还有两个跟主问题无关、但值得记的细节。</p>
+<h3 id="5-1-不用-Pillow-画插件-logo"><a href="#5-1-不用-Pillow-画插件-logo" class="headerlink" title="5.1 不用 Pillow 画插件 logo"></a>5.1 不用 Pillow 画插件 logo</h3><p>AstrBot 对插件 Logo 的规范是根目录放 <code>logo.png</code>（256x256，1:1，注意不是 <code>.ico</code>）。可选项，但缺了市场卡片会是空的。这个环境的 PyPI 访问受限，Pillow 连清华镜像都装不上，报 <code>No matching distribution</code>。</p>
+<p>于是改成纯标准库手工拼 PNG：用 SDF（signed distance field）算每个像素的覆盖率做抗锯齿，再用 <code>zlib</code> + <code>struct</code> 按 PNG 规范拼字节流。零依赖，改配色常量重跑即可。</p>
+<p>顺手写了两个小工具塞进同一个脚本：</p>
+<ul>
+<li><strong>最小 PNG 解码器</strong>：解析 IHDR &#x2F; IDAT，<code>zlib</code> 解压后反解 filter，Sub &#x2F; Up &#x2F; Average &#x2F; Paeth 四种全支持。</li>
+<li><strong>双线性缩放</strong>：把 KOOK 官方 favicon 里内嵌的 256×256 PNG 缩到 44px 当右下角徽章——<code>favicon.ico</code> 本身是 ICO 容器，需要先按目录项偏移把内嵌 PNG 抽出来。</li>
+</ul>
+<p>最终成品：圆角渐变底（靛蓝 → 紫）+ 白色麦克风 + 左右声波弧，右下角一个白色圆底托着的 KOOK 标识。白色圆底是必要的中间层——直接把绿色方块压紫色渐变上会很脏。</p>
+<h3 id="5-2-push-被代理挡住时，用-Git-Data-API-提交"><a href="#5-2-push-被代理挡住时，用-Git-Data-API-提交" class="headerlink" title="5.2 push 被代理挡住时，用 Git Data API 提交"></a>5.2 push 被代理挡住时，用 Git Data API 提交</h3><p>发布 1.0.0 时 <code>git push</code> 连续失败：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">error: RPC failed; curl 7 CONNECT tunnel failed, response 502</span><br><span class="line">fatal: the remote end hung up unexpectedly</span><br></pre></td></tr></table></figure>
+
+<p>排查下来：本地代理（<code>127.0.0.1:14835</code>）对 <code>github.com:443</code> 一律 502，但 <code>api.github.com</code>、<code>codeload.github.com</code> 完全正常。也就是说代理本身能出网，只是 github.com 那条规则或节点挂了。直连也不通。</p>
+<p>既然是代理链路的临时故障，那就绕过去——用 GitHub 的 Git Data API 手工把提交送上去：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">POST /git/blobs     上传文件内容，拿 blob sha</span><br><span class="line">POST /git/trees     以父提交的 tree 为 base，替换这两个条目</span><br><span class="line">POST /git/commits   用原 author / committer 信息建 commit</span><br><span class="line">PATCH /git/refs/heads/main   force: false，只允许快进</span><br></pre></td></tr></table></figure>
+
+<p>为了不让本地和远端历史分叉，我刻意逐字节还原 commit 对象，让远端 SHA 与本地<strong>完全相同</strong>。两个坑：</p>
+<ol>
+<li><strong>blob 必须取仓库内的规范化内容。</strong> 工作区 <code>README.md</code> 是 CRLF，直接读文件上传得到的 blob 是 <code>44f7aa10</code>，而仓库内是 <code>a19feb01</code>。要用 <code>git cat-file blob &lt;sha&gt;</code> 取仓库版本。</li>
+<li><strong>message 必须带结尾换行。</strong> 第一次传不带 <code>\n</code>，GitHub 生成了 <code>7ca4b05</code>；补上换行才得到与本地一致的 <code>3d08a5f</code>。</li>
+</ol>
+<p>最后补一下本地的 <code>refs/remotes/origin/main</code>，<code>git status</code> 就显示已对齐，连 <code>git fetch</code> 都不用跑。</p>
+<p><strong>不过</strong>——半小时后再试，<code>git push</code> 直接成功了。所以这套绕法是应急手段，不是常规方案。真正该做的是去检查代理里 <code>github.com</code> 的规则为什么落在一个失效节点上。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>这次花的时间主要不在写代码，而在<strong>把「做不到」证明到能说服自己</strong>。</p>
+<p>顺序很重要：先读文档排除可能性，再看客户端的实际机制理解数据从哪来，最后用实测堵住「文档没写但实际有」的缝隙。三步走完，结论才站得住。</p>
+<p>顺带说一句，最后那条反向证据挺有意思：一个接口愿意下发给机器人 <code>wealth_level</code> 和 <code>official_guest_rank_top1</code>，却死活不给 activity。这已经不能叫遗漏了，这叫设计。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.szjmhxd.online">十早九木</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.szjmhxd.online/posts/14f6182/">https://blog.szjmhxd.online/posts/14f6182/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.szjmhxd.online" target="_blank">十早九木のBlog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/KOOK/">KOOK</a><a class="post-meta__tags" href="/tags/AstrBot/">AstrBot</a><a class="post-meta__tags" href="/tags/%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/">插件开发</a><a class="post-meta__tags" href="/tags/API-%E6%8E%92%E6%9F%A5/">API 排查</a></div><div class="post-share"><div class="social-share" data-image="/posts/14f6182/cover.svg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/6de062a0/" title="KOOK「找不到语音频道」：同一个错误假设，我犯了三次"><img class="cover" src="/posts/6de062a0/cover.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">KOOK「找不到语音频道」：同一个错误假设，我犯了三次</div></div><div class="info-2"><div class="info-item-1">我给 KOOK 写了一个语音欢迎插件：成员进语音频道，机器人自动加入，用 TTS 按昵称合成一句欢迎语，播完退出。 功能本身早就跑通了。真正耗掉一天的是另一件看起来更小的事：在文字频道里发 /语音欢迎试听，让它自己找到语音频道。 这一件事我改了四个版本，每次都觉得「这次肯定对了」。三次根因其实是同一个错误假设——以为 KOOK 的接口会返回我想要的那部分数据。   0. 三个坑，先给结果如果你只想要结论，这张表就够了：    坑 你看到的现象 真实原因 修于    /guild/view 的 channels 不含语音频道 文字频道解析正常，语音频道「一个都没有」 该字段只列文字频道，而代码只在它为空时才去查完整列表——它永远不空 v0.5.7   /channel/list 的 type 默认是 1 换用完整列表接口，结果还是「没有语音频道」 type 默认 1（文字），不传就只返回文字频道 v0.5.8   event.get_group_id() 给的是频道 ID 接口报 code=40000: guild_id 不存在或者你没有权限操作 KOOK 适配器把频道 ID 塞进...</div></div></div></a><a class="pagination-related" href="/posts/b28f908e/" title="给 AstrBot 写一个天气推送插件：12 次提交、6 个坑"><img class="cover" src="/posts/b28f908e/cover.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">给 AstrBot 写一个天气推送插件：12 次提交、6 个坑</div></div><div class="info-2"><div class="info-item-1">起因每天早上出门前都要查一次天气：今天会不会下雨、要不要带伞、外面几度。手机上点开 App——开屏广告、定位授权、切城市，一套流程走下来十几秒，天天重复。 干脆让机器人自己推。目标很简单：工作日早上推一份当日天气，晚上推一份明天和后天，下雨下雪之前提前叫我一声，有气象预警也告诉我。 AstrBot 是个能接 QQ &#x2F; 微信 &#x2F; 飞书等平台的聊天机器人框架，写插件就是写个 Python 类。本来以为两三天能搞定，结果从 v1.0.0 磨到 v1.5.4，12 次提交。这篇把过程里值得记的东西写下来。   先看成品的输出： 12345678【天气｜公司｜示例市·示例区｜10-30 08:00】实况：晴 21.8°C　体感 16.8°C西 4 级　湿度 15%　气压 1015hPa　能见度 22.1km今天：7°~21°　晴明天：6°~15°　晴间多云转多云后天：8°~16°　少云转晴日出 06:36　日落 17:13空气：AQI 102 轻度污染（首要 PM10）  1234⚠️ 【公司·示例区】橙色大雾预警（↑ 黄色→橙色）发布时间：10-30 07:40内容：...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/6de062a0/" title="KOOK「找不到语音频道」：同一个错误假设，我犯了三次"><img class="cover" src="/posts/6de062a0/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-30</div><div class="info-item-2">KOOK「找不到语音频道」：同一个错误假设，我犯了三次</div></div><div class="info-2"><div class="info-item-1">我给 KOOK 写了一个语音欢迎插件：成员进语音频道，机器人自动加入，用 TTS 按昵称合成一句欢迎语，播完退出。 功能本身早就跑通了。真正耗掉一天的是另一件看起来更小的事：在文字频道里发 /语音欢迎试听，让它自己找到语音频道。 这一件事我改了四个版本，每次都觉得「这次肯定对了」。三次根因其实是同一个错误假设——以为 KOOK 的接口会返回我想要的那部分数据。   0. 三个坑，先给结果如果你只想要结论，这张表就够了：    坑 你看到的现象 真实原因 修于    /guild/view 的 channels 不含语音频道 文字频道解析正常，语音频道「一个都没有」 该字段只列文字频道，而代码只在它为空时才去查完整列表——它永远不空 v0.5.7   /channel/list 的 type 默认是 1 换用完整列表接口，结果还是「没有语音频道」 type 默认 1（文字），不传就只返回文字频道 v0.5.8   event.get_group_id() 给的是频道 ID 接口报 code=40000: guild_id 不存在或者你没有权限操作 KOOK 适配器把频道 ID 塞进...</div></div></div></a><a class="pagination-related" href="/posts/b28f908e/" title="给 AstrBot 写一个天气推送插件：12 次提交、6 个坑"><img class="cover" src="/posts/b28f908e/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-30</div><div class="info-item-2">给 AstrBot 写一个天气推送插件：12 次提交、6 个坑</div></div><div class="info-2"><div class="info-item-1">起因每天早上出门前都要查一次天气：今天会不会下雨、要不要带伞、外面几度。手机上点开 App——开屏广告、定位授权、切城市，一套流程走下来十几秒，天天重复。 干脆让机器人自己推。目标很简单：工作日早上推一份当日天气，晚上推一份明天和后天，下雨下雪之前提前叫我一声，有气象预警也告诉我。 AstrBot 是个能接 QQ &#x2F; 微信 &#x2F; 飞书等平台的聊天机器人框架，写插件就是写个 Python 类。本来以为两三天能搞定，结果从 v1.0.0 磨到 v1.5.4，12 次提交。这篇把过程里值得记的东西写下来。   先看成品的输出： 12345678【天气｜公司｜示例市·示例区｜10-30 08:00】实况：晴 21.8°C　体感 16.8°C西 4 级　湿度 15%　气压 1015hPa　能见度 22.1km今天：7°~21°　晴明天：6°~15°　晴间多云转多云后天：8°~16°　少云转晴日出 06:36　日落 17:13空气：AQI 102 轻度污染（首要 PM10）  1234⚠️ 【公司·示例区】橙色大雾预警（↑ 黄色→橙色）发布时间：10-30 07:40内容：...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">十早九木</div><div class="author-info-description">个人博客 · 技术笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">36</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-%E5%85%88%E7%9C%8B%E6%B8%85%E3%80%8C%E8%83%BD%E7%9C%8B%E8%A7%81%E3%80%8D%E6%98%AF%E8%B0%81%E5%9C%A8%E6%8A%A5"><span class="toc-number">1.</span> <span class="toc-text">0. 先看清「能看见」是谁在报</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%96%87%E6%A1%A3%E9%87%8C%E7%9A%84%E5%9B%9B%E4%B8%AA%E5%87%BA%E5%8F%A3%EF%BC%8C%E5%85%A8%E5%A0%B5"><span class="toc-number">2.</span> <span class="toc-text">1. 文档里的四个出口，全堵</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%8D%E4%BF%A1%E6%96%87%E6%A1%A3%EF%BC%8C%E7%9B%B4%E6%8E%A5%E6%89%93%E6%8E%A5%E5%8F%A3"><span class="toc-number">3.</span> <span class="toc-text">2. 不信文档，直接打接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E6%9C%89%E8%AF%B4%E6%9C%8D%E5%8A%9B%E7%9A%84%E6%98%AF%E5%8F%8D%E5%90%91%E8%AF%81%E6%8D%AE"><span class="toc-number">3.1.</span> <span class="toc-text">最有说服力的是反向证据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-OAuth2-%E8%83%BD%E4%B8%8D%E8%83%BD%E7%BB%95%E8%BF%87%E5%8E%BB"><span class="toc-number">4.</span> <span class="toc-text">3. OAuth2 能不能绕过去</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E9%82%A3%E5%8A%9F%E8%83%BD%E5%88%B0%E5%BA%95%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">5.</span> <span class="toc-text">4. 那功能到底怎么做</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E9%A1%BA%E6%89%8B%E5%81%9A%E7%9A%84%E4%B8%A4%E4%BB%B6%E4%BA%8B"><span class="toc-number">6.</span> <span class="toc-text">5. 顺手做的两件事</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E4%B8%8D%E7%94%A8-Pillow-%E7%94%BB%E6%8F%92%E4%BB%B6-logo"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 不用 Pillow 画插件 logo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-push-%E8%A2%AB%E4%BB%A3%E7%90%86%E6%8C%A1%E4%BD%8F%E6%97%B6%EF%BC%8C%E7%94%A8-Git-Data-API-%E6%8F%90%E4%BA%A4"><span class="toc-number">6.2.</span> <span class="toc-text">5.2 push 被代理挡住时，用 Git Data API 提交</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AF%AD"><span class="toc-number">7.</span> <span class="toc-text">结语</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/6de062a0/" title="KOOK「找不到语音频道」：同一个错误假设，我犯了三次"><img src="/posts/6de062a0/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="KOOK「找不到语音频道」：同一个错误假设，我犯了三次"/></a><div class="content"><a class="title" href="/posts/6de062a0/" title="KOOK「找不到语音频道」：同一个错误假设，我犯了三次">KOOK「找不到语音频道」：同一个错误假设，我犯了三次</a><time datetime="2026-10-30T07:10:00.000Z" title="发表于 2026-10-30 15:10:00">2026-10-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/14f6182/" title="KOOK 机器人为什么看不到群友在玩什么"><img src="/posts/14f6182/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="KOOK 机器人为什么看不到群友在玩什么"/></a><div class="content"><a class="title" href="/posts/14f6182/" title="KOOK 机器人为什么看不到群友在玩什么">KOOK 机器人为什么看不到群友在玩什么</a><time datetime="2026-10-30T06:46:07.000Z" title="发表于 2026-10-30 14:46:07">2026-10-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/b28f908e/" title="给 AstrBot 写一个天气推送插件：12 次提交、6 个坑"><img src="/posts/b28f908e/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="给 AstrBot 写一个天气推送插件：12 次提交、6 个坑"/></a><div class="content"><a class="title" href="/posts/b28f908e/" title="给 AstrBot 写一个天气推送插件：12 次提交、6 个坑">给 AstrBot 写一个天气推送插件：12 次提交、6 个坑</a><time datetime="2026-10-30T05:40:00.000Z" title="发表于 2026-10-30 13:40:00">2026-10-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3658fd19/" title="博客重建全程复盘：从 61 篇旧站到个人技术博客"><img src="/posts/3658fd19/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="博客重建全程复盘：从 61 篇旧站到个人技术博客"/></a><div class="content"><a class="title" href="/posts/3658fd19/" title="博客重建全程复盘：从 61 篇旧站到个人技术博客">博客重建全程复盘：从 61 篇旧站到个人技术博客</a><time datetime="2026-10-23T10:30:00.000Z" title="发表于 2026-10-23 18:30:00">2026-10-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/5cd620c1/" title="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）"><img src="/posts/5cd620c1/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）"/></a><div class="content"><a class="title" href="/posts/5cd620c1/" title="jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）">jypt-server-php 部署排障记录（Docker/1Panel/OpenResty）</a><time datetime="2026-10-21T08:00:37.000Z" title="发表于 2026-10-21 16:00:37">2026-10-21</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 十早九木</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.0</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.0"></script><script src="/js/main.js?v=5.7.0"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.innerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+
+    setTimeout(() => URL.revokeObjectURL(url), 5000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    // Clean up previous event listeners and pending frames
+    if (wrap.__mermaidAbortController) {
+      wrap.__mermaidAbortController.abort()
+      if (wrap.__mermaidRafId) cancelAnimationFrame(wrap.__mermaidRafId)
+    }
+    const ac = new AbortController()
+    wrap.__mermaidAbortController = ac
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+    // Disable default gestures to prevent scroll chaining and pinch-zoom penetration in Chrome
+    svg.style.touchAction = 'none'
+
+    // Cache BoundingClientRect, throttled on scroll to reduce reflow
+    let cachedRect = svg.getBoundingClientRect()
+    let rectDirty = false
+    const markRectDirty = () => { rectDirty = true }
+    window.addEventListener('resize', markRectDirty, { signal: ac.signal })
+    window.addEventListener('scroll', markRectDirty, { signal: ac.signal, capture: true })
+    const getRect = () => {
+      if (rectDirty) {
+        cachedRect = svg.getBoundingClientRect()
+        rectDirty = false
+      }
+      return cachedRect
+    }
+
+    // Precompute clamp bounds from initial viewBox
+    const minW = initVb[2] * 0.1
+    const maxW = initVb[2] * 10
+    const minH = initVb[3] * 0.1
+    const maxH = initVb[3] * 10
+    const clampVb = vb => {
+      const out = vb.slice()
+      out[2] = clamp(out[2], minW, maxW)
+      out[3] = clamp(out[3], minH, maxH)
+      return out
+    }
+
+    // Throttle DOM updates using requestAnimationFrame
+    let pendingVb = null
+    let rafId = null
+    const applyVb = () => {
+      if (pendingVb) {
+        wrap.__mermaidCurViewBox = pendingVb
+        setSvgViewBox(svg, pendingVb)
+        pendingVb = null
+      }
+      rafId = null
+      wrap.__mermaidRafId = null
+    }
+    const setCurVb = vb => {
+      pendingVb = clampVb(vb)
+      if (!rafId) {
+        rafId = requestAnimationFrame(applyVb)
+        wrap.__mermaidRafId = rafId
+      }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      lastPointerX: 0,
+      lastPointerY: 0
+    }
+
+    const onPointerDown = e => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      const curVb = wrap.__mermaidCurViewBox
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      if (state.pointers.size === 1) {
+        state.startVb = curVb.slice()
+        state.lastPointerX = e.clientX
+        state.lastPointerY = e.clientY
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = curVb.slice()
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      const curVb = wrap.__mermaidCurViewBox
+      const rect = getRect()
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = state.pointers.values().next().value
+        const dxClient = p.x - state.lastPointerX
+        const dyClient = p.y - state.lastPointerY
+        state.lastPointerX = p.x
+        state.lastPointerY = p.y
+        const dx = dxClient * (curVb[2] / rect.width)
+        const dy = dyClient * (curVb[3] / rect.height)
+        setCurVb([curVb[0] - dx, curVb[1] - dy, curVb[2], curVb[3]])
+        return
+      }
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const px = curVb[0] + (cx - rect.left) * (curVb[2] / rect.width)
+        const py = curVb[1] + (cy - rect.top) * (curVb[3] / rect.height)
+        setCurVb(zoomAtPoint(state.startVb, factor, px, py))
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      // Release PointerCapture to avoid event capture anomalies
+      if (svg.hasPointerCapture && svg.hasPointerCapture(e.pointerId)) {
+        svg.releasePointerCapture(e.pointerId)
+      }
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+      } else if (state.pointers.size === 1) {
+        const p = state.pointers.values().next().value
+        state.lastPointerX = p.x
+        state.lastPointerY = p.y
+      }
+    }
+
+    const onWheel = e => {
+      // Prevent event bubbling from triggering external scroll
+      e.preventDefault()
+      e.stopPropagation()
+      // Normalize deltaY across deltaMode (Chrome uses pixels, Safari uses lines)
+      let delta = e.deltaY
+      if (e.deltaMode === 1) delta *= 16
+      else if (e.deltaMode === 2) delta *= 400
+
+      // Continuous zoom factor: smoother than fixed 1.1/0.9 steps
+      const zoomFactor = Math.pow(1.001, delta)
+
+      const curVb = wrap.__mermaidCurViewBox
+      const rect = getRect()
+      const px = curVb[0] + (e.clientX - rect.left) * (curVb[2] / rect.width)
+      const py = curVb[1] + (e.clientY - rect.top) * (curVb[3] / rect.height)
+      setCurVb(zoomAtPoint(curVb, zoomFactor, px, py))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (init) setCurVb(init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown, { signal: ac.signal })
+    svg.addEventListener('pointermove', onPointerMove, { signal: ac.signal })
+    svg.addEventListener('pointerup', onPointerUpOrCancel, { signal: ac.signal })
+    svg.addEventListener('pointercancel', onPointerUpOrCancel, { signal: ac.signal })
+    svg.addEventListener('wheel', onWheel, { passive: false, signal: ac.signal })
+    svg.addEventListener('dblclick', onDblClick, { signal: ac.signal })
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      // Clean up event listeners before removing old SVG
+      if (item.__mermaidAbortController) {
+        item.__mermaidAbortController.abort()
+      }
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      let config = {}
+      try {
+        config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      } catch (e) {
+        console.warn('[mermaid] failed to parse dataset.config:', e)
+      }
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+      const handleError = err => {
+        console.error(`[mermaid] render failed for block #${index}:`, err)
+        const errorEl = document.createElement('div')
+        errorEl.className = 'mermaid-error'
+        errorEl.textContent = `Mermaid render error: ${err.message || err}`
+        mermaidSrc.insertAdjacentElement('afterend', errorEl)
+      }
+
+      try {
+        const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+        // mermaid v9 and v10 compatibility
+        if (typeof renderFn === 'string') {
+          renderMermaid(renderFn)
+        } else {
+          renderFn.then(({ svg }) => renderMermaid(svg)).catch(handleError)
+        }
+      } catch (err) {
+        handleError(err)
+      }
+    })
+  }
+
+  const codeToMermaid = $article => {
+    const codeMermaidEle = $article.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    const $article = document.getElementById('article-container')
+    if (!$article) return
+
+    if (true) codeToMermaid($article)
+    const $mermaid = $article.querySelectorAll('.mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.16.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="/js/dynamic-post-link.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
