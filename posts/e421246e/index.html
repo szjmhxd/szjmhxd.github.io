@@ -1,0 +1,866 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>AstrBot + SnowLuma 部署实录：一次把方向搞反的 WebSocket 排查 | 十早九木のBlog</title><meta name="author" content="十早九木"><meta name="copyright" content="十早九木"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在 NAS 上用 Docker 部署 AstrBot + SnowLuma，靠反向 WebSocket 打通 QQ 机器人。记录端口方向搞反、wsClients 为空、401 误判等八个坑的排查过程与解决命令。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AstrBot + SnowLuma 部署实录：一次把方向搞反的 WebSocket 排查">
+<meta property="og:url" content="https://blog.szjmhxd.online/posts/e421246e/">
+<meta property="og:site_name" content="十早九木のBlog">
+<meta property="og:description" content="在 NAS 上用 Docker 部署 AstrBot + SnowLuma，靠反向 WebSocket 打通 QQ 机器人。记录端口方向搞反、wsClients 为空、401 误判等八个坑的排查过程与解决命令。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.szjmhxd.online/posts/e421246e/cover.svg">
+<meta property="article:published_time" content="2026-11-02T03:40:00.000Z">
+<meta property="article:modified_time" content="2026-11-02T03:55:00.000Z">
+<meta property="article:author" content="十早九木">
+<meta property="article:tag" content="AstrBot">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="QQ 机器人">
+<meta property="article:tag" content="SnowLuma">
+<meta property="article:tag" content="WebSocket">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.szjmhxd.online/posts/e421246e/cover.svg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "AstrBot + SnowLuma 部署实录：一次把方向搞反的 WebSocket 排查",
+  "url": "https://blog.szjmhxd.online/posts/e421246e/",
+  "image": "https://blog.szjmhxd.online/posts/e421246e/cover.svg",
+  "datePublished": "2026-11-02T03:40:00.000Z",
+  "dateModified": "2026-11-02T03:55:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "十早九木",
+      "url": "https://blog.szjmhxd.online"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.szjmhxd.online/posts/e421246e/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        const data = { value }
+
+        if (ttl != null) {
+          data.expiry = Date.now() + ttl * 86400000
+        }
+
+        localStorage.setItem(key, JSON.stringify(data))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'AstrBot + SnowLuma 部署实录：一次把方向搞反的 WebSocket 排查',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="十早九木のBlog" type="application/atom+xml">
+</head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/posts/e421246e/banner.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">AstrBot + SnowLuma 部署实录：一次把方向搞反的 WebSocket 排查</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">AstrBot + SnowLuma 部署实录：一次把方向搞反的 WebSocket 排查</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-02T03:40:00.000Z" title="发表于 2026-11-02 11:40:00">2026-11-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-02T03:55:00.000Z" title="更新于 2026-11-02 11:55:00">2026-11-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/">折腾记录</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>目标很简单：在 NAS 上跑一个 QQ 机器人，用大模型接话。</p>
+<p>拆成两半：</p>
+<ul>
+<li><strong>AstrBot</strong> —— 大模型对话框架，负责调模型、跑插件、管人设。</li>
+<li><strong>SnowLuma</strong> —— QQ 协议端，通过 <code>ptrace</code> 注入 QQ 客户端进程，把 QQ 包装成 OneBot v11 接口。</li>
+</ul>
+<p>两半之间用 <strong>WebSocket</strong> 连。听起来是标准动作，实际折腾了一个多小时，全部时间都耗在<strong>一个方向上</strong>。</p>
+<p>下面所有命令都在 NAS 的 SSH 里执行，前提是已经装好 Docker 和 Compose 插件。</p>
+<span id="more"></span>
+
+<h2 id="一、先搞清楚谁连谁"><a href="#一、先搞清楚谁连谁" class="headerlink" title="一、先搞清楚谁连谁"></a>一、先搞清楚谁连谁</h2><p>这是整篇文章唯一值得先记住的事：</p>
+<blockquote>
+<p><strong>AstrBot 的 OneBot v11 适配器（<code>aiocqhttp</code>）只会当反向 WebSocket 服务端，它没有主动外连别人的能力。</strong></p>
+</blockquote>
+<p>所以下面这条是<strong>错的</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">❌ AstrBot(客户端) ──连接──&gt; SnowLuma:3001(WS 服务端)</span><br></pre></td></tr></table></figure>
+
+<p>正确的是反过来的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">✅ SnowLuma(WS 客户端，出站) ──&gt; AstrBot:6199/ws(WS 服务端)</span><br></pre></td></tr></table></figure>
+
+<p>我刚上手时看到 SnowLuma 的 OneBot 配置页里有个 <code>ws-default 0.0.0.0:3001</code> 的服务端，就想当然地以为「既然它有 WS 服务端，那就让 AstrBot 去连它」。结果 AstrBot 的表单里根本没有「主动连接」这一项 —— 它只有「反向 WebSocket 主机 &#x2F; 端口 &#x2F; Token」。</p>
+<p>这个认知偏差是多花了一个小时的根本原因。判断依据很简单：<strong>看哪一端有「填写别人的地址」的输入框，哪一端就是客户端。</strong> SnowLuma 的「WS 客户端」页能让填 URL，它才是客户端。</p>
+<h2 id="二、整体架构"><a href="#二、整体架构" class="headerlink" title="二、整体架构"></a>二、整体架构</h2><img src="/posts/e421246e/astrbot-snowluma-arch.svg" class="" title="AstrBot + SnowLuma 架构：SnowLuma 出站连接 AstrBot 的 6199 端口，AstrBot 再调大模型 API">
+
+<p>数据流一句话：<code>QQ ← 进程注入 ← SnowLuma ←WS→ AstrBot → 大模型 API</code>。</p>
+<p>端口分工：</p>
+<table>
+<thead>
+<tr>
+<th>端口</th>
+<th>归属</th>
+<th>用途</th>
+<th>是否映射到宿主机</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>6185</td>
+<td>AstrBot</td>
+<td>WebUI 管理面板</td>
+<td>是</td>
+</tr>
+<tr>
+<td>6199</td>
+<td>AstrBot</td>
+<td>OneBot v11 反向 WS 服务端</td>
+<td><strong>否</strong>（走 docker 内网）</td>
+</tr>
+<tr>
+<td>6081</td>
+<td>SnowLuma</td>
+<td>noVNC 远程桌面，扫码登录用</td>
+<td>是</td>
+</tr>
+<tr>
+<td>5099</td>
+<td>SnowLuma</td>
+<td>SnowLuma WebUI</td>
+<td>是</td>
+</tr>
+<tr>
+<td>3000 &#x2F; 3001</td>
+<td>SnowLuma</td>
+<td>OneBot HTTP &#x2F; WS 服务端</td>
+<td><strong>否</strong>（本方案用不到）</td>
+</tr>
+</tbody></table>
+<p>注意最后一行：SnowLuma 自带的 3000&#x2F;3001 在反向 WS 方案里<strong>完全不需要暴露</strong>。少开两个口，就少两个被扫的入口。</p>
+<h2 id="三、部署-AstrBot"><a href="#三、部署-AstrBot" class="headerlink" title="三、部署 AstrBot"></a>三、部署 AstrBot</h2><p>已有环境，此处从简。关键只有一点：<strong><code>6199</code> 不要写进 <code>ports</code></strong>，交给 docker 网络解决。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">astrbot:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">astrbot-pw:local</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">astrbot</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">security_opt:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="literal">no</span><span class="string">-new-privileges:true</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;6185:6185&quot;</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TZ=Asia/Shanghai</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/vol1/1000/docker/astrbot/data:/AstrBot/data</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="四、部署-SnowLuma"><a href="#四、部署-SnowLuma" class="headerlink" title="四、部署 SnowLuma"></a>四、部署 SnowLuma</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">snowluma:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">motricseven7/snowluma:latest</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">snowluma</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">shm_size:</span> <span class="string">1gb</span></span><br><span class="line">    <span class="attr">ulimits:</span></span><br><span class="line">      <span class="attr">nofile:</span></span><br><span class="line">        <span class="attr">soft:</span> <span class="number">65536</span></span><br><span class="line">        <span class="attr">hard:</span> <span class="number">1048576</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">cap_add:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">SYS_PTRACE</span></span><br><span class="line">    <span class="attr">security_opt:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">seccomp=unconfined</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">      <span class="attr">VNC_PASSWD:</span> <span class="string">$&#123;VNC_PASSWD&#125;</span></span><br><span class="line">      <span class="attr">SNOWLUMA_UID:</span> <span class="number">1000</span></span><br><span class="line">      <span class="attr">SNOWLUMA_GID:</span> <span class="number">1000</span></span><br><span class="line">      <span class="attr">SNOWLUMA_WEBUI_HOST:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line">      <span class="attr">SNOWLUMA_WEBUI_PORT:</span> <span class="number">5099</span></span><br><span class="line">      <span class="attr">SNOWLUMA_HOOK_AUTOLOAD:</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;6081:6081&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;5099:5099&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/vol1/1000/docker/snowluma/data:/app/data</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/vol1/1000/docker/snowluma/config:/app/.config</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/vol1/1000/docker/snowluma/share:/app/.local/share</span></span><br></pre></td></tr></table></figure>
+
+<p>四个参数不能省，原因如下：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+<th>省了会怎样</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cap_add: SYS_PTRACE</code></td>
+<td>native addon 靠 ptrace 注入 QQ 进程</td>
+<td>hook 挂不上，QQ 在跑但收不到消息</td>
+</tr>
+<tr>
+<td><code>security_opt: seccomp=unconfined</code></td>
+<td>默认 seccomp 会拦 ptrace 调用</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>shm_size: 1gb</code></td>
+<td>QQ 基于 Chromium，依赖 <code>/dev/shm</code></td>
+<td>QQ 启动几秒后随机崩溃</td>
+</tr>
+<tr>
+<td><code>SNOWLUMA_HOOK_AUTOLOAD: 1</code></td>
+<td>扫码后自动加载 hook</td>
+<td>需要每次去 WebUI 手动 Load</td>
+</tr>
+</tbody></table>
+<p>启动后<strong>必须</strong>先验证 ptrace 能力：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> snowluma <span class="built_in">getcap</span> /usr/local/bin/node</span><br><span class="line"><span class="comment"># 期望输出包含 cap_sys_ptrace=ep</span></span><br></pre></td></tr></table></figure>
+
+<p>输出为空的话别急着扫码，先回去检查上面两个参数。</p>
+<h2 id="五、扫码登录"><a href="#五、扫码登录" class="headerlink" title="五、扫码登录"></a>五、扫码登录</h2><p>浏览器打开 <code>http://&lt;NAS_IP&gt;:6081/</code>，密码是 compose 里的 <code>VNC_PASSWD</code>。远程桌面里 QQ 已经自动启动了，直接扫码。</p>
+<p>然后打开 <code>http://&lt;NAS_IP&gt;:5099/</code>，首次登录凭据在日志里：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker logs snowluma 2&gt;&amp;1 | grep -E <span class="string">&quot;initial credentials|临时密码&quot;</span> | <span class="built_in">tail</span> -1</span><br><span class="line"><span class="comment"># initial credentials: user=admin password=xxxxxxxx</span></span><br></pre></td></tr></table></figure>
+
+<p>这个密码只显示一次，进去先同意 EULA，立刻改掉。</p>
+<p>登录成功的标志（日志里能看到注入过程）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[preload] succeeded. /opt/QQ/resources/app/major.node</span><br><span class="line">[Hook] pipe connected: PID=86</span><br></pre></td></tr></table></figure>
+
+<h2 id="六、把两个容器塞进一个网络"><a href="#六、把两个容器塞进一个网络" class="headerlink" title="六、把两个容器塞进一个网络"></a>六、把两个容器塞进一个网络</h2><p>AstrBot 和 SnowLuma 是两份独立的 compose，默认在不同网络里，互相不认识。建一个自定义网络，两边都接进去：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker network create botnet</span><br><span class="line">docker network connect botnet astrbot</span><br><span class="line">docker network connect botnet snowluma</span><br><span class="line"></span><br><span class="line">docker network inspect botnet | grep -E <span class="string">&#x27;&quot;Name&quot;|&quot;IPv4Address&quot;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>应该看到两个容器拿到同一网段的地址：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&quot;Name&quot;: &quot;astrbot&quot;,   &quot;IPv4Address&quot;: &quot;172.25.0.2/16&quot;</span><br><span class="line">&quot;Name&quot;: &quot;snowluma&quot;,  &quot;IPv4Address&quot;: &quot;172.25.0.3/16&quot;</span><br></pre></td></tr></table></figure>
+
+<p>先验证网络层通不通，再动配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> snowluma node -e <span class="string">&quot;require(&#x27;net&#x27;).connect(6199,&#x27;astrbot&#x27;).on(&#x27;connect&#x27;,()=&gt;&#123;console.log(&#x27;6199 OK&#x27;);process.exit(0)&#125;).on(&#x27;error&#x27;,e=&gt;&#123;console.log(&#x27;FAIL&#x27;,e.code);process.exit(1)&#125;)&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>输出 <code>6199 OK</code> 才继续。<strong>这一步能提前排除 90% 的「配置了但连不上」</strong>，非常值得先做。</p>
+<h2 id="七、两端配置"><a href="#七、两端配置" class="headerlink" title="七、两端配置"></a>七、两端配置</h2><h3 id="AstrBot-侧"><a href="#AstrBot-侧" class="headerlink" title="AstrBot 侧"></a>AstrBot 侧</h3><p>WebUI（6185）→ 机器人 → 创建机器人 → OneBot v11：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>反向 WebSocket 主机</td>
+<td><code>0.0.0.0</code></td>
+</tr>
+<tr>
+<td>反向 WebSocket 端口</td>
+<td><code>6199</code></td>
+</tr>
+<tr>
+<td>反向 WebSocket Token</td>
+<td>一个随机串</td>
+</tr>
+</tbody></table>
+<p><strong>主机必须是 <code>0.0.0.0</code>。</strong> 填 <code>127.0.0.1</code> 时容器只监听 loopback，从别的容器连进来必失败。</p>
+<h3 id="SnowLuma-侧"><a href="#SnowLuma-侧" class="headerlink" title="SnowLuma 侧"></a>SnowLuma 侧</h3><p>WebUI（5099）→ OneBot 协议端点 → <strong>WS 客户端</strong> → 新建：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>名称</td>
+<td><code>astrbot</code></td>
+</tr>
+<tr>
+<td>URL</td>
+<td><code>ws://astrbot:6199/ws</code></td>
+</tr>
+<tr>
+<td>Token</td>
+<td>与 AstrBot 侧完全相同</td>
+</tr>
+<tr>
+<td>消息格式</td>
+<td>数组</td>
+</tr>
+<tr>
+<td>角色</td>
+<td>Universal</td>
+</tr>
+</tbody></table>
+<p>URL 里用<strong>容器名</strong>而不是 IP，容器重建后 IP 会变，容器名不会。</p>
+<p>保存后页面上应该立刻变成 <code>正常 · 已连接</code>：</p>
+<img src="/posts/e421246e/astrbot-snowluma-ws-client.png" class="" title="SnowLuma 的「WS 客户端」页：astrbot 显示绿色「正常 · 已连接」，地址 ws:&#x2F;&#x2F;astrbot:6199&#x2F;ws">
+
+<h2 id="八、验证"><a href="#八、验证" class="headerlink" title="八、验证"></a>八、验证</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs --<span class="built_in">tail</span> 30 astrbot | grep -i aiocqhttp</span><br></pre></td></tr></table></figure>
+
+<p>出现这一行就通了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[aiocqhttp.aiocqhttp_platform_adapter:107]: aiocqhttp(OneBot v11) 适配器已连接。</span><br></pre></td></tr></table></figure>
+
+<p>再用另一个 QQ 号给机器人发条消息，AstrBot 日志会打印收到的事件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[core.event_bus:117]: [default] [snowluma(aiocqhttp)] 昵称/QQ号:消息内容</span><br></pre></td></tr></table></figure>
+
+<h2 id="九、踩过的坑"><a href="#九、踩过的坑" class="headerlink" title="九、踩过的坑"></a>九、踩过的坑</h2><h3 id="1-docker-compose-build-卡住，其实什么都没做"><a href="#1-docker-compose-build-卡住，其实什么都没做" class="headerlink" title="1. docker compose build 卡住，其实什么都没做"></a>1. <code>docker compose build</code> 卡住，其实什么都没做</h3><p>现象：命令跑完没有任何输出，以为卡死了。</p>
+<p>原因：compose 文件里<strong>只有 <code>image:</code> 没有 <code>build:</code> 段</strong>，<code>build</code> 是空操作，直接返回 0。真正耗时的是 <code>docker compose up -d</code> 在拉镜像（约 2GB）。</p>
+<p>顺带一提，<code>--progress</code> 是全局 flag，放错位置会提示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker compose --progress plain build   <span class="comment"># 正确</span></span><br><span class="line">docker compose build --progress=plain   <span class="comment"># 会被警告</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-env-没传上去，VNC-密码变空串"><a href="#2-env-没传上去，VNC-密码变空串" class="headerlink" title="2. .env 没传上去，VNC 密码变空串"></a>2. <code>.env</code> 没传上去，VNC 密码变空串</h3><p>现象：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">level=warning msg=&quot;The \&quot;VNC_PASSWD\&quot; variable is not set. Defaulting to a blank string.&quot;</span><br></pre></td></tr></table></figure>
+
+<p>原因：<code>.env</code> 是点开头的隐藏文件，<code>ls</code> 看不到，复制文件时被漏掉了。</p>
+<p>确认方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -la</span><br><span class="line"><span class="built_in">cat</span> &gt; .<span class="built_in">env</span> &lt;&lt;<span class="string">&#x27;EOF&#x27;</span></span><br><span class="line">VNC_PASSWD=你的密码</span><br><span class="line">EOF</span><br><span class="line">docker compose config | <span class="built_in">head</span> -30   <span class="comment"># 展开所有变量，确认不是空串</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-401-Unauthorized-被误判成失败"><a href="#3-401-Unauthorized-被误判成失败" class="headerlink" title="3. 401 Unauthorized 被误判成失败"></a>3. <code>401 Unauthorized</code> 被误判成失败</h3><p>现象：用 curl 测端口，返回：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 401</span><br><span class="line">server: hypercorn-h11</span><br></pre></td></tr></table></figure>
+
+<p>第一反应是「端口有问题」。<strong>恰恰相反，这是端口完全正常的证据。</strong> 没带 token 被拒绝，说明 TCP 通了、HTTP 通了、WS 路由也在。如果端口没开，看到的会是 <code>Connection refused</code> 或超时，根本不会有这个响应。</p>
+<p>判读口诀：</p>
+<table>
+<thead>
+<tr>
+<th>返回</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>401</code></td>
+<td>服务正常，只是 token 不对</td>
+</tr>
+<tr>
+<td><code>Connection refused</code></td>
+<td>端口没映射到宿主机</td>
+</tr>
+<tr>
+<td>超时</td>
+<td>被防火墙&#x2F;安全组拦了</td>
+</tr>
+</tbody></table>
+<h3 id="4-wsClients-是空数组，却一直去查端口"><a href="#4-wsClients-是空数组，却一直去查端口" class="headerlink" title="4. wsClients 是空数组，却一直去查端口"></a>4. <code>wsClients</code> 是空数组，却一直去查端口</h3><p>现象：AstrBot 显示 adapter 加载成功但没有「已连接」。</p>
+<p>原因：SnowLuma 的配置里 <code>&quot;wsClients&quot;: []</code> —— <strong>客户端压根没创建过</strong>，根本没发起连接。查端口是在查一个不存在的问题。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> snowluma sh -c <span class="string">&quot;cat /app/data/config/onebot*.json&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>看到 <code>&quot;wsClients&quot;: []</code> 就别再折腾端口了，去 WebUI 的「WS 客户端」页新建。</p>
+<p>另外注意 <code>&quot;mode&quot;: &quot;overlay&quot;</code> 时，<strong>账号级文件 <code>onebot_&lt;uin&gt;.json</code> 会覆盖基础文件 <code>onebot.json</code></strong>，光改一个可能不生效。用 WebUI 保存最稳妥，应用会自己落盘。</p>
+<h3 id="5-容器里没有-ss-netstat"><a href="#5-容器里没有-ss-netstat" class="headerlink" title="5. 容器里没有 ss &#x2F; netstat"></a>5. 容器里没有 <code>ss</code> &#x2F; <code>netstat</code></h3><p>现象：<code>sh: 1: ss: not found</code>。</p>
+<p>AstrBot 和 SnowLuma 都是精简镜像，网络工具全无。三种替代方案：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ① 宿主机看映射</span></span><br><span class="line">docker port astrbot</span><br><span class="line"></span><br><span class="line"><span class="comment"># ② 直接 TCP 探测（AstrBot 是 Python 应用）</span></span><br><span class="line">docker <span class="built_in">exec</span> astrbot python -c <span class="string">&quot;import socket;s=socket.create_connection((&#x27;127.0.0.1&#x27;,6199),3);print(&#x27;OPEN&#x27;);s.close()&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ③ 什么都不装：读 /proc/net/tcp，端口是十六进制</span></span><br><span class="line">docker <span class="built_in">exec</span> astrbot sh -c <span class="string">&#x27;grep &quot;:1837&quot; /proc/net/tcp&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>③ 的输出第 4 列是 <code>0A</code> 就是 LISTEN。常用端口十六进制对照：</p>
+<table>
+<thead>
+<tr>
+<th>端口</th>
+<th>hex</th>
+<th>端口</th>
+<th>hex</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>3000</td>
+<td><code>0BB8</code></td>
+<td>5099</td>
+<td><code>13EB</code></td>
+</tr>
+<tr>
+<td>3001</td>
+<td><code>0BB9</code></td>
+<td>6081</td>
+<td><code>17C1</code></td>
+</tr>
+<tr>
+<td>6185</td>
+<td><code>1829</code></td>
+<td>6199</td>
+<td><code>1837</code></td>
+</tr>
+</tbody></table>
+<h3 id="6-别照抄别人的教程"><a href="#6-别照抄别人的教程" class="headerlink" title="6. 别照抄别人的教程"></a>6. 别照抄别人的教程</h3><p>踩到两处：</p>
+<ul>
+<li>某教程的 SnowLuma 卷路径写的是 <code>/app/snowluma-data</code>，<strong>官方文档是 <code>/app/data</code></strong>。照抄的话配置和登录态会存进一个没人读的目录，重启全丢。</li>
+<li>某教程写 URL 用「<code>ws://AstrBotDocker网段:6199/ws</code>」，这是占位符，不是真的让你填网段。填容器名 <code>astrbot</code> 或具体容器 IP。</li>
+</ul>
+<h3 id="7-docker-network-connect-不持久化"><a href="#7-docker-network-connect-不持久化" class="headerlink" title="7. docker network connect 不持久化"></a>7. <code>docker network connect</code> 不持久化</h3><p>容器一被重建（<code>docker compose up -d</code> 检测到 compose 变化就会重建），手动 <code>connect</code> 的网络连接就丢了，连接器又变回连不上。</p>
+<p>想一劳永逸，在 compose 里声明外部网络：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">default:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">botnet</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="8-Client-private-message-reporting-is-unavailable"><a href="#8-Client-private-message-reporting-is-unavailable" class="headerlink" title="8. Client private-message reporting is unavailable"></a>8. <code>Client private-message reporting is unavailable</code></h3><p>登录前日志里一直有：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[QQHook.Runtime] Client private-message reporting is unavailable: PID=86 status=-1 reason=1</span><br></pre></td></tr></table></figure>
+
+<p>这是<strong>未登录状态下的正常输出</strong>，扫码成功后自动消失。如果登录后仍持续出现，说明私聊消息收不到（群消息不受影响），需要核对 SnowLuma 与 QQ 客户端版本匹配情况。</p>
+<h2 id="十、安全"><a href="#十、安全" class="headerlink" title="十、安全"></a>十、安全</h2><p>这套组合的风险点和普通 Web 服务不一样，6081 尤其要当心：</p>
+<ul>
+<li><strong><code>6081</code> 等于一台能操作你 QQ 的远程桌面。</strong> 端口一暴露，扫到的人可以直接接管你的号。别裸放公网，要远程就套反代加认证，或者走 Tailscale &#x2F; WireGuard。</li>
+<li><strong><code>6199</code> 不映射宿主机</strong>，只在 <code>botnet</code> 内网可见。这是本方案比「映射到宿主机」更好的地方。</li>
+<li><strong>Token 不要留空</strong>（前提是端口映射过）。留空等于允许任何能连上该端口的人接入你的机器人。</li>
+<li><strong>登录态卷别删。</strong> <code>share</code> 卷存的是 QQ 登录态，删了要重新扫码。</li>
+</ul>
+<h2 id="十一、速查表"><a href="#十一、速查表" class="headerlink" title="十一、速查表"></a>十一、速查表</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 状态</span></span><br><span class="line">docker compose ps</span><br><span class="line">docker <span class="built_in">exec</span> snowluma supervisorctl status</span><br><span class="line">docker <span class="built_in">exec</span> snowluma <span class="built_in">getcap</span> /usr/local/bin/node</span><br><span class="line"></span><br><span class="line"><span class="comment"># 网络</span></span><br><span class="line">docker network inspect botnet | grep -E <span class="string">&#x27;&quot;Name&quot;|&quot;IPv4Address&quot;&#x27;</span></span><br><span class="line">docker <span class="built_in">exec</span> snowluma node -e <span class="string">&quot;require(&#x27;net&#x27;).connect(6199,&#x27;astrbot&#x27;).on(&#x27;connect&#x27;,()=&gt;&#123;console.log(&#x27;OK&#x27;);process.exit(0)&#125;).on(&#x27;error&#x27;,e=&gt;&#123;console.log(e.code);process.exit(1)&#125;)&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 日志</span></span><br><span class="line">docker logs --<span class="built_in">tail</span> 50 astrbot  | grep -i aiocqhttp</span><br><span class="line">docker logs --<span class="built_in">tail</span> 50 snowluma | grep -iE <span class="string">&quot;hook|onebot|ws-client&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置</span></span><br><span class="line">docker <span class="built_in">exec</span> snowluma sh -c <span class="string">&quot;cat /app/data/config/onebot*.json&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>最终成功的两组日志：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">snowluma: [OneBot.WS-Client] [astrbot] connected ws://astrbot:6199/ws</span><br><span class="line">astrbot:  aiocqhttp(OneBot v11) 适配器已连接。</span><br></pre></td></tr></table></figure>
+
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>技术上没有难点，全程卡在一个<strong>方向性误判</strong>上 —— 看到 SnowLuma 有 WS 服务端就以为该让它当服务端。真正的判断依据不在功能列表里，而在「哪一端需要填对方的地址」。</p>
+<p>如果把这次的经验浓缩成三句话：</p>
+<ol>
+<li><strong>反向 WS 意味着「被动方」是服务端，它永远不会主动找你。</strong></li>
+<li><strong>先验证网络层（TCP 能不能通），再动配置。</strong> 顺序反了会浪费大量时间在错误的地方找原因。</li>
+<li><strong><code>401</code> 是好消息，<code>Connection refused</code> 才是问题。</strong></li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.szjmhxd.online">十早九木</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.szjmhxd.online/posts/e421246e/">https://blog.szjmhxd.online/posts/e421246e/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.szjmhxd.online" target="_blank">十早九木のBlog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/AstrBot/">AstrBot</a><a class="post-meta__tags" href="/tags/SnowLuma/">SnowLuma</a><a class="post-meta__tags" href="/tags/QQ-%E6%9C%BA%E5%99%A8%E4%BA%BA/">QQ 机器人</a><a class="post-meta__tags" href="/tags/Docker/">Docker</a><a class="post-meta__tags" href="/tags/WebSocket/">WebSocket</a></div><div class="post-share"><div class="social-share" data-image="/posts/e421246e/cover.svg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/6de062a0/" title="KOOK「找不到语音频道」：同一个错误假设，我犯了三次"><img class="cover" src="/posts/6de062a0/cover.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">KOOK「找不到语音频道」：同一个错误假设，我犯了三次</div></div><div class="info-2"><div class="info-item-1">我给 KOOK 写了一个语音欢迎插件：成员进语音频道，机器人自动加入，用 TTS 按昵称合成一句欢迎语，播完退出。 功能本身早就跑通了。真正耗掉一天的是另一件看起来更小的事：在文字频道里发 /语音欢迎试听，让它自己找到语音频道。 这一件事我改了四个版本，每次都觉得「这次肯定对了」。三次根因其实是同一个错误假设——以为 KOOK 的接口会返回我想要的那部分数据。   0. 三个坑，先给结果如果你只想要结论，这张表就够了：    坑 你看到的现象 真实原因 修于    /guild/view 的 channels 不含语音频道 文字频道解析正常，语音频道「一个都没有」 该字段只列文字频道，而代码只在它为空时才去查完整列表——它永远不空 v0.5.7   /channel/list 的 type 默认是 1 换用完整列表接口，结果还是「没有语音频道」 type 默认 1（文字），不传就只返回文字频道 v0.5.8   event.get_group_id() 给的是频道 ID 接口报 code=40000: guild_id 不存在或者你没有权限操作 KOOK 适配器把频道 ID 塞进...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/a4aa3bb4/" title="使用Docker部署RustDesk服务器"><img class="cover" src="/posts/a4aa3bb4/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-23</div><div class="info-item-2">使用Docker部署RustDesk服务器</div></div><div class="info-2"><div class="info-item-1">RustDesk是一款开源远程桌面软件，本文将详细介绍如何使用Docker部署RustDesk服务器及其API服务。 一、准备工作1. 环境要求 Docker 和 Docker Compose 服务器一台 域名或公网IP地址  2. 相关资源 RustDesk API项目：lejianwen&#x2F;rustdesk-api (官方免费版不支持web api，无法登录和管理) 官方文档：Use Docker With Rustdesk-Server-S6  二、部署步骤1. 创建Docker Compose文件提供了直接自定义key的方法，还需要修改一些配置。我选择直接替换key文件的方式： 1234567891011121314151617181920212223242526272829303132333435363738394041networks:  rustdesk-net:    external: falseservices:  rustdesk-server:    container_name: rustdesk-server    ports:      - ...</div></div></div></a><a class="pagination-related" href="/posts/5cd620c1/" title="jypt-server-php 部署排障记录（Docker&#x2F;1Panel&#x2F;OpenResty）"><img class="cover" src="/posts/5cd620c1/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-21</div><div class="info-item-2">jypt-server-php 部署排障记录（Docker&#x2F;1Panel&#x2F;OpenResty）</div></div><div class="info-2"><div class="info-item-1"> 环境：1Panel 面板 + Docker「php8335」（1panel-php-fpm:8.3.35）+ OpenResty（1Panel-openresty-gw6h）站点目录（同一套代码，两处部署）：  bgpt_python/index/jypt_laravel_server_2.0（原始部署） bgpt_laravel/index/jypt_laravel_server_2.0（复制部署，8900 端口，⑧⑨⑩ 三轮排障都在这套）  Laravel 11.46 &#x2F; PHP 8.3.35 &#x2F; Composer 2.10.3。artisan&#x2F;openresty 命令都在 docker 容器里执行，宿主机（szjm-ubu22）无 php、无 /www/sites 目录。   一、结论速览（问题的完整链条）      阶段 报错 根因 解法 ✅    ① composer install 平台不兼容，缺扩展 PHP 容器缺 bcmath/gd/sockets/sodium 逐个补扩展（sodium 需重建镜像）   ② composer in...</div></div></div></a><a class="pagination-related" href="/posts/b28f908e/" title="给 AstrBot 写一个天气推送插件：12 次提交、6 个坑"><img class="cover" src="/posts/b28f908e/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-30</div><div class="info-item-2">给 AstrBot 写一个天气推送插件：12 次提交、6 个坑</div></div><div class="info-2"><div class="info-item-1">起因每天早上出门前都要查一次天气：今天会不会下雨、要不要带伞、外面几度。手机上点开 App——开屏广告、定位授权、切城市，一套流程走下来十几秒，天天重复。 干脆让机器人自己推。目标很简单：工作日早上推一份当日天气，晚上推一份明天和后天，下雨下雪之前提前叫我一声，有气象预警也告诉我。 AstrBot 是个能接 QQ &#x2F; 微信 &#x2F; 飞书等平台的聊天机器人框架，写插件就是写个 Python 类。本来以为两三天能搞定，结果从 v1.0.0 磨到 v1.5.4，12 次提交。这篇把过程里值得记的东西写下来。   先看成品的输出： 12345678【天气｜公司｜示例市·示例区｜10-30 08:00】实况：晴 21.8°C　体感 16.8°C西 4 级　湿度 15%　气压 1015hPa　能见度 22.1km今天：7°~21°　晴明天：6°~15°　晴间多云转多云后天：8°~16°　少云转晴日出 06:36　日落 17:13空气：AQI 102 轻度污染（首要 PM10）  1234⚠️ 【公司·示例区】橙色大雾预警（↑ 黄色→橙色）发布时间：10-30 07:40内容：...</div></div></div></a><a class="pagination-related" href="/posts/6de062a0/" title="KOOK「找不到语音频道」：同一个错误假设，我犯了三次"><img class="cover" src="/posts/6de062a0/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-30</div><div class="info-item-2">KOOK「找不到语音频道」：同一个错误假设，我犯了三次</div></div><div class="info-2"><div class="info-item-1">我给 KOOK 写了一个语音欢迎插件：成员进语音频道，机器人自动加入，用 TTS 按昵称合成一句欢迎语，播完退出。 功能本身早就跑通了。真正耗掉一天的是另一件看起来更小的事：在文字频道里发 /语音欢迎试听，让它自己找到语音频道。 这一件事我改了四个版本，每次都觉得「这次肯定对了」。三次根因其实是同一个错误假设——以为 KOOK 的接口会返回我想要的那部分数据。   0. 三个坑，先给结果如果你只想要结论，这张表就够了：    坑 你看到的现象 真实原因 修于    /guild/view 的 channels 不含语音频道 文字频道解析正常，语音频道「一个都没有」 该字段只列文字频道，而代码只在它为空时才去查完整列表——它永远不空 v0.5.7   /channel/list 的 type 默认是 1 换用完整列表接口，结果还是「没有语音频道」 type 默认 1（文字），不传就只返回文字频道 v0.5.8   event.get_group_id() 给的是频道 ID 接口报 code=40000: guild_id 不存在或者你没有权限操作 KOOK 适配器把频道 ID 塞进...</div></div></div></a><a class="pagination-related" href="/posts/14f6182/" title="KOOK 机器人为什么看不到群友在玩什么"><img class="cover" src="/posts/14f6182/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-30</div><div class="info-item-2">KOOK 机器人为什么看不到群友在玩什么</div></div><div class="info-2"><div class="info-item-1">写 KOOK 语音欢迎插件的时候冒出一个想法：成员进语音频道，机器人合成欢迎语，如果能顺口带一句「他正在玩《英雄联盟》」，这个体验会比干巴巴的「欢迎 xxx」有意思得多。 于是我花了点时间确认这件事到底能不能做。结论是不能——但不是查一眼文档就下的判断。这篇记录完整的过程：文档怎么排除、客户端的「在玩」状态从哪来、以及最后怎么用实测把「读不到」这件事钉死。 如果你只是想拿结论：KOOK 开放平台不向机器人下发任何用户的「正在玩 &#x2F; 正在听」状态，也没有任何查询他人活动的接口。 客户端能看到，是因为客户端用的是用户身份加本地进程 hook，与 API 无关。   0. 先看清「能看见」是谁在报刚开始想这件事的时候，我先去看了 KOOK 客户端的实际表现：某个用户的个人资料卡上确实写着「正在玩 Warframe」。 但这句话不是服务器算出来的，是那台 PC 上的 KOOK 客户端报上去的。整条链路是： 123456789游戏进程启动   ↓KOOK 客户端（kmhook）扫描本机进程   ↓与官方游戏库比对（按 process_name 匹配）   ↓命中 → 用「当前登录...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">十早九木</div><div class="author-info-description">个人博客 · 技术笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">39</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%85%88%E6%90%9E%E6%B8%85%E6%A5%9A%E8%B0%81%E8%BF%9E%E8%B0%81"><span class="toc-number">2.</span> <span class="toc-text">一、先搞清楚谁连谁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">二、整体架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E9%83%A8%E7%BD%B2-AstrBot"><span class="toc-number">4.</span> <span class="toc-text">三、部署 AstrBot</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E9%83%A8%E7%BD%B2-SnowLuma"><span class="toc-number">5.</span> <span class="toc-text">四、部署 SnowLuma</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%89%AB%E7%A0%81%E7%99%BB%E5%BD%95"><span class="toc-number">6.</span> <span class="toc-text">五、扫码登录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E6%8A%8A%E4%B8%A4%E4%B8%AA%E5%AE%B9%E5%99%A8%E5%A1%9E%E8%BF%9B%E4%B8%80%E4%B8%AA%E7%BD%91%E7%BB%9C"><span class="toc-number">7.</span> <span class="toc-text">六、把两个容器塞进一个网络</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E4%B8%A4%E7%AB%AF%E9%85%8D%E7%BD%AE"><span class="toc-number">8.</span> <span class="toc-text">七、两端配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#AstrBot-%E4%BE%A7"><span class="toc-number">8.1.</span> <span class="toc-text">AstrBot 侧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SnowLuma-%E4%BE%A7"><span class="toc-number">8.2.</span> <span class="toc-text">SnowLuma 侧</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E9%AA%8C%E8%AF%81"><span class="toc-number">9.</span> <span class="toc-text">八、验证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91"><span class="toc-number">10.</span> <span class="toc-text">九、踩过的坑</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-docker-compose-build-%E5%8D%A1%E4%BD%8F%EF%BC%8C%E5%85%B6%E5%AE%9E%E4%BB%80%E4%B9%88%E9%83%BD%E6%B2%A1%E5%81%9A"><span class="toc-number">10.1.</span> <span class="toc-text">1. docker compose build 卡住，其实什么都没做</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-env-%E6%B2%A1%E4%BC%A0%E4%B8%8A%E5%8E%BB%EF%BC%8CVNC-%E5%AF%86%E7%A0%81%E5%8F%98%E7%A9%BA%E4%B8%B2"><span class="toc-number">10.2.</span> <span class="toc-text">2. .env 没传上去，VNC 密码变空串</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-401-Unauthorized-%E8%A2%AB%E8%AF%AF%E5%88%A4%E6%88%90%E5%A4%B1%E8%B4%A5"><span class="toc-number">10.3.</span> <span class="toc-text">3. 401 Unauthorized 被误判成失败</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-wsClients-%E6%98%AF%E7%A9%BA%E6%95%B0%E7%BB%84%EF%BC%8C%E5%8D%B4%E4%B8%80%E7%9B%B4%E5%8E%BB%E6%9F%A5%E7%AB%AF%E5%8F%A3"><span class="toc-number">10.4.</span> <span class="toc-text">4. wsClients 是空数组，却一直去查端口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%AE%B9%E5%99%A8%E9%87%8C%E6%B2%A1%E6%9C%89-ss-netstat"><span class="toc-number">10.5.</span> <span class="toc-text">5. 容器里没有 ss &#x2F; netstat</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E5%88%AB%E7%85%A7%E6%8A%84%E5%88%AB%E4%BA%BA%E7%9A%84%E6%95%99%E7%A8%8B"><span class="toc-number">10.6.</span> <span class="toc-text">6. 别照抄别人的教程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-docker-network-connect-%E4%B8%8D%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">10.7.</span> <span class="toc-text">7. docker network connect 不持久化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-Client-private-message-reporting-is-unavailable"><span class="toc-number">10.8.</span> <span class="toc-text">8. Client private-message reporting is unavailable</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E5%AE%89%E5%85%A8"><span class="toc-number">11.</span> <span class="toc-text">十、安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E9%80%9F%E6%9F%A5%E8%A1%A8"><span class="toc-number">12.</span> <span class="toc-text">十一、速查表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">13.</span> <span class="toc-text">小结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/e421246e/" title="AstrBot + SnowLuma 部署实录：一次把方向搞反的 WebSocket 排查"><img src="/posts/e421246e/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="AstrBot + SnowLuma 部署实录：一次把方向搞反的 WebSocket 排查"/></a><div class="content"><a class="title" href="/posts/e421246e/" title="AstrBot + SnowLuma 部署实录：一次把方向搞反的 WebSocket 排查">AstrBot + SnowLuma 部署实录：一次把方向搞反的 WebSocket 排查</a><time datetime="2026-11-02T03:40:00.000Z" title="发表于 2026-11-02 11:40:00">2026-11-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/6de062a0/" title="KOOK「找不到语音频道」：同一个错误假设，我犯了三次"><img src="/posts/6de062a0/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="KOOK「找不到语音频道」：同一个错误假设，我犯了三次"/></a><div class="content"><a class="title" href="/posts/6de062a0/" title="KOOK「找不到语音频道」：同一个错误假设，我犯了三次">KOOK「找不到语音频道」：同一个错误假设，我犯了三次</a><time datetime="2026-10-30T07:10:00.000Z" title="发表于 2026-10-30 15:10:00">2026-10-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/14f6182/" title="KOOK 机器人为什么看不到群友在玩什么"><img src="/posts/14f6182/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="KOOK 机器人为什么看不到群友在玩什么"/></a><div class="content"><a class="title" href="/posts/14f6182/" title="KOOK 机器人为什么看不到群友在玩什么">KOOK 机器人为什么看不到群友在玩什么</a><time datetime="2026-10-30T06:46:07.000Z" title="发表于 2026-10-30 14:46:07">2026-10-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/b28f908e/" title="给 AstrBot 写一个天气推送插件：12 次提交、6 个坑"><img src="/posts/b28f908e/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="给 AstrBot 写一个天气推送插件：12 次提交、6 个坑"/></a><div class="content"><a class="title" href="/posts/b28f908e/" title="给 AstrBot 写一个天气推送插件：12 次提交、6 个坑">给 AstrBot 写一个天气推送插件：12 次提交、6 个坑</a><time datetime="2026-10-30T05:40:00.000Z" title="发表于 2026-10-30 13:40:00">2026-10-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3658fd19/" title="博客重建全程复盘：从 61 篇旧站到个人技术博客"><img src="/posts/3658fd19/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="博客重建全程复盘：从 61 篇旧站到个人技术博客"/></a><div class="content"><a class="title" href="/posts/3658fd19/" title="博客重建全程复盘：从 61 篇旧站到个人技术博客">博客重建全程复盘：从 61 篇旧站到个人技术博客</a><time datetime="2026-10-23T10:30:00.000Z" title="发表于 2026-10-23 18:30:00">2026-10-23</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 十早九木</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.0</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.0"></script><script src="/js/main.js?v=5.7.0"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.innerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+
+    setTimeout(() => URL.revokeObjectURL(url), 5000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    // Clean up previous event listeners and pending frames
+    if (wrap.__mermaidAbortController) {
+      wrap.__mermaidAbortController.abort()
+      if (wrap.__mermaidRafId) cancelAnimationFrame(wrap.__mermaidRafId)
+    }
+    const ac = new AbortController()
+    wrap.__mermaidAbortController = ac
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+    // Disable default gestures to prevent scroll chaining and pinch-zoom penetration in Chrome
+    svg.style.touchAction = 'none'
+
+    // Cache BoundingClientRect, throttled on scroll to reduce reflow
+    let cachedRect = svg.getBoundingClientRect()
+    let rectDirty = false
+    const markRectDirty = () => { rectDirty = true }
+    window.addEventListener('resize', markRectDirty, { signal: ac.signal })
+    window.addEventListener('scroll', markRectDirty, { signal: ac.signal, capture: true })
+    const getRect = () => {
+      if (rectDirty) {
+        cachedRect = svg.getBoundingClientRect()
+        rectDirty = false
+      }
+      return cachedRect
+    }
+
+    // Precompute clamp bounds from initial viewBox
+    const minW = initVb[2] * 0.1
+    const maxW = initVb[2] * 10
+    const minH = initVb[3] * 0.1
+    const maxH = initVb[3] * 10
+    const clampVb = vb => {
+      const out = vb.slice()
+      out[2] = clamp(out[2], minW, maxW)
+      out[3] = clamp(out[3], minH, maxH)
+      return out
+    }
+
+    // Throttle DOM updates using requestAnimationFrame
+    let pendingVb = null
+    let rafId = null
+    const applyVb = () => {
+      if (pendingVb) {
+        wrap.__mermaidCurViewBox = pendingVb
+        setSvgViewBox(svg, pendingVb)
+        pendingVb = null
+      }
+      rafId = null
+      wrap.__mermaidRafId = null
+    }
+    const setCurVb = vb => {
+      pendingVb = clampVb(vb)
+      if (!rafId) {
+        rafId = requestAnimationFrame(applyVb)
+        wrap.__mermaidRafId = rafId
+      }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      lastPointerX: 0,
+      lastPointerY: 0
+    }
+
+    const onPointerDown = e => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      const curVb = wrap.__mermaidCurViewBox
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      if (state.pointers.size === 1) {
+        state.startVb = curVb.slice()
+        state.lastPointerX = e.clientX
+        state.lastPointerY = e.clientY
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = curVb.slice()
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      const curVb = wrap.__mermaidCurViewBox
+      const rect = getRect()
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = state.pointers.values().next().value
+        const dxClient = p.x - state.lastPointerX
+        const dyClient = p.y - state.lastPointerY
+        state.lastPointerX = p.x
+        state.lastPointerY = p.y
+        const dx = dxClient * (curVb[2] / rect.width)
+        const dy = dyClient * (curVb[3] / rect.height)
+        setCurVb([curVb[0] - dx, curVb[1] - dy, curVb[2], curVb[3]])
+        return
+      }
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const px = curVb[0] + (cx - rect.left) * (curVb[2] / rect.width)
+        const py = curVb[1] + (cy - rect.top) * (curVb[3] / rect.height)
+        setCurVb(zoomAtPoint(state.startVb, factor, px, py))
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      // Release PointerCapture to avoid event capture anomalies
+      if (svg.hasPointerCapture && svg.hasPointerCapture(e.pointerId)) {
+        svg.releasePointerCapture(e.pointerId)
+      }
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+      } else if (state.pointers.size === 1) {
+        const p = state.pointers.values().next().value
+        state.lastPointerX = p.x
+        state.lastPointerY = p.y
+      }
+    }
+
+    const onWheel = e => {
+      // Prevent event bubbling from triggering external scroll
+      e.preventDefault()
+      e.stopPropagation()
+      // Normalize deltaY across deltaMode (Chrome uses pixels, Safari uses lines)
+      let delta = e.deltaY
+      if (e.deltaMode === 1) delta *= 16
+      else if (e.deltaMode === 2) delta *= 400
+
+      // Continuous zoom factor: smoother than fixed 1.1/0.9 steps
+      const zoomFactor = Math.pow(1.001, delta)
+
+      const curVb = wrap.__mermaidCurViewBox
+      const rect = getRect()
+      const px = curVb[0] + (e.clientX - rect.left) * (curVb[2] / rect.width)
+      const py = curVb[1] + (e.clientY - rect.top) * (curVb[3] / rect.height)
+      setCurVb(zoomAtPoint(curVb, zoomFactor, px, py))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (init) setCurVb(init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown, { signal: ac.signal })
+    svg.addEventListener('pointermove', onPointerMove, { signal: ac.signal })
+    svg.addEventListener('pointerup', onPointerUpOrCancel, { signal: ac.signal })
+    svg.addEventListener('pointercancel', onPointerUpOrCancel, { signal: ac.signal })
+    svg.addEventListener('wheel', onWheel, { passive: false, signal: ac.signal })
+    svg.addEventListener('dblclick', onDblClick, { signal: ac.signal })
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      // Clean up event listeners before removing old SVG
+      if (item.__mermaidAbortController) {
+        item.__mermaidAbortController.abort()
+      }
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      let config = {}
+      try {
+        config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      } catch (e) {
+        console.warn('[mermaid] failed to parse dataset.config:', e)
+      }
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+      const handleError = err => {
+        console.error(`[mermaid] render failed for block #${index}:`, err)
+        const errorEl = document.createElement('div')
+        errorEl.className = 'mermaid-error'
+        errorEl.textContent = `Mermaid render error: ${err.message || err}`
+        mermaidSrc.insertAdjacentElement('afterend', errorEl)
+      }
+
+      try {
+        const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+        // mermaid v9 and v10 compatibility
+        if (typeof renderFn === 'string') {
+          renderMermaid(renderFn)
+        } else {
+          renderFn.then(({ svg }) => renderMermaid(svg)).catch(handleError)
+        }
+      } catch (err) {
+        handleError(err)
+      }
+    })
+  }
+
+  const codeToMermaid = $article => {
+    const codeMermaidEle = $article.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    const $article = document.getElementById('article-container')
+    if (!$article) return
+
+    if (true) codeToMermaid($article)
+    const $mermaid = $article.querySelectorAll('.mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.16.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="/js/dynamic-post-link.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
