@@ -24,6 +24,6 @@
 </g>
 <g transform="translate(448,180) scale(2.3750)" opacity="0.95" fill="none"><path d="M20 4v32M4 20h32M8.7 8.7l22.6 22.6M8.7 31.3 31.3 8.7M14.5 7.5 20 13l5.5-5.5M32.5 14.5 27 20l5.5 5.5M25.5 32.5 20 27l-5.5 5.5M7.5 25.5 13 20l-5.5-5.5" stroke="#e6f2ff" stroke-width="1.516" stroke-linecap="round" stroke-linejoin="round"/></g>
   <rect x="58" y="288" width="6" height="58" fill="#57b0f0" rx="3"/>
-  <text x="82" y="332" font-size="46" font-weight="bold" fill="#ffffff">AstrBot + SnowLuma</text>
-  <text x="84" y="378" font-size="23" fill="#57b0f0" opacity="0.92">一次把方向搞反的 WebSocket 排查</text>
+  <text x="82" y="332" font-size="46" font-weight="bold" fill="#ffffff">SnowLuma + AstrBot</text>
+  <text x="84" y="378" font-size="23" fill="#57b0f0" opacity="0.92">放弃官方机器人 · 自建 QQ 机器人</text>
 </svg>
