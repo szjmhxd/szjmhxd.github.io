@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="620" viewBox="0 0 960 620" font-family="Microsoft YaHei, PingFang SC, Hiragino Sans GB, sans-serif">
+  <defs>
+    <marker id="a4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#8a97a4"/>
+    </marker>
+  </defs>
+  <rect width="960" height="620" fill="#ffffff"/>
+  <text x="480" y="36" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">DSH 拒绝网络盘：两道互相独立的墙</text>
+  <text x="480" y="60" text-anchor="middle" font-size="12.5" fill="#8894a0">软链接只破得了墙 A，墙 B 必须关沙箱</text>
+
+  <!-- Wall A -->
+  <rect x="30" y="80" width="440" height="330" rx="10" fill="#f4f7fb" stroke="#9db7d6" stroke-width="2"/>
+  <text x="250" y="108" text-anchor="middle" font-size="15" font-weight="bold" fill="#33507a">墙 A · 工作区卷校验</text>
+  <text x="250" y="130" text-anchor="middle" font-size="11.5" fill="#7b8794">决定「能不能登记为工作区」</text>
+
+  <rect x="52" y="144" width="396" height="96" rx="6" fill="#ffffff" stroke="#cfd8e3"/>
+  <text x="68" y="167" font-size="12" font-weight="bold" fill="#33507a">两项检查</text>
+  <text x="68" y="189" font-size="11.2" fill="#4a5a6a">GetVolumeInformationW → 文件系统 ∈ {NTFS, REFS}</text>
+  <text x="68" y="209" font-size="11.2" fill="#4a5a6a">GetDriveTypeW → 类型 = DRIVE_FIXED(3)</text>
+  <text x="68" y="230" font-size="11.2" fill="#b34a4a">P: 盘实况：NTFS ✓ / DRIVE_REMOTE(4) ✗ → block</text>
+
+  <rect x="52" y="252" width="396" height="76" rx="6" fill="#fff8e8" stroke="#e0c88a"/>
+  <text x="68" y="275" font-size="12" font-weight="bold" fill="#8a6d1f">关键：只做字符串路径运算</text>
+  <text x="68" y="296" font-size="11.2" fill="#9a7f30">取路径的卷根，不解析符号链接/junction 的真实目标</text>
+  <text x="68" y="316" font-size="11.2" fill="#9a7f30">E:\ws\jypt_worker → 卷根 E:\ → NTFS+FIXED</text>
+
+  <rect x="52" y="340" width="396" height="52" rx="6" fill="#eefaf2" stroke="#a8d0b6"/>
+  <text x="68" y="363" font-size="12" font-weight="bold" fill="#2f7a4d">→ ALLOW ✓</text>
+  <text x="150" y="363" font-size="11.2" fill="#3f6b52">软链接放本地 NTFS 盘即可骗过这一关</text>
+  <text x="68" y="382" font-size="10.8" fill="#7b8794">mklink /D E:\ws\jypt_worker P:\jypt_laravel_server_2.0_python_worker</text>
+
+  <line x1="250" y1="410" x2="250" y2="442" stroke="#8a97a4" stroke-width="2" marker-end="url(#a4)"/>
+  <text x="262" y="433" font-size="11" fill="#8a97a4">登记成功后</text>
+
+  <!-- Wall B -->
+  <rect x="30" y="446" width="900" height="150" rx="10" fill="#fdf5f5" stroke="#e0b4b4" stroke-width="2"/>
+  <text x="60" y="474" font-size="15" font-weight="bold" fill="#b34a4a">墙 B · ACL 沙箱</text>
+  <text x="230" y="474" font-size="11.5" fill="#8a5a5a">决定「登记后能不能真的读写」—— 软链接骗不过它</text>
+
+  <rect x="52" y="488" width="400" height="92" rx="6" fill="#ffffff" stroke="#dda3a3"/>
+  <text x="68" y="510" font-size="11.8" font-weight="bold" fill="#b34a4a">workspace-write 模式下的令牌</text>
+  <text x="68" y="531" font-size="11.2" fill="#8a5a5a">Low 完整性 + WRITE_RESTRICTED 受限令牌</text>
+  <text x="68" y="551" font-size="11.2" fill="#8a5a5a">SMB 网络盘连读都被 OS 拒绝</text>
+  <text x="68" y="571" font-size="11.2" fill="#c25b5b">与文件策略绑定，与路径写法无关</text>
+
+  <rect x="472" y="488" width="434" height="92" rx="6" fill="#ffffff" stroke="#dda3a3"/>
+  <text x="488" y="510" font-size="11.8" font-weight="bold" fill="#b34a4a">实测报错</text>
+  <text x="488" y="530" font-size="10.8" font-family="Consolas, monospace" fill="#8a5a5a">Directory.GetDirectories('P:\')  → 访问被拒绝</text>
+  <text x="488" y="549" font-size="10.8" font-family="Consolas, monospace" fill="#8a5a5a">node fs.readdirSync('P:\\')      → EPERM</text>
+  <text x="488" y="568" font-size="10.8" font-family="Consolas, monospace" fill="#8a5a5a">net use \\server\share         → System error 1223</text>
+
+  <rect x="660" y="88" width="270" height="300" rx="10" fill="#fffbe6" stroke="#e6d78a" stroke-width="2"/>
+  <text x="795" y="116" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#8a6d1f">唯一解法</text>
+  <rect x="682" y="132" width="226" height="76" rx="6" fill="#ffffff" stroke="#e0c88a"/>
+  <text x="795" y="156" text-anchor="middle" font-size="12" font-weight="bold" fill="#8a6d1f">文件访问策略切 Full access</text>
+  <text x="795" y="177" text-anchor="middle" font-size="11" fill="#9a7f30">danger-full-access</text>
+  <text x="795" y="196" text-anchor="middle" font-size="11" fill="#9a7f30">= 沙箱整体关闭</text>
+
+  <rect x="682" y="222" width="226" height="94" rx="6" fill="#fff0f0" stroke="#dda3a3"/>
+  <text x="795" y="245" text-anchor="middle" font-size="12" font-weight="bold" fill="#b34a4a">⚠ 安全降级</text>
+  <text x="795" y="266" text-anchor="middle" font-size="10.8" fill="#8a5a5a">agent 可读写本机任意位置</text>
+  <text x="795" y="284" text-anchor="middle" font-size="10.8" fill="#8a5a5a">含 C:\ 与凭据文件</text>
+  <text x="795" y="303" text-anchor="middle" font-size="10.8" fill="#8a5a5a">用完可切回</text>
+
+  <text x="795" y="344" text-anchor="middle" font-size="10.8" fill="#8a6d1f">软链接 → 只破墙 A</text>
+  <text x="795" y="363" text-anchor="middle" font-size="10.8" fill="#8a6d1f">墙 B 只能靠关沙箱</text>
+
+  <text x="480" y="608" text-anchor="middle" font-size="11" fill="#8894a0">其它方案（不用关沙箱）：在共享主机上跑 DSH / 本地工作副本+单向同步 / iSCSI 块级挂载</text>
+</svg>
