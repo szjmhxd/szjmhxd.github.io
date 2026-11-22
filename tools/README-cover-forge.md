@@ -77,8 +77,11 @@ node tools/cover-forge.js --check "source/_posts/my-new-post"
 | `--cover-title` | 单独指定封面大标题 |
 | `--cover-sub` | 单独指定封面小标题 |
 | `--sub` | 副标题（封面/横幅共用） |
-| `--theme <名>` | `blue` `purple` `teal` `green` `orange` `slate` `ink` |
-| `--c1 --c2 --accent` | 自定义配色，覆盖 `--theme` |
+| `--brand-color <色>` | 品牌主色，底色由它推导（推荐，写死最可控） |
+| `--from-logo` | 不给色值时从主图标里猜（有彩取主色，全灰取中位灰） |
+| `--tone <档>` | `deep` / `normal` / `vivid`，同品牌多篇时用明度分档 |
+| `--theme <名>` | 兜底预设：`blue` `purple` `teal` `green` `orange` `slate` `ink` |
+| `--c1 --c2 --accent` | 完全手动指定配色，跳过品牌推导 |
 | `--post-title` | 显式指定用于判定折行的文章标题（默认从同名 md 的 front matter 读） |
 
 ### 图标
@@ -86,8 +89,62 @@ node tools/cover-forge.js --check "source/_posts/my-new-post"
 | 参数 | 说明 |
 |---|---|
 | `--main <svg>` | 主图标 = 文章主题的官方矢量（默认 `hexo.svg`） |
-| `--sub-icon <svg>` | 副图标 = 这篇文章对该主题做了什么（默认 `wand.svg`） |
-| `--brand <目录>` | 图标库目录（默认 `source/_posts/../../../../brand-icons`） |
+| `--sub-icon <svg>` | 副图标 = 这篇文章对该主题做了什么（默认 `ui-wand-sparkles.svg`） |
+| `--brand <目录>` | 图标库目录（默认 `tools/brand-icons`，再沿文章目录向上找） |
+| `--keep-colors` | 保留图标原色（只把低彩度深色提亮） |
+| `--keep-colors-main` | 只对主图标保留原色 |
+| `--keep-colors-sub` | 只对副图标保留原色 |
+
+### 线条图标与填充图标
+
+品牌 logo 是填充图形（外层套 `fill`），Lucide 那类是 `fill="none"` + `stroke="currentColor"`。生成器按 SVG 根节点判断类型：线条图标会走描边模式（`fill="none"` + `stroke-width/linecap/linejoin` 从源文件继承），否则描边会消失、封闭区域被糊成实心块。
+
+混排时核一下笔画粗细：24 视口的 `stroke-width="2"` 放大到 95px 的副图标是 7.9px，和实心 logo 的笔画才匹配。
+
+### 配色怎么来的
+
+```
+品牌色 → HSL → 色相不动，饱和度夹到 [0.34, 0.72]
+c1 = hsl(h, s×0.9, L−0.17)   // 渐变起点
+c2 = hsl(h, s,     L)        // 渐变终点
+L  = deep 0.215 / normal 0.27 / vivid 0.325
+```
+
+三条硬约束（都写在代码里）：
+
+| 约束 | 数值 | 处理 |
+|---|---|---|
+| 白字对 c2 | ≥ 4.6:1 | 不够就按 0.005 步长压暗 L（荧光色会被压，红/蓝不受影响） |
+| accent 对 c2 | ≥ 4.6:1 | 从品牌色亮度起跳，每次 +0.02 提亮，上限 0.86 |
+| 单色 logo | 饱和度 < 0.1 | 色相锁 210、饱和度 0.07 → 冷灰，不出现"灰卡" |
+
+光斑位置按文章目录名散列三档 —— 同色相的文章才不会撞图。
+
+主图标的上色规则：单色 logo 用 accent（提亮的品牌色），多色 logo 用 `--keep-colors-main` 保原色，副图标一律白。
+
+### 什么时候要 `--keep-colors`
+
+默认行为是**剥离图标内层的 `fill`**，让所有部件统一由外层配色（`accent`）决定——这适合 simple-icons 那种单色扁平图标。
+
+但有些图标**本身是配色的**，剥掉就丢信息。例如计算器那个图标：
+
+```
+外框 + 按键 = #666666（深灰）
+"=" 长键    = #CFB263（金色强调）
+```
+
+剥成纯白之后，"这条键是等号"这个视觉提示就没了。这时加 `--keep-colors`：
+
+- 彩色（`#CFB263`）**原样保留**
+- 低彩度且偏暗的（`#666666`）**提亮**成 `#e8eef7`——否则深灰在深色底上发闷，缩小后几乎看不见
+
+判定逻辑是逐色算亮度与彩度：
+
+```js
+const lum = (0.2126*r + 0.7152*g + 0.0722*b) / 255;
+const chroma = (max(r,g,b) - min(r,g,b)) / 255;
+return (chroma < 0.22 && lum < 0.62) ? '#e8eef7' : 原色;
+```
 
 ### 输出 / 验收
 
@@ -104,11 +161,11 @@ node tools/cover-forge.js --check "source/_posts/my-new-post"
 
 **主图标 = 文章主题的官方矢量。** 讲 Docker 就放 Docker 官方图标，必须是原版，不要自己重画。
 
-**副图标 = 这篇文章对该主题做了什么。** 固定用「魔法棒」，语义是**改造 / 修补 / 自定义**——把官方机器人换成自建、给输入法补一个缺失的能力，都是「改造」。同一语义用同一形状，读者扫一眼首页就知道这类文章属于"折腾记录"。
+**副图标 = 这篇文章对该主题做了什么。** 必须是个**动词**：修好（反向箭头）、分享（share-2）、接管输入（鼠标）、就地计算（计算器）、打通路径（软链文件夹）。
 
-判断标准：**副图标要选和本文动作对应的形状，而不是"这个项目还有哪些图标没用过"。**
+判断标准：**副图标要选和本文动作对应的形状，而不是"这个项目还有哪些图标没用过"。** 也不能拿第二个品牌 logo 凑数 —— 一张封面只允许一个视觉主角。
 
-反面例子：曾有一篇写 SnowLuma 的，副图标放了 SnowLuma 的 favicon，被否——理由是「favicon 不是 logo，而且跟这篇文章讲的『放弃官方方案』毫无关系」。
+反面例子：早期所有副图标都固定用「魔法棒」，结果 14 张封面的第二视觉元素长得一模一样，等于没有信息量。
 
 ## 版式是怎么定的（全部实测）
 
@@ -192,7 +249,8 @@ node tools/cover-forge.js --check "source/_posts/my-new-post"
 
 ```bash
 # 生成
-node tools/cover-forge.js "source/_posts/xxx" --title "..." --theme blue
+node tools/cover-forge.js "source/_posts/xxx" --title "..." \
+  --main tools/brand-icons/docker.svg --brand-color "#2496ED"
 
 # 构建 + 验收
 npx hexo generate

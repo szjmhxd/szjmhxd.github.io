@@ -60,6 +60,8 @@ const SPEC = {
   titleFont: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Lato, Roboto, "PingFang SC", "Microsoft YaHei", sans-serif',
 };
 
+// 兜底预设：只在「既没给 --brand-color 也没给 --from-logo」时用到。
+// 正常流程按主图标的品牌色推导配色，见 brandPalette()。
 const THEME_PRESETS = {
   blue: ['#0c1a2b', '#16395c', '#3fa9f5'],
   purple: ['#091726', '#1d1040', '#57b0f0'],
@@ -70,24 +72,244 @@ const THEME_PRESETS = {
   ink: ['#0d1b2a', '#1b2f4a', '#4fa8e0'],
 };
 
+/* ─────────────────── 品牌色 → 配色 ─────────────────── */
+
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+function hexToRgb(hex) {
+  let h = String(hex).trim().replace(/^#/, '');
+  if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) throw new Error('颜色格式不对（要 #rrggbb）: ' + hex);
+  return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+}
+
+const rgbToHex = (rgb) => '#' + rgb
+  .map((v) => clamp(Math.round(v), 0, 255).toString(16).padStart(2, '0')).join('');
+
+function rgbToHsl([r, g, b]) {
+  r /= 255; g /= 255; b /= 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  const l = (mx + mn) / 2;
+  if (!d) return { h: 0, s: 0, l };
+  const s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+  let h;
+  if (mx === r) h = ((g - b) / d + (g < b ? 6 : 0));
+  else if (mx === g) h = (b - r) / d + 2;
+  else h = (r - g) / d + 4;
+  return { h: h * 60, s, l };
+}
+
+function hslToRgb(h, s, l) {
+  h = ((h % 360) + 360) % 360 / 360;
+  if (!s) { const v = l * 255; return [v, v, v]; }
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+  const f = (t) => {
+    t = (t + 1) % 1;
+    if (t < 1 / 6) return p + (q - p) * 6 * t;
+    if (t < 1 / 2) return q;
+    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    return p;
+  };
+  return [f(h + 1 / 3) * 255, f(h) * 255, f(h - 1 / 3) * 255];
+}
+
+const relLum = (rgb) => {
+  const f = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+  const [R, G, B] = rgb.map(f);
+  return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+};
+
+const contrast = (a, b) => {
+  const la = relLum(a), lb = relLum(b);
+  return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+};
+
+/** 字符串 → 稳定的 0..1 数，用来给同一品牌色换几种光斑位置，避免同色文章长得一模一样 */
+function seedOf(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return ((h >>> 0) % 1000) / 1000;
+}
+
+/**
+ * 品牌色 → 深色三件套。
+ *
+ * 为什么要推而不是直接拿品牌色当背景：
+ *   Ubuntu 橙 #E95420 直接铺满，白字读不出来；KOOK 荧光绿 #87EB00 更糟。
+ *   所以固定「色相取自品牌色，亮度压进深色区间」，再用同色相提亮的 accent 做强调。
+ *
+ * 单色 / 金属 logo（AutoHotkey 那种银灰）没有可用色相，走冷灰，不硬造一个假品牌色。
+ */
+/**
+ * 品牌色 → 一整套深色封面配色。
+ *
+ * tone 是给「同一个品牌有多篇文章」准备的：同色相不可能靠色相区分，
+ * 只能靠明度分档 —— deep 更沉（接近夜空的深色），vivid 更亮（品牌色本身的感觉）。
+ */
+const TONES = { deep: 0.215, normal: 0.27, vivid: 0.325 };
+
+function brandPalette(brand, seedText, tone) {
+  const base = hexToRgb(brand);
+  let { h, s, l } = rgbToHsl(base);
+  const neutral = s < 0.1;
+  const sat = neutral ? 0.07 : clamp(s, 0.34, 0.72);
+  if (neutral) h = 210;
+
+  const l2 = TONES[tone] || TONES.normal;
+  // 灰色品牌（AHK 那种金属灰）没有色相帮忙，vivid 拉到 0.325 会变成一张灰卡，压回来一点
+  let ll = neutral ? Math.min(l2, 0.30) : l2;
+  // 荧光色（KOOK 那种黄绿）在同等明度下亮度高一截，直接压到 #5c8f17 会让白底字掉到 4:1 以下。
+  // 这里按白字 4.6:1 反推，够暗就停 —— 只有高亮度色相会被压，红/蓝不受影响。
+  let g2 = 0;
+  while (contrast(hexToRgb('#ffffff'), hexToRgb(rgbToHex(hslToRgb(h, sat, ll)))) < 4.6 && ll > 0.13 && g2++ < 40) {
+    ll -= 0.005;
+  }
+  const c1 = rgbToHex(hslToRgb(h, sat * 0.9, ll - 0.17));
+  const c2 = rgbToHex(hslToRgb(h, sat, ll));
+
+  // accent = 品牌色提亮到能在深底上当小字用；对比度不够就继续提
+  let al = clamp(l, 0.56, 0.78);
+  let accent = rgbToHex(hslToRgb(h, neutral ? s : clamp(s, 0.45, 0.85), al));
+  let guard = 0;
+  while (contrast(hexToRgb(accent), hexToRgb(c2)) < 4.6 && al < 0.86 && guard++ < 30) {
+    al += 0.02;
+    accent = rgbToHex(hslToRgb(h, neutral ? s : clamp(s, 0.45, 0.85), al));
+  }
+
+  // 光斑位置按 seed 三选一，同色相的文章才不会撞图
+  const seed = seedOf(seedText || brand);
+  const G = [
+    { gx: '72%', gy: '32%', gr: '62%' },
+    { gx: '26%', gy: '26%', gr: '58%' },
+    { gx: '58%', gy: '76%', gr: '58%' },
+  ][Math.floor(seed * 3) % 3];
+
+  return {
+    brand: rgbToHex(base),
+    c1, c2, accent,
+    neutral,
+    gx: G.gx, gy: G.gy, gr: G.gr,
+    glowOpacity: neutral ? 0.10 : 0.16,
+    // 主图标 = 提亮的品牌色（同色相靠亮度拉开层次），副图标保持白色做对比
+    mainFill: accent,
+    subFill: '#ffffff',
+  };
+}
+
+/** 从图标 SVG 里猜品牌色：取出现次数最多的「有彩」颜色；全是灰就取中位灰 */
+function brandFromIcon(file) {
+  const raw = fs.readFileSync(file, 'utf8');
+  const found = [...raw.matchAll(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g)].map((m) => '#' + m[1]);
+  const counts = new Map();
+  for (const c of found) counts.set(c, (counts.get(c) || 0) + 1);
+  let best = null, mid = null;
+  const hues = [];
+  for (const [c, n] of counts) {
+    const { s, l } = rgbToHsl(hexToRgb(c));
+    if (s >= 0.15 && l > 0.12 && l < 0.9) { if (!best || n > best.n) best = { c, n }; continue; }
+    if (s < 0.1) hues.push(l);
+  }
+  if (best) return best.c;
+  if (hues.length) {
+    hues.sort((a, b) => a - b);
+    const g = Math.round(hues[Math.floor(hues.length / 2)] * 255);
+    return rgbToHex([g, g, g]);
+  }
+  return null;
+}
+
+/**
+ * 只换色、不动版式：直接在已生成的 SVG 上改三处颜色。
+ *
+ * 换配色不该重排文字和图标 —— 旧封面里的标题是当初定稿的文案，
+ * 重新走一遍生成流程反而多一次「标题重新拼错」的机会。三处改动：
+ *   ① <linearGradient id="bg"> 两个 stop → c1 / c2
+ *   ② 全文把旧强调色换成新 accent（竖条 / 副标题 / 主图标都吃这一个色）
+ *   ③ <radialGradient id="glow"> 的浓度跟着调淡（单色 logo 的灰底尤其需要）
+ */
+function recolorSvg(svg, pal) {
+  const oldBg = [];
+
+  svg = svg.replace(/(<linearGradient id="bg"[^>]*>)([\s\S]*?)(<\/linearGradient>)/, (m, open, body, close) => {
+    let i = 0;
+    const stops = [...body.matchAll(/stop-color="(#[0-9a-fA-F]{3,8})"/g)].map((x) => x[1]);
+    if (stops.length) oldBg.push(...stops);
+    return open + body.replace(/stop-color="[^"]*"/g, () => `stop-color="${i++ === 0 ? pal.c1 : pal.c2}"`) + close;
+  });
+
+  const glow = svg.match(/<radialGradient id="glow"[^>]*>([\s\S]*?)<\/radialGradient>/);
+  const oldAccent = glow
+    ? [...new Set([...glow[1].matchAll(/stop-color="(#[0-9a-fA-F]{3,8})"/g)].map((x) => x[1]))]
+    : [];
+
+  for (const old of oldAccent) {
+    const re = new RegExp(old.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    svg = svg.replace(re, pal.accent);
+  }
+
+  svg = svg.replace(/(<radialGradient id="glow"[^>]*>[\s\S]*?)(<\/radialGradient>)/,
+    (m, body, close) => body.replace(/stop-opacity="[\d.]+"/, `stop-opacity="${pal.glowOpacity}"`) + close);
+
+  return { svg, oldBg: [...new Set(oldBg)], oldAccent };
+}
+
 /* ─────────────────────── 图标处理 ─────────────────────── */
 
 /**
  * 读 SVG 内部内容。必须剥离内层 fill —— 图标自带的黑色填充会盖掉外层配色，
  * 在深色底上直接隐形（本项目最常撞的坑）。
  */
-function innerSvg(file) {
+function innerSvg(file, opts) {
+  opts = opts || {};
   const raw = fs.readFileSync(file, 'utf8');
   const vb = (raw.match(/viewBox="([^"]+)"/) || [, '0 0 24 24'])[1].trim().split(/\s+/).map(Number);
-  const inner = raw
+
+  // 线条图标（Lucide 一类：根节点 fill="none" + stroke="currentColor"）不能当填充图形用，
+  // 否则描边会消失、只剩被 fill 糊住的碎块。这里单独识别，交给 place() 走描边模式。
+  const rootTag = (raw.match(/<svg[^>]*>/) || [''])[0];
+  const strokeIcon = /fill="none"/.test(rootTag) && /stroke=/.test(rootTag);
+
+  let inner = raw
     .replace(/^[\s\S]*?<svg[^>]*>/, '')
     .replace(/<\/svg>[\s\S]*$/, '')
     .replace(/<title>[\s\S]*?<\/title>/g, '')
     .replace(/<metadata>[\s\S]*?<\/metadata>/g, '')
-    .replace(/\sfill="#[0-9a-fA-F]{3,8}"/g, '')
     .replace(/\sstyle="[^"]*"/g, '');
+
+  if (opts.keepColors) {
+    // 保留多色：只把“深色”映射成浅色，否则深灰/纯黑在深底上会发闷甚至隐形。
+    // 规则：按亮度判断，亮度 < 0.62 的灰系换成 opts.darkAs（默认 #e8eef7），彩色不动。
+    const darkAs = opts.darkAs || '#e8eef7';
+    inner = inner.replace(/fill="#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})"/g, (m, hex) => {
+      let h = hex;
+      if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+      const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+      const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+      const chroma = (Math.max(r, g, b) - Math.min(r, g, b)) / 255;
+      // 灰系（低彩度）且偏暗 → 提亮成浅色
+      return (chroma < 0.22 && lum < 0.62) ? `fill="${darkAs}"` : m;
+    });
+  } else {
+    // 默认：剥离内层 fill，统一由外层配色控制
+    inner = inner.replace(/\sfill="#[0-9a-fA-F]{3,8}"/g, '');
+  }
+
   if (!inner.trim()) throw new Error('图标内容为空: ' + file);
-  return { vb, inner, file };
+
+  const pick = (name, dflt) => {
+    const m = rootTag.match(new RegExp(`\\s${name}="([^"]+)"`));
+    return m ? m[1] : dflt;
+  };
+
+  return {
+    vb, inner, file,
+    keepColors: !!opts.keepColors,
+    stroke: strokeIcon,
+    strokeWidth: strokeIcon ? pick('stroke-width', '2') : null,
+    strokeCap: strokeIcon ? pick('stroke-linecap', 'round') : null,
+    strokeJoin: strokeIcon ? pick('stroke-linejoin', 'round') : null,
+  };
 }
 
 /** 等比放进 size 见方的框并居中到 (x,y)；处理非零原点 viewBox */
@@ -97,8 +319,13 @@ function place(spec, x, y, size, opts) {
   const sc = Math.min(size / vw, size / vh);
   const ox = x + (size - vw * sc) / 2;
   const oy = y + (size - vh * sc) / 2;
+  const color = opts.fill || '#ffffff';
+  const paint = spec.stroke
+    ? `fill="none" stroke="${color}" stroke-width="${spec.strokeWidth}"`
+      + ` stroke-linecap="${spec.strokeCap}" stroke-linejoin="${spec.strokeJoin}"`
+    : `fill="${color}"`;
   let out = `<g transform="translate(${ox.toFixed(2)},${oy.toFixed(2)}) scale(${sc.toFixed(5)})"`
-    + ` fill="${opts.fill || '#ffffff'}" opacity="${opts.opacity === undefined ? 0.97 : opts.opacity}">\n`;
+    + ` ${paint} opacity="${opts.opacity === undefined ? 0.97 : opts.opacity}">\n`;
   if (vx !== 0 || vy !== 0) out += `<g transform="translate(${-vx},${-vy})">\n${spec.inner}\n</g>\n`;
   else out += spec.inner + '\n';
   return out + '</g>\n';
@@ -146,11 +373,11 @@ const defsBlock = (t, gx, gy, gr, go) => `  <defs>
 function makeCover(t) {
   const C = SPEC.cover;
   let s = `<svg xmlns="http://www.w3.org/2000/svg" width="${C.w}" height="${C.h}" viewBox="0 0 ${C.w} ${C.h}" font-family="${SPEC.fonts}">\n`;
-  s += defsBlock(t, '70%', '35%', '60%', '0.22');
+  s += defsBlock(t, t.gx, t.gy, t.gr, t.glowOpacity);
   s += `  <rect width="${C.w}" height="${C.h}" fill="url(#bg)"/>\n`;
   s += `  <rect width="${C.w}" height="${C.h}" fill="url(#glow)"/>\n`;
-  s += place(t.mainIcon, C.main.x, C.main.y, C.main.size, { fill: t.accent });
-  s += place(t.subIcon, C.sub.x, C.sub.y, C.sub.size, { fill: '#ffffff', opacity: 0.92 });
+  s += place(t.mainIcon, C.main.x, C.main.y, C.main.size, { fill: t.mainFill, opacity: 0.97 });
+  s += place(t.subIcon, C.sub.x, C.sub.y, C.sub.size, { fill: t.subFill, opacity: 0.92 });
   s += `  <rect x="${C.bar.x}" y="${C.bar.y}" width="${C.bar.w}" height="${C.bar.h}" fill="${t.accent}" rx="${C.bar.rx}"/>\n`;
   s += `  <text x="${C.title.x}" y="${C.title.y}" font-size="${C.title.size}" font-weight="bold" fill="#ffffff">${esc(t.coverTitle)}</text>\n`;
   s += `  <text x="${C.desc.x}" y="${C.desc.y}" font-size="${C.desc.size}" fill="${t.accent}" opacity="0.92">${esc(t.coverSub)}</text>\n`;
@@ -160,11 +387,11 @@ function makeCover(t) {
 function makeBanner(t, tight) {
   const B = SPEC.banner, L = tight ? B.tight : B.normal;
   let s = `<svg xmlns="http://www.w3.org/2000/svg" width="${B.w}" height="${B.h}" viewBox="0 0 ${B.w} ${B.h}" font-family="${SPEC.fonts}">\n`;
-  s += defsBlock(t, '76%', '45%', '45%', '0.18');
+  s += defsBlock(t, t.gx, t.gy, t.gr, t.glowOpacity);
   s += `  <rect width="${B.w}" height="${B.h}" fill="url(#bg)"/>\n`;
   s += `  <rect width="${B.w}" height="${B.h}" fill="url(#glow)"/>\n`;
-  s += place(t.mainIcon, L.main.x, L.main.y, L.main.size, { fill: t.accent });
-  s += place(t.subIcon, L.sub.x, L.sub.y, L.sub.size, { fill: '#ffffff', opacity: 0.92 });
+  s += place(t.mainIcon, L.main.x, L.main.y, L.main.size, { fill: t.mainFill, opacity: 0.97 });
+  s += place(t.subIcon, L.sub.x, L.sub.y, L.sub.size, { fill: t.subFill, opacity: 0.92 });
   s += `  <rect x="${L.bar.x}" y="${L.bar.y}" width="${L.bar.w}" height="${L.bar.h}" fill="${t.accent}" rx="${L.bar.rx}"/>\n`;
   s += `  <text x="${L.title.x}" y="${L.title.y}" font-size="${L.title.size}" font-weight="bold" fill="#ffffff">${esc(t.bannerTitle)}</text>\n`;
   s += `  <text x="${L.desc.x}" y="${L.desc.y}" font-size="${L.desc.size}" fill="${t.accent}" opacity="0.9">${esc(t.bannerSub)}</text>\n`;
@@ -201,7 +428,7 @@ function selfCheck(t, tight) {
 /* ─────────────────────── 命令行 ─────────────────────── */
 
 // 纯开关型参数：本身不带值（路径等放在位置参数里）
-const BOOLEAN_FLAGS = new Set(['check', 'png', 'help', 'init', 'force-tight']);
+const BOOLEAN_FLAGS = new Set(['check', 'png', 'help', 'init', 'force-tight', 'keep-colors', 'keep-colors-main', 'keep-colors-sub', 'from-logo', 'recolor']);
 
 function parseArgs(argv) {
   const out = { _: [] };
@@ -224,6 +451,7 @@ cover-forge —— butterfly 封面/横幅生成器
 
 用法：
   node cover-forge.js <文章目录> [选项]
+  node cover-forge.js --recolor <文章目录> --brand-color "#E95420"
   node cover-forge.js --check <文章目录> [--url http://127.0.0.1:4000]
   node cover-forge.js --init <目录> [--title "文章标题"]
 
@@ -234,13 +462,24 @@ cover-forge —— butterfly 封面/横幅生成器
   --banner-sub <文>   单独指定横幅副标题
   --cover-title <文>  单独指定封面大标题
   --cover-sub <文>    单独指定封面小标题
-  --theme <名>        配色预设：${Object.keys(THEME_PRESETS).join(' / ')}（默认 blue）
-  --c1 --c2 --accent <色> 自定义配色，覆盖 --theme
+
+配色选项（背景色跟着主图标的品牌色走，不再统一深蓝）：
+  --brand-color <色>  品牌主色，如 #E95420 / #0E83CD（推荐，写死最可控）
+  --from-logo         不给色值时，从主图标 SVG 里猜（有彩取主色，全灰取中位灰）
+  --theme <名>        兜底预设：${Object.keys(THEME_PRESETS).join(' / ')}（默认 blue）
+  --tone <deep|normal|vivid> 同一品牌多篇时用明度分档拉开（默认 normal）
+  --c1 --c2 --accent <色> 手动指定背景/强调色，完全跳过品牌推导
+
+改色（不动版式）：
+  --recolor           只改已有 cover.svg / banner.svg 的颜色，坐标和文案一律不碰
 
 图标选项：
   --main <svg>        主图标 = 文章主题的官方矢量（默认 brand-icons/hexo.svg）
-  --sub-icon <svg>    副图标 = 这篇文章对该主题做了什么（默认 brand-icons/wand.svg）
-  --brand <目录>      图标库目录（默认自动探测 ../../../../brand-icons）
+  --sub-icon <svg>    副图标 = 这篇文章对该主题做了什么（默认 ui-wand-sparkles.svg）
+  --brand <目录>      图标库目录（默认 tools/brand-icons，再向上逐级找）
+  --keep-colors       保留图标原色（只把深暗灰系提亮，避免深底上发闷/隐形）
+  --keep-colors-main  只对主图标保留原色
+  --keep-colors-sub   只对副图标保留原色
 
 输出：
   --png               额外导出 cover.png / banner.png（掘金等平台需要位图）
@@ -258,7 +497,11 @@ cover-forge —— butterfly 封面/横幅生成器
 示例：
   node cover-forge.js "E:/test/hexo/source/_posts/wechat-ime-mathinput" \\
     --title "按 = 出答案" --sub "AutoHotkey v2 · 任意输入框里算算式" \\
-    --main E:/test/brand-icons/autohotkey.svg --png --preview E:/tmp/preview
+    --main E:/test/brand-icons/autohotkey.svg --from-logo --png --preview E:/tmp/preview
+
+  node cover-forge.js "E:/test/hexo/source/_posts/blog-cover-design-guide" \\
+    --title "封面生成规则" --sub "630×487 是怎么算出来的" \\
+    --main E:/test/brand-icons/hexo.svg --brand-color "#0E83CD"
 `);
 }
 
@@ -471,6 +714,46 @@ top_img: banner.svg
     return await runCheck(pw, postDir, id, args.url || 'http://127.0.0.1:4000');
   }
 
+  /* --recolor：只换配色，不动版式 */
+  if (args.recolor) {
+    const dir = path.resolve(args._[0] || '.');
+    if (!fs.existsSync(dir)) { console.error('✗ 目录不存在: ' + dir); return 1; }
+    let brand = args['brand-color'] ? String(args['brand-color']) : null;
+    if (!brand && args['from-logo']) {
+      if (!args.main) { console.error('✗ --from-logo 需要同时给 --main <svg>'); return 1; }
+      brand = brandFromIcon(path.resolve(String(args.main)));
+      if (!brand) { console.error('✗ 图标里没有可用颜色，请直接给 --brand-color'); return 1; }
+    }
+    if (!brand) { console.error('✗ --recolor 需要 --brand-color（或 --from-logo --main）'); return 1; }
+
+    const pal = brandPalette(brand, path.basename(dir), args.tone ? String(args.tone) : null);
+    let touched = 0;
+    for (const f of ['cover.svg', 'banner.svg']) {
+      const p = path.join(dir, f);
+      if (!fs.existsSync(p)) { console.log('  跳过 ' + f + '（不存在）'); continue; }
+      const r = recolorSvg(fs.readFileSync(p, 'utf8'), pal);
+      fs.writeFileSync(p, r.svg, 'utf8');
+      touched++;
+      console.log('  ' + f.padEnd(10)
+        + ' 底 ' + (r.oldBg[0] || '?') + '/' + (r.oldBg[1] || '?') + ' → ' + pal.c1 + '/' + pal.c2
+        + ' · 强调 ' + (r.oldAccent.join(',') || '?') + ' → ' + pal.accent);
+    }
+    console.log('\n配色 ' + pal.brand + (pal.neutral ? '（单色 logo → 冷灰）' : '')
+      + ' · 白字对比 ' + contrast(hexToRgb('#ffffff'), hexToRgb(pal.c2)).toFixed(1) + ':1'
+      + ' · 改了 ' + touched + ' 个文件');
+
+    // 已经有位图副本的文章，顺手把 PNG 也重出一遍（掘金等平台用的是 PNG）
+    const pngTargets = [
+      { file: 'cover.svg', w: 630, h: 487 },
+      { file: 'banner.svg', w: 1600, h: 400 },
+    ].filter((t) => fs.existsSync(path.join(dir, t.file.replace(/\.svg$/, '.png'))));
+    if (args.png && pngTargets.length) {
+      console.log('\n重出已有 PNG:');
+      await exportPngs(pw, dir, pngTargets);
+    }
+    return 0;
+  }
+
   /* 生成 */
   const postDir = path.resolve(args._[0]);
   if (!fs.existsSync(postDir)) { console.error('✗ 目录不存在: ' + postDir); return 1; }
@@ -478,6 +761,10 @@ top_img: banner.svg
   // 图标库定位：--brand 优先；否则从文章目录向上逐级找 brand-icons
   const findBrandDir = () => {
     if (args.brand) return path.resolve(String(args.brand));
+    // 先看工具自带的一份（tools/brand-icons），再沿文章目录向上找，
+    // 这样 clone 下来就能直接跑，不依赖仓库外的图标库
+    const own = path.join(__dirname, 'brand-icons');
+    if (fs.existsSync(own)) return own;
     let d = postDir;
     for (let i = 0; i < 8; i++) {
       const cand = path.join(d, 'brand-icons');
@@ -510,16 +797,55 @@ top_img: banner.svg
     return p;
   };
 
+  // 图标着色策略：--keep-colors 全局开启；--keep-colors-main / --keep-colors-sub 单独控制
+  const keepAll = !!args['keep-colors'];
+  const iconOpts = { keepColors: keepAll };
+  const mainIconOpts = { keepColors: keepAll || !!args['keep-colors-main'] };
+  const subIconOpts = { keepColors: keepAll || !!args['keep-colors-sub'] };
+
   const themeName = String(args.theme || 'blue');
   const preset = THEME_PRESETS[themeName] || THEME_PRESETS.blue;
 
+  const mainIconPath = pickIcon(args.main, 'hexo.svg');
+  const subIconPath = pickIcon(args['sub-icon'], 'ui-wand-sparkles.svg');
+
+  // 配色优先级：手写 --c1/--c2/--accent > 品牌色推导 > --theme 预设
+  let pal;
+  let brandSource = '';
+  if (args.c1 && args.c2 && args.accent) {
+    pal = {
+      c1: String(args.c1), c2: String(args.c2), accent: String(args.accent),
+      gx: '70%', gy: '35%', gr: '60%', glowOpacity: 0.2,
+      mainFill: String(args.accent), subFill: '#ffffff', neutral: false,
+    };
+    brandSource = '手写三色';
+  } else {
+    let brand = args['brand-color'] ? String(args['brand-color']) : null;
+    if (!brand && args['from-logo']) {
+      brand = brandFromIcon(mainIconPath);
+      if (!brand) throw new Error('主图标里找不到可用颜色，请直接给 --brand-color');
+      brandSource = path.basename(mainIconPath) + ' 提取';
+    }
+    if (!brand) {
+      pal = {
+        c1: String(args.c1 || preset[0]), c2: String(args.c2 || preset[1]),
+        accent: String(args.accent || preset[2]),
+        gx: '70%', gy: '35%', gr: '60%', glowOpacity: 0.2,
+        mainFill: String(args.accent || preset[2]), subFill: '#ffffff', neutral: false,
+      };
+      brandSource = '预设 ' + themeName;
+    } else {
+      pal = brandPalette(brand, path.basename(postDir), args.tone ? String(args.tone) : null);
+      brandSource = '品牌色 ' + pal.brand + (pal.neutral ? '（单色 logo → 冷灰）' : '');
+    }
+  }
+
   const title = String(args.title || path.basename(postDir));
   const t = {
-    c1: String(args.c1 || preset[0]),
-    c2: String(args.c2 || preset[1]),
-    accent: String(args.accent || preset[2]),
-    mainIcon: innerSvg(pickIcon(args.main, 'hexo.svg')),
-    subIcon: innerSvg(pickIcon(args['sub-icon'], 'wand.svg')),
+    ...pal,
+    // --keep-colors 作用于全部图标：保留原图多色，只把深暗灰系提亮
+    mainIcon: innerSvg(mainIconPath, mainIconOpts),
+    subIcon: innerSvg(subIconPath, subIconOpts),
     coverTitle: String(args['cover-title'] || title),
     coverSub: String(args['cover-sub'] || args.sub || ''),
     bannerTitle: String(args['banner-title'] || title),
@@ -550,7 +876,9 @@ top_img: banner.svg
   console.log('\n已写入:');
   console.log('  cover.svg   ' + fs.statSync(coverPath).size + ' B');
   console.log('  banner.svg  ' + fs.statSync(bannerPath).size + ' B');
-  console.log(`  主图标 ${path.basename(t.mainIcon.file)} · 副图标 ${path.basename(t.subIcon.file)} · 配色 ${themeName}`);
+  console.log(`  主图标 ${path.basename(t.mainIcon.file)} · 副图标 ${path.basename(t.subIcon.file)}`);
+  console.log(`  配色 ${brandSource} → 底 ${t.c1} → ${t.c2} · 强调 ${t.accent}`
+    + ` · 白字对比 ${contrast(hexToRgb('#ffffff'), hexToRgb(t.c2)).toFixed(1)}:1`);
 
   if (args.png) {
     console.log('\n导出 PNG:');

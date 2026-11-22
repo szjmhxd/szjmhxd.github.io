@@ -1,34 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="400" viewBox="0 0 1600 400" font-family="Microsoft YaHei, PingFang SC, sans-serif">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#2a1108"/>
-      <stop offset="100%" stop-color="#4a1f0c"/>
+      <stop offset="0%" stop-color="#2a1209"/><stop offset="100%" stop-color="#762d13"/>
     </linearGradient>
-    <radialGradient id="glow" cx="76%" cy="45%" r="45%">
-      <stop offset="0%" stop-color="#e95420" stop-opacity="0.18"/>
-      <stop offset="100%" stop-color="#e95420" stop-opacity="0"/>
+    <radialGradient id="glow" cx="26%" cy="26%" r="58%">
+      <stop offset="0%" stop-color="#f3a286" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#f3a286" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="1600" height="400" fill="url(#bg)"/>
   <rect width="1600" height="400" fill="url(#glow)"/>
-<g transform="translate(1110.00,100.00) scale(7.70833)" opacity="0.96">
-  <g fill="#e95420">
-    <path d="M17.61.455a3.41 3.41 0 0 0-3.41 3.41 3.41 3.41 0 0 0 3.41 3.41 3.41 3.41 0 0 0 3.41-3.41 3.41 3.41 0 0 0-3.41-3.41zM12.92.8C8.923.777 5.137 2.941 3.148 6.451a4.5 4.5 0 0 1 .26-.007 4.92 4.92 0 0 1 2.585.737A8.316 8.316 0 0 1 12.688 3.6 4.944 4.944 0 0 1 13.723.834 11.008 11.008 0 0 0 12.92.8zm9.226 4.994a4.915 4.915 0 0 1-1.918 2.246 8.36 8.36 0 0 1-.273 8.303 4.89 4.89 0 0 1 1.632 2.54 11.156 11.156 0 0 0 .559-13.089zM3.41 7.932A3.41 3.41 0 0 0 0 11.342a3.41 3.41 0 0 0 3.41 3.409 3.41 3.41 0 0 0 3.41-3.41 3.41 3.41 0 0 0-3.41-3.41zm2.027 7.866a4.908 4.908 0 0 1-2.915.358 11.1 11.1 0 0 0 7.991 6.698 11.234 11.234 0 0 0 2.422.249 4.879 4.879 0 0 1-.999-2.85 8.484 8.484 0 0 1-.836-.136 8.304 8.304 0 0 1-5.663-4.32zm11.405.928a3.41 3.41 0 0 0-3.41 3.41 3.41 3.41 0 0 0 3.41 3.41 3.41 3.41 0 0 0 3.41-3.41 3.41 3.41 0 0 0-3.41-3.41z"/>
-  </g>
+<g transform="translate(1164.00,104.00) scale(5.33333)" fill="#f3a286" opacity="0.97">
+<path d="M17.61.455a3.41 3.41 0 0 0-3.41 3.41 3.41 3.41 0 0 0 3.41 3.41 3.41 3.41 0 0 0 3.41-3.41 3.41 3.41 0 0 0-3.41-3.41zM12.92.8C8.923.777 5.137 2.941 3.148 6.451a4.5 4.5 0 0 1 .26-.007 4.92 4.92 0 0 1 2.585.737A8.316 8.316 0 0 1 12.688 3.6 4.944 4.944 0 0 1 13.723.834 11.008 11.008 0 0 0 12.92.8zm9.226 4.994a4.915 4.915 0 0 1-1.918 2.246 8.36 8.36 0 0 1-.273 8.303 4.89 4.89 0 0 1 1.632 2.54 11.156 11.156 0 0 0 .559-13.089zM3.41 7.932A3.41 3.41 0 0 0 0 11.342a3.41 3.41 0 0 0 3.41 3.409 3.41 3.41 0 0 0 3.41-3.41 3.41 3.41 0 0 0-3.41-3.41zm2.027 7.866a4.908 4.908 0 0 1-2.915.358 11.1 11.1 0 0 0 7.991 6.698 11.234 11.234 0 0 0 2.422.249 4.879 4.879 0 0 1-.999-2.85 8.484 8.484 0 0 1-.836-.136 8.304 8.304 0 0 1-5.663-4.32zm11.405.928a3.41 3.41 0 0 0-3.41 3.41 3.41 3.41 0 0 0 3.41 3.41 3.41 3.41 0 0 0 3.41-3.41 3.41 3.41 0 0 0-3.41-3.41z"/>
 </g>
-<g transform="translate(1250.00,220.00) scale(4.16667)" opacity="0.94">
-  <g fill="#e95420">
-    <circle cx="6" cy="12" r="3.2"/>
-    <circle cx="18" cy="6" r="3.2"/>
-    <circle cx="18" cy="18" r="3.2"/>
-  </g>
-  <g stroke="#e95420" stroke-width="3.2" stroke-linecap="round">
-    <line x1="8.8" y1="10.6" x2="15.2" y2="7.4"/>
-    <line x1="8.8" y1="13.4" x2="15.2" y2="16.6"/>
-  </g>
+<g transform="translate(1312.00,126.00) scale(3.66667)" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.92">
+
+  <circle cx="18" cy="5" r="3" />
+  <circle cx="6" cy="12" r="3" />
+  <circle cx="18" cy="19" r="3" />
+  <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />
+  <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
+
 </g>
-  <rect x="130" y="116" width="6" height="58" fill="#e95420" rx="3"/>
-  <text x="158" y="160" font-size="44" font-weight="bold" fill="#ffffff">Samba 共享踩坑</text>
-  <text x="160" y="204" font-size="20" fill="#e95420" opacity="0.9">Ubuntu 22.04 · Windows 客户端</text>
-  <line x1="130" y1="252" x2="660" y2="252" stroke="#e95420" stroke-opacity="0.25" stroke-width="1.5"/>
+  <rect x="182" y="112" width="5" height="52" fill="#f3a286" rx="2.5"/>
+  <text x="206" y="152" font-size="44" font-weight="bold" fill="#ffffff">Samba 共享</text>
+  <text x="208" y="194" font-size="21" fill="#f3a286" opacity="0.9">Ubuntu 22.04 · 共享配置踩坑</text>
 </svg>
