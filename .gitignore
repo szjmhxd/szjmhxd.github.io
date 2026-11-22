@@ -1,0 +1,22 @@
+# 本仓只放 Hexo 构建产物 + 部署配置 + 工具脚本
+# 源码与素材一律留在私有仓 blog-hexo-butterfly-old（E:\test\hexo），不要镜像进来
+
+# Hexo 源文件（产物里已有渲染结果，无需重复）
+source/
+scaffolds/
+themes/
+node_modules/
+
+# Hexo 本地状态
+db.json
+*.log
+public/
+.deploy*/
+
+# DSH 临时锁文件
+.dsh-ops-*.lock
+.dsh-meow/
+
+# 系统垃圾
+.DS_Store
+Thumbs.db
