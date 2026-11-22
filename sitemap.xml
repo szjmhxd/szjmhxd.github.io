@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.szjmhxd.online/posts/3f7c9a21/</loc>
+    
+    <lastmod>2026-11-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://blog.szjmhxd.online/posts/4b2bdae9/</loc>
     
     <lastmod>2026-11-22</lastmod>
@@ -441,6 +450,13 @@
   
   <url>
     <loc>https://blog.szjmhxd.online/tags/%E7%A3%81%E8%B4%B4/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.szjmhxd.online/tags/%E5%B0%8F%E7%B1%B3%E5%A6%99%E4%BA%AB/</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
