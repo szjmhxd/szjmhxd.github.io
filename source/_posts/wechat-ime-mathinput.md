@@ -8,6 +8,9 @@ categories:
 tags:
   - AutoHotkey
   - 开源
+cover: cover.svg
+top_img: banner.svg
+abbrlink: 7d2c1b8e
 ---
 
 ## 先说结论
@@ -29,23 +32,23 @@ tags:
 
 敲完算式还没按等号，光标旁已经把结果显示出来了：
 
-![输入过程中实时预览](https://raw.githubusercontent.com/szjmhxd/ahk-scripts/main/docs/img/preview.png)
+{% asset_img preview.png 输入过程中实时预览 %}
 
 按 `=`，答案直接接在等号后面，你写的算式一个字符都不动：
 
-![按等号后追加答案](https://raw.githubusercontent.com/szjmhxd/ahk-scripts/main/docs/img/commit.png)
+{% asset_img commit.png 按等号后追加答案 %}
 
 前面有中文、有空格也认得出哪一段是算式：
 
-![中文和空格前缀](https://raw.githubusercontent.com/szjmhxd/ahk-scripts/main/docs/img/prefix-cn.png)
+{% asset_img prefix-cn.png 中文和空格前缀 %}
 
 算完可以接着算，以上一个结果为起点：
 
-![链式计算](https://raw.githubusercontent.com/szjmhxd/ahk-scripts/main/docs/img/chain.png)
+{% asset_img chain.png 链式计算 %}
 
 算不出来就什么都不做，`=` 保持原样：
 
-![非法算式不动作](https://raw.githubusercontent.com/szjmhxd/ahk-scripts/main/docs/img/noop.png)
+{% asset_img noop.png 非法算式不动作 %}
 
 ---
 
