@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="630" height="487" viewBox="0 0 630 487" font-family="Microsoft YaHei, PingFang SC, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0c1a2b"/>
+      <stop offset="100%" stop-color="#16395c"/>
+    </linearGradient>
+  </defs>
+  <rect width="630" height="487" fill="url(#bg)"/>
+  <g opacity="0.92">
+    <rect x="150" y="150" width="300" height="26" rx="13" fill="#3fa9f5" fill-opacity="0.85"/>
+    <rect x="150" y="222" width="300" height="26" rx="13" fill="#3fa9f5" fill-opacity="0.5"/>
+    <rect x="470" y="150" width="16" height="98" rx="8" fill="#ffffff" fill-opacity="0.55"/>
+  </g>
+  <text x="150" y="330" font-size="40" font-weight="bold" fill="#ffffff">AutoHotkey</text>
+  <text x="152" y="372" font-size="20" fill="#3fa9f5" opacity="0.9">MathInput · 任意输入框按 = 出答案</text>
+  <line x1="150" y1="402" x2="480" y2="402" stroke="#3fa9f5" stroke-opacity="0.25" stroke-width="1.5"/>
+</svg>

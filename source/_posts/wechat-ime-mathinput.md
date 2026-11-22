@@ -26,6 +26,28 @@ tags:
 - 仓库：<https://github.com/szjmhxd/ahk-scripts>
 - 依赖：Windows 10/11 + [AutoHotkey v2.0](https://www.autohotkey.com/)（v1 不行）
 
+## 先看效果
+
+敲完算式还没按等号，光标旁已经把结果显示出来了：
+
+![输入过程中实时预览](https://raw.githubusercontent.com/szjmhxd/ahk-scripts/main/docs/img/preview.png)
+
+按 `=`，答案直接接在等号后面，你写的算式一个字符都不动：
+
+![按等号后追加答案](https://raw.githubusercontent.com/szjmhxd/ahk-scripts/main/docs/img/commit.png)
+
+前面有中文、有空格也认得出哪一段是算式：
+
+![中文和空格前缀](https://raw.githubusercontent.com/szjmhxd/ahk-scripts/main/docs/img/prefix-cn.png)
+
+算完可以接着算，以上一个结果为起点：
+
+![链式计算](https://raw.githubusercontent.com/szjmhxd/ahk-scripts/main/docs/img/chain.png)
+
+算不出来就什么都不做，`=` 保持原样：
+
+![非法算式不动作](https://raw.githubusercontent.com/szjmhxd/ahk-scripts/main/docs/img/noop.png)
+
 ---
 
 <!-- more -->

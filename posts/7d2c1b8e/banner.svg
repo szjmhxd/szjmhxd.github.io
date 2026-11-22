@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="400" viewBox="0 0 1600 400" font-family="Microsoft YaHei, PingFang SC, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0c1a2b"/>
+      <stop offset="100%" stop-color="#132f4d"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="76%" cy="45%" r="45%">
+      <stop offset="0%" stop-color="#3fa9f5" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#3fa9f5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="400" fill="url(#bg)"/>
+  <rect width="1600" height="400" fill="url(#glow)"/>
+  <g opacity="0.9">
+    <rect x="1150" y="146" width="230" height="24" rx="12" fill="#3fa9f5" fill-opacity="0.8"/>
+    <rect x="1150" y="204" width="230" height="24" rx="12" fill="#3fa9f5" fill-opacity="0.45"/>
+    <rect x="1398" y="146" width="12" height="82" rx="6" fill="#ffffff" fill-opacity="0.55"/>
+  </g>
+  <rect x="130" y="116" width="6" height="58" fill="#3fa9f5" rx="3"/>
+  <text x="158" y="160" font-size="44" font-weight="bold" fill="#ffffff">按 = 出答案的算式输入</text>
+  <text x="160" y="204" font-size="20" fill="#3fa9f5" opacity="0.9">AutoHotkey v2 · 全局键盘钩子 · 递归下降求值</text>
+  <line x1="130" y1="252" x2="880" y2="252" stroke="#3fa9f5" stroke-opacity="0.25" stroke-width="1.5"/>
+</svg>
