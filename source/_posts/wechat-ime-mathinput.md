@@ -8,7 +8,6 @@ categories:
 tags:
   - AutoHotkey
   - 开源
-  - Windows
 ---
 
 ## 先说结论
