@@ -1,0 +1,955 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>从写 md 到上线：这个博客的完整工作流 | 十早九木のBlog</title><meta name="author" content="十早九木"><meta name="copyright" content="十早九木"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="四个仓库各管什么、md 的 front matter 每个字段怎么填、配图为什么必须用 asset_img、封面和横幅怎么一条命令生成、发版后怎么验收。把这个博客从零到上线的全部规则写清楚。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从写 md 到上线：这个博客的完整工作流">
+<meta property="og:url" content="https://szjmhxd.github.io/posts/d7309f33/">
+<meta property="og:site_name" content="十早九木のBlog">
+<meta property="og:description" content="四个仓库各管什么、md 的 front matter 每个字段怎么填、配图为什么必须用 asset_img、封面和横幅怎么一条命令生成、发版后怎么验收。把这个博客从零到上线的全部规则写清楚。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://szjmhxd.github.io/posts/d7309f33/cover.svg">
+<meta property="article:published_time" content="2026-11-23T09:20:00.000Z">
+<meta property="article:modified_time" content="2026-11-23T09:20:00.000Z">
+<meta property="article:author" content="十早九木">
+<meta property="article:tag" content="Butterfly">
+<meta property="article:tag" content="GitHub Pages">
+<meta property="article:tag" content="Hexo">
+<meta property="article:tag" content="工作流">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://szjmhxd.github.io/posts/d7309f33/cover.svg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "从写 md 到上线：这个博客的完整工作流",
+  "url": "https://szjmhxd.github.io/posts/d7309f33/",
+  "image": "https://szjmhxd.github.io/posts/d7309f33/cover.svg",
+  "datePublished": "2026-11-23T09:20:00.000Z",
+  "dateModified": "2026-11-23T09:20:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "十早九木",
+      "url": "https://szjmhxd.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://szjmhxd.github.io/posts/d7309f33/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        const data = { value }
+
+        if (ttl != null) {
+          data.expiry = Date.now() + ttl * 86400000
+        }
+
+        localStorage.setItem(key, JSON.stringify(data))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '从写 md 到上线：这个博客的完整工作流',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="十早九木のBlog" type="application/atom+xml">
+</head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/posts/d7309f33/banner.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">从写 md 到上线：这个博客的完整工作流</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">从写 md 到上线：这个博客的完整工作流</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-23T09:20:00.000Z" title="发表于 2026-11-23 17:20:00">2026-11-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-23T09:20:00.000Z" title="更新于 2026-11-23 17:20:00">2026-11-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%8D%9A%E5%AE%A2/">博客</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="先说结论"><a href="#先说结论" class="headerlink" title="先说结论"></a>先说结论</h2><p>这个博客是「源码仓负责写，产物仓负责展示」的两段式结构。你只在源码仓里写 markdown，一条命令帮你编译、同步、推送到两个 GitHub 仓库，剩下的交给 Pages 自动构建。</p>
+<p>整个链路只有一条命令：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> E:\test\hexo</span><br><span class="line">.\deploy.ps1 <span class="literal">-Message</span> <span class="string">&quot;新增：文章标题&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>但在按下这条命令之前，有四件事必须做对：<strong>front matter、配图语法、封面生成、本地预览</strong>。这篇把每一步都写清楚，下次照着做就行。</p>
+<hr>
+<h2 id="一、四个仓库，各管什么"><a href="#一、四个仓库，各管什么" class="headerlink" title="一、四个仓库，各管什么"></a>一、四个仓库，各管什么</h2><p>打开我的 GitHub 会看到四个仓库，很容易混。先把关系摆清楚：</p>
+<table>
+<thead>
+<tr>
+<th>仓库</th>
+<th>可见性</th>
+<th>角色</th>
+<th>本地路径</th>
+<th>我要不要动它</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>blog-hexo-butterfly-old</code></td>
+<td>私有</td>
+<td><strong>Hexo 源码</strong>（md + 素材 + 主题配置）</td>
+<td><code>E:\test\hexo</code></td>
+<td>✅ 只在这里写</td>
+</tr>
+<tr>
+<td><code>szjmhxd.github.io</code></td>
+<td>公开</td>
+<td><strong>展示站</strong>（编译产物）</td>
+<td><code>E:\test\site-new</code></td>
+<td>❌ 自动生成，不要手改</td>
+</tr>
+<tr>
+<td><code>blog-hexo-Melody-old</code></td>
+<td>公开</td>
+<td>旧版博客归档快照</td>
+<td>无</td>
+<td>只读留存</td>
+</tr>
+<tr>
+<td><code>szjmhxd</code></td>
+<td>公开</td>
+<td><strong>个人主页名片</strong>（不是博客）</td>
+<td>无</td>
+<td>与博客无关</td>
+</tr>
+</tbody></table>
+<h3 id="为什么第-4-个容易误会"><a href="#为什么第-4-个容易误会" class="headerlink" title="为什么第 4 个容易误会"></a>为什么第 4 个容易误会</h3><p>GitHub 有个特殊机制：<strong>当仓库名和用户名完全一样时，这个仓库的 README 会显示在你的 GitHub 首页</strong>，这叫 Profile README。</p>
+<p>所以 <code>szjmhxd/szjmhxd</code> 不是我的博客，是那张像素风的个人名片。它和 <code>szjmhxd.github.io</code> 只差一个后缀，但完全无关。看到 <code>owner/owner</code> 这种形式，先想到个人主页。</p>
+<h3 id="为什么源码仓要私有、产物仓要公开"><a href="#为什么源码仓要私有、产物仓要公开" class="headerlink" title="为什么源码仓要私有、产物仓要公开"></a>为什么源码仓要私有、产物仓要公开</h3><p>产物仓必须是 public——<strong>GitHub Pages 免费版只能从公开仓库发布</strong>。</p>
+<p>源码仓设成 private，是因为里面除了文章还有工作笔记、内网 IP、服务器路径这类不该公开的东西。虽然产物也是公开的，但至少源头是受控的。</p>
+<blockquote>
+<p>这里踩过一个坑：我一度把源码仓的 <code>source/_posts</code> 完整复制进了产物仓，想着「这样产物仓能独立构建」。结果两个问题：①产物仓缺 <code>_config.yml</code> 和 <code>package.json</code>，压根构建不了；②产物仓是公开的，<code>raw.githubusercontent.com</code> 可以直接读到所有 md 原文——隐私仓形同虚设。后来整段删掉了，产物仓只留编译结果。</p>
+</blockquote>
+<hr>
+<h2 id="二、md-怎么写"><a href="#二、md-怎么写" class="headerlink" title="二、md 怎么写"></a>二、md 怎么写</h2><h3 id="建文章"><a href="#建文章" class="headerlink" title="建文章"></a>建文章</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> E:\test\hexo</span><br><span class="line">npx hexo new post <span class="string">&quot;文章标题&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>会生成两个东西：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source/_posts/文章标题.md         ← 你写的正文</span><br><span class="line">source/_posts/文章标题/           ← 配图目录（因为开了 post_asset_folder）</span><br></pre></td></tr></table></figure>
+
+<p>那个同名目录不是多余的，它决定了配图能不能正确加载，后面会讲。</p>
+<h3 id="front-matter-全字段"><a href="#front-matter-全字段" class="headerlink" title="front matter 全字段"></a>front matter 全字段</h3><p><code>hexo new</code> 只给三行（title &#x2F; date &#x2F; tags），实际需要补全成这样：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">文章标题</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2026-11-23 17:20:00</span></span><br><span class="line"><span class="attr">updated:</span> <span class="number">2026-11-23 17:20:00</span></span><br><span class="line"><span class="attr">description:</span> <span class="string">一句话摘要，会进首页卡片和</span> <span class="string">SEO</span> <span class="string">的</span> <span class="string">og:description</span></span><br><span class="line"><span class="attr">categories:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">博客</span></span><br><span class="line"><span class="attr">tags:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">Hexo</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"><span class="attr">cover:</span> <span class="string">cover.svg</span>        <span class="comment"># 首页卡片图</span></span><br><span class="line"><span class="attr">top_img:</span> <span class="string">banner.svg</span>     <span class="comment"># 文章页顶部横幅</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
+
+<p>逐个说：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>作用</th>
+<th>注意</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>title</code></td>
+<td>文章标题</td>
+<td>会显示在首页、文章页、RSS、SEO</td>
+</tr>
+<tr>
+<td><code>date</code></td>
+<td>写作时间</td>
+<td>决定排序和归档目录</td>
+</tr>
+<tr>
+<td><code>updated</code></td>
+<td>更新时间</td>
+<td>不填的话 Hexo 用文件 mtime，每次保存都变，建议写死</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>摘要</td>
+<td>首页卡片和搜索结果里那句小字，不填会截正文前几十字</td>
+</tr>
+<tr>
+<td><code>categories</code></td>
+<td>分类</td>
+<td>数组，支持层级（<code>- 部署运维</code> &#x2F; <code>- Laravel</code> 就是两级）</td>
+</tr>
+<tr>
+<td><code>tags</code></td>
+<td>标签</td>
+<td>数组，随便多个</td>
+</tr>
+<tr>
+<td><code>cover</code></td>
+<td>首页卡片封面</td>
+<td>值是<strong>相对文章素材目录</strong>的文件名</td>
+</tr>
+<tr>
+<td><code>top_img</code></td>
+<td>文章页横幅</td>
+<td>同上</td>
+</tr>
+</tbody></table>
+<h3 id="abbrlink-不要手填"><a href="#abbrlink-不要手填" class="headerlink" title="abbrlink 不要手填"></a>abbrlink 不要手填</h3><p>我的 URL 结构是 <code>posts/:abbrlink/</code>，比如这篇就是 <code>posts/d7309f33/</code>。</p>
+<p>那个八位十六进制短码由 <code>hexo-abbrlink</code> 插件在<strong>首次 generate 时自动写进 front matter</strong>。你手填反而容易和别的文章撞。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">abbrlink:</span> <span class="string">7d2c1b8e</span>     <span class="comment"># 首次 generate 自动写入，之后钉死不再变</span></span><br></pre></td></tr></table></figure>
+
+<p>一旦写进 front matter 就固定了，改标题、改文件名都不影响 URL——这是短链方案的核心价值。</p>
+<h3 id="一个例外：老文章可以钉死"><a href="#一个例外：老文章可以钉死" class="headerlink" title="一个例外：老文章可以钉死"></a>一个例外：老文章可以钉死</h3><p>如果从别的平台迁文章过来、或者要给旧 URL 做兼容，可以手动指定：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">abbrlink:</span> <span class="string">a4aa3bb4</span>     <span class="comment"># 手动钉死，和旧站一致</span></span><br></pre></td></tr></table></figure>
+
+<p>我这个博客现在<strong>不做旧链兼容</strong>了。历史上 RustDesk 那篇换过三次 URL：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/2025/12/23/rustdesk部署/                    ← 已废弃</span><br><span class="line">/2025/12/23/使用Docker部署RustDesk服务器/      ← 已废弃</span><br><span class="line">/posts/a4aa3bb4/                             ← 现行</span><br></pre></td></tr></table></figure>
+
+<p>前两个是当年用 <code>hexo-generator-alias</code> 生成的 meta-refresh 跳转页。后来决定只留短链，把它们连同 md 里的 <code>alias:</code> 字段一起删了。</p>
+<blockquote>
+<p><strong>踩坑提醒</strong>：<code>alias:</code> 配在 md 的 front matter 里，<strong>只删 <code>public/</code> 下的产物目录无效</strong>——下次 <code>hexo generate</code> 会原样重建。要彻底去掉必须改 front matter。这个坑我当时判断错过一次。</p>
+</blockquote>
+<hr>
+<h2 id="三、配图：为什么不能用-x-png"><a href="#三、配图：为什么不能用-x-png" class="headerlink" title="三、配图：为什么不能用 ![](x.png)"></a>三、配图：为什么不能用 <code>![](x.png)</code></h2><p>这是最容易踩、也最影响观感的一条。</p>
+<h3 id="必须用-asset-img"><a href="#必须用-asset-img" class="headerlink" title="必须用 "></a>必须用 <code>&#123;% asset_img %&#125;</code></h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;% asset<span class="emphasis">_img 截图.png 图注文字 %&#125;     ✅ 正确</span></span><br><span class="line"><span class="emphasis">![](<span class="link">截图.png</span>)                          ❌ 错误</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>区别在哪：</strong></p>
+<p><code>&#123;% asset_img %&#125;</code> 是 Hexo 的 asset tag，它知道「这篇文章的素材目录是 <code>source/_posts/文章标题/</code>」，会生成：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/posts/xxxxxxx/截图.png&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;图注文字&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>而纯 markdown 语法 <code>![](截图.png)</code> 会被当成<strong>相对当前页面</strong>的路径，生成：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;截图.png&quot;</span>&gt;</span>       ← 浏览器去找 /posts/xxxxxxx/截图.png，但这个文件根本不在那</span><br></pre></td></tr></table></figure>
+
+<p>结果就是图片 404。</p>
+<h3 id="素材目录的对应关系"><a href="#素材目录的对应关系" class="headerlink" title="素材目录的对应关系"></a>素材目录的对应关系</h3><p>因为开了 <code>post_asset_folder: true</code>，构建时会自动把素材目录复制到产物里：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">源码                                    产物</span><br><span class="line">source/_posts/文章标题/截图.png    →    public/posts/xxxxxxx/截图.png</span><br></pre></td></tr></table></figure>
+
+<p><code>asset_img</code> 就是靠这个映射把图正确地指过去。</p>
+<h3 id="SVG-图也能直接放"><a href="#SVG-图也能直接放" class="headerlink" title="SVG 图也能直接放"></a>SVG 图也能直接放</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% asset<span class="emphasis">_img 架构图.svg AstrBot + SnowLuma 架构图 %&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>SVG 好处是矢量、体积小、缩放不糊。但注意：<strong>SVG 里如果烘焙了文字，改标题后要重新生成</strong>——字是画在图里的，不是文本。</p>
+<h3 id="图注会变成什么"><a href="#图注会变成什么" class="headerlink" title="图注会变成什么"></a>图注会变成什么</h3><p><code>&#123;% asset_img 图.png 这里写图注 %&#125;</code> 的第二个参数会变成 <code>&lt;img alt=&quot;这里写图注&quot;&gt;</code>，butterfly 主题（配合 fancybox）会把它显示成图片下方的说明文字。所以图注要写完整的一句话，不要只写「示意图」。</p>
+<hr>
+<h2 id="四、封面和横幅怎么生成"><a href="#四、封面和横幅怎么生成" class="headerlink" title="四、封面和横幅怎么生成"></a>四、封面和横幅怎么生成</h2><p>每篇文章需要两张自绘图，尺寸是<strong>反推 CSS 出来的</strong>，不是拍脑袋：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>尺寸</th>
+<th>用在哪</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>封面 <code>cover</code></td>
+<td>630×487</td>
+<td>首页卡片左侧图框（实际显示 348×269）</td>
+</tr>
+<tr>
+<td>横幅 <code>banner</code></td>
+<td>1600×400</td>
+<td>文章页顶部（400px 高）</td>
+</tr>
+</tbody></table>
+<h3 id="一条命令"><a href="#一条命令" class="headerlink" title="一条命令"></a>一条命令</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">node tools/cover<span class="literal">-forge</span>.js source/_posts/文章标题 `</span><br><span class="line">  <span class="literal">--title</span> <span class="string">&quot;横幅上的短标题&quot;</span> `</span><br><span class="line">  <span class="literal">--sub</span> <span class="string">&quot;副标题 · 关键技术点&quot;</span> `</span><br><span class="line">  <span class="literal">--main</span> tools/brand<span class="literal">-icons</span>/docker.svg `</span><br><span class="line">  <span class="literal">--sub-icon</span> tools/brand<span class="literal">-icons</span>/ui<span class="literal">-calculator</span>.svg `</span><br><span class="line">  <span class="literal">--brand-color</span> <span class="string">&quot;#2496ED&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>跑完，素材目录里会多出 <code>cover.svg</code> 和 <code>banner.svg</code>，正好对应 front matter 里的 <code>cover:</code> &#x2F; <code>top_img:</code>。</p>
+<h3 id="两个图标怎么选（这条最重要）"><a href="#两个图标怎么选（这条最重要）" class="headerlink" title="两个图标怎么选（这条最重要）"></a>两个图标怎么选（这条最重要）</h3><p><strong>主图标 &#x3D; 文章主题的官方 logo。</strong> 讲 Docker 就放 Docker 官方图标，讲 Laravel 就放 Laravel，必须是原版矢量，不要自己重画，也不要拿近似的东西凑。</p>
+<p><strong>副图标 &#x3D; 这篇文章对该主题「做了什么」。</strong> 必须是个<strong>动词</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>文章做了什么</th>
+<th>副图标</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>修好了某个毛病</td>
+<td><code>ui-rotate-ccw</code>（反向箭头）</td>
+</tr>
+<tr>
+<td>接管了输入</td>
+<td><code>ui-mouse</code></td>
+</tr>
+<tr>
+<td>就地计算</td>
+<td><code>ui-calculator</code></td>
+</tr>
+<tr>
+<td>打通了路径</td>
+<td><code>ui-folder-symlink</code></td>
+</tr>
+<tr>
+<td>分享了内容</td>
+<td><code>ui-share-2</code></td>
+</tr>
+<tr>
+<td>顶部面板改造</td>
+<td><code>ui-panel-top</code></td>
+</tr>
+<tr>
+<td>语音&#x2F;播报</td>
+<td><code>ui-mic</code></td>
+</tr>
+<tr>
+<td>机器人&#x2F;对话</td>
+<td><code>ui-bot</code></td>
+</tr>
+<tr>
+<td>天气&#x2F;推送</td>
+<td><code>ui-cloud-sun</code></td>
+</tr>
+<tr>
+<td>分支&#x2F;流程</td>
+<td><code>ui-git-branch</code></td>
+</tr>
+</tbody></table>
+<p>判断标准是：<strong>副图标要对应本文的动作形状，而不是「这个项目还有哪些图标没用过」。</strong></p>
+<p>也不能拿第二个品牌 logo 凑数——一张封面只允许一个视觉主角。</p>
+<blockquote>
+<p>反面例子：早期我所有副图标都固定用「魔法棒」，结果 14 张封面的第二视觉元素长得一模一样，等于没有信息量。后来才改成按动作选。</p>
+</blockquote>
+<h3 id="配色跟着品牌走"><a href="#配色跟着品牌走" class="headerlink" title="配色跟着品牌走"></a>配色跟着品牌走</h3><p>现在的规则是<strong>背景色由主图标的品牌色推导</strong>，不再统一深蓝：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">--brand-color</span> <span class="string">&quot;#2496ED&quot;</span>     <span class="comment"># 推荐：写死最可控</span></span><br><span class="line"><span class="literal">--from-logo</span>                 <span class="comment"># 不给色值时，从 SVG 里猜（有彩取主色，全灰取中位灰）</span></span><br><span class="line"><span class="literal">--tone</span> deep|normal|vivid    <span class="comment"># 同一品牌多篇时，用明度分档拉开</span></span><br></pre></td></tr></table></figure>
+
+<p>品牌色 → HSL → 色相不动、饱和度夹到 <code>[0.34, 0.72]</code>，再按 <code>--tone</code> 取明度。<strong>代码里还写死了三条对比度约束</strong>（白字对底色 ≥ 4.6:1），所以荧光色会被自动压暗，不会出现看不清的情况。</p>
+<p>有几组常用色：</p>
+<table>
+<thead>
+<tr>
+<th>品牌</th>
+<th>色值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Docker</td>
+<td><code>#2496ED</code></td>
+</tr>
+<tr>
+<td>Hexo</td>
+<td><code>#0E83CD</code></td>
+</tr>
+<tr>
+<td>Ubuntu</td>
+<td><code>#E95420</code></td>
+</tr>
+<tr>
+<td>Laravel</td>
+<td><code>#FF2D20</code></td>
+</tr>
+<tr>
+<td>GitHub</td>
+<td><code>#24292e</code></td>
+</tr>
+</tbody></table>
+<h3 id="什么时候加-keep-colors"><a href="#什么时候加-keep-colors" class="headerlink" title="什么时候加 --keep-colors"></a>什么时候加 <code>--keep-colors</code></h3><p>默认行为是<strong>剥离图标内层的 <code>fill</code></strong>，让所有部件统一由外层配色决定——这适合 simple-icons 那种单色扁平图标。</p>
+<p>但有些图标<strong>本身就是配色的</strong>，剥掉就丢信息。比如计算器那个图标：「&#x3D;」长键是金色 <code>#CFB263</code>，其余是深灰 <code>#666666</code>。剥成纯白之后，「这条键是等号」的视觉提示就没了。</p>
+<p>这时加 <code>--keep-colors</code>：彩色原样保留，低彩度偏暗的提亮成 <code>#e8eef7</code>（否则深灰在深底上发闷，缩小后几乎看不见）。</p>
+<h3 id="验收：-check"><a href="#验收：-check" class="headerlink" title="验收：--check"></a>验收：<code>--check</code></h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.\preview.ps1                                        <span class="comment"># 先起本地服务</span></span><br><span class="line">node tools/cover<span class="literal">-forge</span>.js <span class="literal">--check</span> source/_posts/文章标题</span><br></pre></td></tr></table></figure>
+
+<p>它会渲染 banner，取每个绘制元素的真实屏幕框，按 1280&#x2F;1440&#x2F;1600&#x2F;1920&#x2F;2560 五个视口的 <code>cover</code> 映射求交，逐视口报告重叠面积和出框像素，两个指标都应该是 0。</p>
+<h3 id="三个必踩的坑（生成器已内置处理）"><a href="#三个必踩的坑（生成器已内置处理）" class="headerlink" title="三个必踩的坑（生成器已内置处理）"></a>三个必踩的坑（生成器已内置处理）</h3><p><strong>坑 1：比例不匹配会被裁。</strong> 封面如果用 1200×500（2.4:1），放进 348×269（1.294:1）的卡片会被 <code>object-fit: cover</code> 裁掉左右各 149px。所以封面必须是 630×487。</p>
+<p><strong>坑 2：横幅两侧和底部都有禁区。</strong> <code>background-size: cover</code> 在 1280 宽下横向裁 ±160px；而长标题在 1280 下折两行，标题文字上沿会抬到 y&#x3D;214。自绘内容必须全部躲进 <code>x∈[182,1420] × y&lt;200</code>。</p>
+<blockquote>
+<p>关键认知：<strong>最严的不是最宽的屏，也不是最窄的屏，而是「窄屏 + 长标题」这个组合。</strong></p>
+</blockquote>
+<p><strong>坑 3：图标自带 <code>fill</code> 会在深色底上隐形。</strong> 很多国内图标站导出的 SVG 内层写着 <code>fill=&quot;#000000&quot;</code>，深色封面上一贴就「消失」。生成器会把这类填充剥离，改由外层配色。</p>
+<hr>
+<h2 id="五、本地预览"><a href="#五、本地预览" class="headerlink" title="五、本地预览"></a>五、本地预览</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\preview.ps1</span><br></pre></td></tr></table></figure>
+
+<p>这个脚本用 <code>_config.local.yml</code> 覆盖配置，把 <code>url</code> 改成 <code>http://localhost:4000</code>，然后起服务。</p>
+<p>为什么要覆盖域名？因为 <code>_config.yml</code> 里的 <code>url</code> 是线上域名，如果本地预览不覆盖，页面里的完整链接会全指向线上，点一下就跳走了。</p>
+<blockquote>
+<p>一个老坑：PowerShell 里直接 <code>Start-Process &quot;hexo&quot;</code> 会报「不是有效的 Win32 应用程序」。原因是 hexo 是 npm 装的，那个 <code>hexo</code> 是 cmd 垫片不是 exe。必须用 <code>cmd /c</code> 包一层。<code>preview.ps1</code> 里已经处理好了。</p>
+</blockquote>
+<p>预览时重点看三件事：</p>
+<ol>
+<li>首页卡片里封面有没有被裁</li>
+<li>文章页横幅两侧有没有切掉内容</li>
+<li>正文配图有没有 404</li>
+</ol>
+<hr>
+<h2 id="六、发布"><a href="#六、发布" class="headerlink" title="六、发布"></a>六、发布</h2><h3 id="一条命令-1"><a href="#一条命令-1" class="headerlink" title="一条命令"></a>一条命令</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> E:\test\hexo</span><br><span class="line">.\deploy.ps1 <span class="literal">-Message</span> <span class="string">&quot;新增：文章标题&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>它按顺序做五件事：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[1/5] hexo clean        清掉旧产物</span><br><span class="line">[2/5] hexo generate     编译（约 2 秒，180+ 文件）</span><br><span class="line">[3/5] git add/commit    提交源码仓</span><br><span class="line">[4/5] 复制 public\* →   同步到 E:\test\site-new 并提交</span><br><span class="line">[5/5] git push × 2      两个仓各自推送（含 HTTP/1.1 + postBuffer + 退避重试）</span><br></pre></td></tr></table></figure>
+
+<p>推送那段有重试逻辑：失败后等 15s、30s、45s……最多试 8 次。国内推 GitHub 经常抖动，没有这个基本推不上去。</p>
+<h3 id="产物仓的清理白名单"><a href="#产物仓的清理白名单" class="headerlink" title="产物仓的清理白名单"></a>产物仓的清理白名单</h3><p><code>deploy.ps1</code> 第 32 行有一个 <code>$keep</code> 数组：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$keep</span> = <span class="selector-tag">@</span>(<span class="string">&#x27;.git&#x27;</span>, <span class="string">&#x27;docker-compose.yml&#x27;</span>, <span class="string">&#x27;.env&#x27;</span>, <span class="string">&#x27;tools&#x27;</span>, <span class="string">&#x27;.gitignore&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>同步前会清空产物仓（除这些以外全删），再把 <code>public\*</code> 复制进去。</p>
+<p><strong>这行必须留意</strong>：以后往产物仓里放任何要长期保留的东西（比如 CNAME 文件），都得同步加进这个数组，否则下次部署就被删了。</p>
+<blockquote>
+<p>这个坑真实存在：<code>tools/</code> 目录曾经就被自动删过一次，后来才补进白名单。</p>
+</blockquote>
+<h3 id="手动等价流程"><a href="#手动等价流程" class="headerlink" title="手动等价流程"></a>手动等价流程</h3><p>脚本挂了可以手动：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">npx hexo clean</span><br><span class="line">npx hexo generate</span><br><span class="line"><span class="comment"># 复制 public\* 到 E:\test\site-new（保留 .git/.env/docker-compose.yml/tools/.gitignore）</span></span><br><span class="line"><span class="built_in">cd</span> E:\test\site<span class="literal">-new</span>; git add <span class="literal">-A</span>; git commit <span class="literal">-m</span> <span class="string">&quot;Deploy: xxx&quot;</span></span><br><span class="line"><span class="built_in">cd</span> E:\test\site<span class="literal">-new</span>; git push</span><br><span class="line"><span class="built_in">cd</span> E:\test\hexo;   git push</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、上线后验收"><a href="#七、上线后验收" class="headerlink" title="七、上线后验收"></a>七、上线后验收</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python E:\test\verify_links.py</span><br></pre></td></tr></table></figure>
+
+<p>这个脚本批量请求线上 URL，逐项断言状态码，现在是 18 项：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">首页 / 各篇短链 / 头像 / RSS / 分页 / 归档 / sitemap</span><br><span class="line">已删的老链（应 404）</span><br><span class="line">源码 md（应 404）</span><br></pre></td></tr></table></figure>
+
+<p><strong>为什么要断言「应该 404」的项</strong>：确认某个东西真的删干净了，比确认它存在更重要。比如源码 md 如果哪天变成 200，说明产物仓又被塞了不该有的东西。</p>
+<h3 id="推送后-Pages-要等一会儿"><a href="#推送后-Pages-要等一会儿" class="headerlink" title="推送后 Pages 要等一会儿"></a>推送后 Pages 要等一会儿</h3><p><code>git push</code> 成功不等于线上生效。GitHub Pages 要重新构建，通常几十秒：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gh api repos/szjmhxd/szjmhxd.github.io/pages <span class="literal">--jq</span> <span class="string">&#x27;.status&#x27;</span></span><br><span class="line"><span class="comment"># &quot;building&quot; → &quot;built&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>刚推完就访问可能还是旧内容，别急着判断失败。</p>
+<hr>
+<h2 id="八、易错清单"><a href="#八、易错清单" class="headerlink" title="八、易错清单"></a>八、易错清单</h2><p>写文章、发布时容易踩的，集中列一遍：</p>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>原因</th>
+<th>处理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>配图 404</td>
+<td>用了 <code>![](x.png)</code></td>
+<td>改用 <code>&#123;% asset_img x.png 图注 %&#125;</code></td>
+</tr>
+<tr>
+<td>首页封面被裁</td>
+<td>封面尺寸不是 630×487</td>
+<td>用 <code>cover-forge.js</code> 生成，别自己画</td>
+</tr>
+<tr>
+<td>横幅文字被切</td>
+<td>内容超出安全框</td>
+<td>跑 <code>--check</code> 看重叠&#x2F;出框</td>
+</tr>
+<tr>
+<td>图标在深底上看不见</td>
+<td>SVG 内层有 <code>fill=&quot;#000&quot;</code></td>
+<td>去掉 <code>--keep-colors</code>（默认会剥离）</td>
+</tr>
+<tr>
+<td>图标是黑块看不清细节</td>
+<td>该保留配色的图标被剥离了</td>
+<td>加 <code>--keep-colors</code></td>
+</tr>
+<tr>
+<td><code>updated</code> 每次都变</td>
+<td>没写死</td>
+<td>front matter 里显式写 <code>updated:</code></td>
+</tr>
+<tr>
+<td>部署后 <code>tools/</code> 消失</td>
+<td>不在 <code>$keep</code> 白名单</td>
+<td>补进 <code>deploy.ps1</code> 第 32 行</td>
+</tr>
+<tr>
+<td>日期老链删了又回来</td>
+<td><code>alias:</code> 在 front matter 里</td>
+<td>改 md，不是删产物目录</td>
+</tr>
+<tr>
+<td>本地预览链接指到线上</td>
+<td>没加载 <code>_config.local.yml</code></td>
+<td>用 <code>.\preview.ps1</code></td>
+</tr>
+<tr>
+<td>推 GitHub 失败</td>
+<td>网络抖动</td>
+<td>等重试，或手动 <code>git push</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="九、完整流程速查"><a href="#九、完整流程速查" class="headerlink" title="九、完整流程速查"></a>九、完整流程速查</h2><p>以后新增一篇文章，照着走：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 建文章（md + 素材目录）</span></span><br><span class="line"><span class="built_in">cd</span> E:\test\hexo</span><br><span class="line">npx hexo new post <span class="string">&quot;文章标题&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 写正文，补 front matter</span></span><br><span class="line"><span class="comment">#    title / date / updated / description / categories / tags</span></span><br><span class="line"><span class="comment">#    cover: cover.svg   top_img: banner.svg</span></span><br><span class="line"><span class="comment">#    abbrlink 留空，首次 generate 自动写</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 生成封面 + 横幅</span></span><br><span class="line">node tools/cover<span class="literal">-forge</span>.js source/_posts/文章标题 `</span><br><span class="line">  <span class="literal">--title</span> <span class="string">&quot;短标题&quot;</span> <span class="literal">--sub</span> <span class="string">&quot;副标题&quot;</span> `</span><br><span class="line">  <span class="literal">--main</span> tools/brand<span class="literal">-icons</span>/&lt;品牌&gt;.svg `</span><br><span class="line">  <span class="literal">--sub-icon</span> tools/brand<span class="literal">-icons</span>/ui-&lt;动作&gt;.svg `</span><br><span class="line">  <span class="literal">--brand-color</span> <span class="string">&quot;#xxxxxx&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 配图放进 source/_posts/文章标题/</span></span><br><span class="line"><span class="comment">#    正文用 &#123;% asset_img 名.png 图注 %&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 本地预览检查</span></span><br><span class="line">.\preview.ps1</span><br><span class="line">node tools/cover<span class="literal">-forge</span>.js <span class="literal">--check</span> source/_posts/文章标题</span><br><span class="line"></span><br><span class="line"><span class="comment"># 6. 发布</span></span><br><span class="line">.\deploy.ps1 <span class="literal">-Message</span> <span class="string">&quot;新增：文章标题&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 7. 验收</span></span><br><span class="line">python E:\test\verify_links.py</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>这套流程的核心思想是<strong>把规则固化进工具，而不是记在脑子里</strong>。</p>
+<p>尺寸、安全框、配色对比度、图标类型判断、折行判定——这些全部写进了 <code>cover-forge.js</code>。我只需要告诉它「讲什么主题、做了什么动作、什么品牌色」，剩下的它保证不会出错。</p>
+<p>同理，<code>deploy.ps1</code> 把「编译→同步→双仓推送→重试」固化，<code>verify_links.py</code> 把「什么该 200、什么该 404」固化。</p>
+<p><strong>人负责想内容，工具负责不出错。</strong> 这样写博客才可持续。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://szjmhxd.github.io">十早九木</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://szjmhxd.github.io/posts/d7309f33/">https://szjmhxd.github.io/posts/d7309f33/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://szjmhxd.github.io" target="_blank">十早九木のBlog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Hexo/">Hexo</a><a class="post-meta__tags" href="/tags/Butterfly/">Butterfly</a><a class="post-meta__tags" href="/tags/GitHub-Pages/">GitHub Pages</a><a class="post-meta__tags" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81/">工作流</a></div><div class="post-share"><div class="social-share" data-image="/posts/d7309f33/cover.svg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/3f7c9a21/" title="小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势"><img class="cover" src="/posts/3f7c9a21/cover.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势</div></div><div class="info-2"><div class="info-item-1">手机投屏到电脑这件事，我有两套工具在轮换用：scrcpy 系（现在主要是 qtscrcpy）和小米妙享。 scrcpy 那边的操作是肌肉记忆：右键返回、中键回桌面、Ctrl+滚轮 捏合缩放。妙享的画面更清楚、延迟更低、连接也更省事，但它把这几个手势全丢了——鼠标在投屏窗口里只能点、能滚，想返回得把手机拿起来，或者去点窗口边缘的虚拟导航栏。 这篇记录的是怎么在不改妙享、不注入进程、不依赖 adb 的前提下，把「右键返回、中键回桌面」这套操作补回来。 先把需求钉死不是「给妙享加功能」，而是三条具体要求：    需求 说明    右键短按 &#x3D; 返回 和 scrcpy 一致，不需要看键盘   中键短按 &#x3D; 回桌面 同上   不干扰原有操作 左键点击、滚轮滚动、右键在窗口外弹菜单，全部保持原样   「不改原程序」是硬约束。妙享是装在 C:\Program Files\MI\ 下的商业软件，注入 DLL 或者打补丁，升级一次就失效，出问题还不好排查。 妙享其实已经有一半翻「小米电脑管家 → 工具 → 妙享桌面」的设置页，会发现三个键盘快捷键：   Alt+B 返回上级、A...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/3658fd19/" title="博客重建全程复盘：从 61 篇旧站到个人技术博客"><img class="cover" src="/posts/3658fd19/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-23</div><div class="info-item-2">博客重建全程复盘：从 61 篇旧站到个人技术博客</div></div><div class="info-2"><div class="info-item-1"> 一次把「死站」变成「活站」的完整过程记录周期：2026-10-16 ~ 2026-10-23 ｜ 仓库：szjmhxd 名下 ｜ 域名：blog.szjmhxd.online  一、起点：一个只有编译产物的旧站原 szjmhxd.github.io 有 61 篇文章，但只有编译后的 HTML、没有 hexo 源码——_config.yml、source/ 全部缺失，无法重新生成。内容构成：  60 篇 2022 年”狂神说Java”视频转录笔记（预科→多态止步，非原创） 1 篇原创《使用Docker部署RustDesk服务器》（2025-12-23） 1 处重复：「逻辑运算符、位运算符」出现两次 旁边的 blog-hexo-Melody-old（1366 文件）是同套内容旧版 + 收款码隐私图  用户工作方式（本项目沉淀的规则）：先盘点给清单 → 用户拍板 → 才动手；方案会多次改道，新指令一到旧方案立即作废。 二、三次改道，最终形态   阶段 方案 结局    ① 逐篇留删 保留有用、删掉没用的 61 篇 被改道   ② 整仓归档+同名新建 旧仓改名 blog-hexo-bu...</div></div></div></a><a class="pagination-related" href="/posts/4b2bdae9/" title="我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的"><img class="cover" src="/posts/4b2bdae9/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-22</div><div class="info-item-2">我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的</div></div><div class="info-2"><div class="info-item-1">先说结论我给这个博客的每一篇文章都配了两张自己画的 SVG 图：首页卡片的封面，和文章页顶部的横幅。 它们不是同一张图的两个尺寸，而是两张按各自容器比例独立设计的图：     尺寸 比例 用在哪    封面 cover 630×487 1.294 : 1 首页卡片左侧图框（348×269）   横幅 banner 1600×400 4 : 1 文章页顶部 #page-header.post-bg（400px 高）   这两个数字都不是拍脑袋定的，是从 CSS 反推出来的。下面把推导过程、坐标参数、以及六轮目检踩出来的迭代规则一次讲清。 一、首页卡片到底会不会裁你的图先看现象。butterfly 的首页文章卡片是 flex 布局，图片区 .post_cover 的宽度是 42%，高度由父容器 16.8em 决定。图片本身是 object-fit: cover。 object-fit: cover 的意思是：等比缩放到刚好填满容器，超出的部分居中裁掉。 所以问题变成：一张 1200×500 的横图放进 348×269 的框里，会发生什么？   答案是左右各裁掉约 149px，一共丢掉...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">十早九木</div><div class="author-info-description">个人博客 · 技术笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">45</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/szjmhxd"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/szjmhxd" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #f26522;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E8%AF%B4%E7%BB%93%E8%AE%BA"><span class="toc-number">1.</span> <span class="toc-text">先说结论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%9B%9B%E4%B8%AA%E4%BB%93%E5%BA%93%EF%BC%8C%E5%90%84%E7%AE%A1%E4%BB%80%E4%B9%88"><span class="toc-number">2.</span> <span class="toc-text">一、四个仓库，各管什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E7%AC%AC-4-%E4%B8%AA%E5%AE%B9%E6%98%93%E8%AF%AF%E4%BC%9A"><span class="toc-number">2.1.</span> <span class="toc-text">为什么第 4 个容易误会</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%BA%90%E7%A0%81%E4%BB%93%E8%A6%81%E7%A7%81%E6%9C%89%E3%80%81%E4%BA%A7%E7%89%A9%E4%BB%93%E8%A6%81%E5%85%AC%E5%BC%80"><span class="toc-number">2.2.</span> <span class="toc-text">为什么源码仓要私有、产物仓要公开</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81md-%E6%80%8E%E4%B9%88%E5%86%99"><span class="toc-number">3.</span> <span class="toc-text">二、md 怎么写</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E6%96%87%E7%AB%A0"><span class="toc-number">3.1.</span> <span class="toc-text">建文章</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#front-matter-%E5%85%A8%E5%AD%97%E6%AE%B5"><span class="toc-number">3.2.</span> <span class="toc-text">front matter 全字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#abbrlink-%E4%B8%8D%E8%A6%81%E6%89%8B%E5%A1%AB"><span class="toc-number">3.3.</span> <span class="toc-text">abbrlink 不要手填</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%A4%96%EF%BC%9A%E8%80%81%E6%96%87%E7%AB%A0%E5%8F%AF%E4%BB%A5%E9%92%89%E6%AD%BB"><span class="toc-number">3.4.</span> <span class="toc-text">一个例外：老文章可以钉死</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E9%85%8D%E5%9B%BE%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%83%BD%E7%94%A8-x-png"><span class="toc-number">4.</span> <span class="toc-text">三、配图：为什么不能用 ![](x.png)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%85%E9%A1%BB%E7%94%A8-asset-img"><span class="toc-number">4.1.</span> <span class="toc-text">必须用 {% asset_img %}</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B4%A0%E6%9D%90%E7%9B%AE%E5%BD%95%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB"><span class="toc-number">4.2.</span> <span class="toc-text">素材目录的对应关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SVG-%E5%9B%BE%E4%B9%9F%E8%83%BD%E7%9B%B4%E6%8E%A5%E6%94%BE"><span class="toc-number">4.3.</span> <span class="toc-text">SVG 图也能直接放</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E6%B3%A8%E4%BC%9A%E5%8F%98%E6%88%90%E4%BB%80%E4%B9%88"><span class="toc-number">4.4.</span> <span class="toc-text">图注会变成什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%B0%81%E9%9D%A2%E5%92%8C%E6%A8%AA%E5%B9%85%E6%80%8E%E4%B9%88%E7%94%9F%E6%88%90"><span class="toc-number">5.</span> <span class="toc-text">四、封面和横幅怎么生成</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E6%9D%A1%E5%91%BD%E4%BB%A4"><span class="toc-number">5.1.</span> <span class="toc-text">一条命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E4%B8%AA%E5%9B%BE%E6%A0%87%E6%80%8E%E4%B9%88%E9%80%89%EF%BC%88%E8%BF%99%E6%9D%A1%E6%9C%80%E9%87%8D%E8%A6%81%EF%BC%89"><span class="toc-number">5.2.</span> <span class="toc-text">两个图标怎么选（这条最重要）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E8%89%B2%E8%B7%9F%E7%9D%80%E5%93%81%E7%89%8C%E8%B5%B0"><span class="toc-number">5.3.</span> <span class="toc-text">配色跟着品牌走</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E5%8A%A0-keep-colors"><span class="toc-number">5.4.</span> <span class="toc-text">什么时候加 --keep-colors</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AA%8C%E6%94%B6%EF%BC%9A-check"><span class="toc-number">5.5.</span> <span class="toc-text">验收：--check</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E4%B8%AA%E5%BF%85%E8%B8%A9%E7%9A%84%E5%9D%91%EF%BC%88%E7%94%9F%E6%88%90%E5%99%A8%E5%B7%B2%E5%86%85%E7%BD%AE%E5%A4%84%E7%90%86%EF%BC%89"><span class="toc-number">5.6.</span> <span class="toc-text">三个必踩的坑（生成器已内置处理）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%9C%AC%E5%9C%B0%E9%A2%84%E8%A7%88"><span class="toc-number">6.</span> <span class="toc-text">五、本地预览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%8F%91%E5%B8%83"><span class="toc-number">7.</span> <span class="toc-text">六、发布</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E6%9D%A1%E5%91%BD%E4%BB%A4-1"><span class="toc-number">7.1.</span> <span class="toc-text">一条命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%A7%E7%89%A9%E4%BB%93%E7%9A%84%E6%B8%85%E7%90%86%E7%99%BD%E5%90%8D%E5%8D%95"><span class="toc-number">7.2.</span> <span class="toc-text">产物仓的清理白名单</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%8B%E5%8A%A8%E7%AD%89%E4%BB%B7%E6%B5%81%E7%A8%8B"><span class="toc-number">7.3.</span> <span class="toc-text">手动等价流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E4%B8%8A%E7%BA%BF%E5%90%8E%E9%AA%8C%E6%94%B6"><span class="toc-number">8.</span> <span class="toc-text">七、上线后验收</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E9%80%81%E5%90%8E-Pages-%E8%A6%81%E7%AD%89%E4%B8%80%E4%BC%9A%E5%84%BF"><span class="toc-number">8.1.</span> <span class="toc-text">推送后 Pages 要等一会儿</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%98%93%E9%94%99%E6%B8%85%E5%8D%95"><span class="toc-number">9.</span> <span class="toc-text">八、易错清单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B%E9%80%9F%E6%9F%A5"><span class="toc-number">10.</span> <span class="toc-text">九、完整流程速查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">11.</span> <span class="toc-text">最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/d7309f33/" title="从写 md 到上线：这个博客的完整工作流"><img src="/posts/d7309f33/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="从写 md 到上线：这个博客的完整工作流"/></a><div class="content"><a class="title" href="/posts/d7309f33/" title="从写 md 到上线：这个博客的完整工作流">从写 md 到上线：这个博客的完整工作流</a><time datetime="2026-11-23T09:20:00.000Z" title="发表于 2026-11-23 17:20:00">2026-11-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3f7c9a21/" title="小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势"><img src="/posts/3f7c9a21/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势"/></a><div class="content"><a class="title" href="/posts/3f7c9a21/" title="小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势">小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势</a><time datetime="2026-11-22T07:45:00.000Z" title="发表于 2026-11-22 15:45:00">2026-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/4b2bdae9/" title="我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的"><img src="/posts/4b2bdae9/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的"/></a><div class="content"><a class="title" href="/posts/4b2bdae9/" title="我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的">我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的</a><time datetime="2026-11-22T05:00:00.000Z" title="发表于 2026-11-22 13:00:00">2026-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7d2c1b8e/" title="微信输入法的算式结果时灵时不灵，我用 AutoHotkey 补了个按 = 出答案的"><img src="/posts/7d2c1b8e/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="微信输入法的算式结果时灵时不灵，我用 AutoHotkey 补了个按 = 出答案的"/></a><div class="content"><a class="title" href="/posts/7d2c1b8e/" title="微信输入法的算式结果时灵时不灵，我用 AutoHotkey 补了个按 = 出答案的">微信输入法的算式结果时灵时不灵，我用 AutoHotkey 补了个按 = 出答案的</a><time datetime="2026-11-22T02:50:00.000Z" title="发表于 2026-11-22 10:50:00">2026-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/e421246e/" title="放弃 QQ 官方机器人：用 SnowLuma + AstrBot 自建 QQ 机器人"><img src="/posts/e421246e/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="放弃 QQ 官方机器人：用 SnowLuma + AstrBot 自建 QQ 机器人"/></a><div class="content"><a class="title" href="/posts/e421246e/" title="放弃 QQ 官方机器人：用 SnowLuma + AstrBot 自建 QQ 机器人">放弃 QQ 官方机器人：用 SnowLuma + AstrBot 自建 QQ 机器人</a><time datetime="2026-11-02T05:50:00.000Z" title="发表于 2026-11-02 13:50:00">2026-11-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 十早九木</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.0</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.0"></script><script src="/js/main.js?v=5.7.0"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.innerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+
+    setTimeout(() => URL.revokeObjectURL(url), 5000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    // Clean up previous event listeners and pending frames
+    if (wrap.__mermaidAbortController) {
+      wrap.__mermaidAbortController.abort()
+      if (wrap.__mermaidRafId) cancelAnimationFrame(wrap.__mermaidRafId)
+    }
+    const ac = new AbortController()
+    wrap.__mermaidAbortController = ac
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+    // Disable default gestures to prevent scroll chaining and pinch-zoom penetration in Chrome
+    svg.style.touchAction = 'none'
+
+    // Cache BoundingClientRect, throttled on scroll to reduce reflow
+    let cachedRect = svg.getBoundingClientRect()
+    let rectDirty = false
+    const markRectDirty = () => { rectDirty = true }
+    window.addEventListener('resize', markRectDirty, { signal: ac.signal })
+    window.addEventListener('scroll', markRectDirty, { signal: ac.signal, capture: true })
+    const getRect = () => {
+      if (rectDirty) {
+        cachedRect = svg.getBoundingClientRect()
+        rectDirty = false
+      }
+      return cachedRect
+    }
+
+    // Precompute clamp bounds from initial viewBox
+    const minW = initVb[2] * 0.1
+    const maxW = initVb[2] * 10
+    const minH = initVb[3] * 0.1
+    const maxH = initVb[3] * 10
+    const clampVb = vb => {
+      const out = vb.slice()
+      out[2] = clamp(out[2], minW, maxW)
+      out[3] = clamp(out[3], minH, maxH)
+      return out
+    }
+
+    // Throttle DOM updates using requestAnimationFrame
+    let pendingVb = null
+    let rafId = null
+    const applyVb = () => {
+      if (pendingVb) {
+        wrap.__mermaidCurViewBox = pendingVb
+        setSvgViewBox(svg, pendingVb)
+        pendingVb = null
+      }
+      rafId = null
+      wrap.__mermaidRafId = null
+    }
+    const setCurVb = vb => {
+      pendingVb = clampVb(vb)
+      if (!rafId) {
+        rafId = requestAnimationFrame(applyVb)
+        wrap.__mermaidRafId = rafId
+      }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      lastPointerX: 0,
+      lastPointerY: 0
+    }
+
+    const onPointerDown = e => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      const curVb = wrap.__mermaidCurViewBox
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      if (state.pointers.size === 1) {
+        state.startVb = curVb.slice()
+        state.lastPointerX = e.clientX
+        state.lastPointerY = e.clientY
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = curVb.slice()
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      const curVb = wrap.__mermaidCurViewBox
+      const rect = getRect()
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = state.pointers.values().next().value
+        const dxClient = p.x - state.lastPointerX
+        const dyClient = p.y - state.lastPointerY
+        state.lastPointerX = p.x
+        state.lastPointerY = p.y
+        const dx = dxClient * (curVb[2] / rect.width)
+        const dy = dyClient * (curVb[3] / rect.height)
+        setCurVb([curVb[0] - dx, curVb[1] - dy, curVb[2], curVb[3]])
+        return
+      }
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const px = curVb[0] + (cx - rect.left) * (curVb[2] / rect.width)
+        const py = curVb[1] + (cy - rect.top) * (curVb[3] / rect.height)
+        setCurVb(zoomAtPoint(state.startVb, factor, px, py))
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      // Release PointerCapture to avoid event capture anomalies
+      if (svg.hasPointerCapture && svg.hasPointerCapture(e.pointerId)) {
+        svg.releasePointerCapture(e.pointerId)
+      }
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+      } else if (state.pointers.size === 1) {
+        const p = state.pointers.values().next().value
+        state.lastPointerX = p.x
+        state.lastPointerY = p.y
+      }
+    }
+
+    const onWheel = e => {
+      // Prevent event bubbling from triggering external scroll
+      e.preventDefault()
+      e.stopPropagation()
+      // Normalize deltaY across deltaMode (Chrome uses pixels, Safari uses lines)
+      let delta = e.deltaY
+      if (e.deltaMode === 1) delta *= 16
+      else if (e.deltaMode === 2) delta *= 400
+
+      // Continuous zoom factor: smoother than fixed 1.1/0.9 steps
+      const zoomFactor = Math.pow(1.001, delta)
+
+      const curVb = wrap.__mermaidCurViewBox
+      const rect = getRect()
+      const px = curVb[0] + (e.clientX - rect.left) * (curVb[2] / rect.width)
+      const py = curVb[1] + (e.clientY - rect.top) * (curVb[3] / rect.height)
+      setCurVb(zoomAtPoint(curVb, zoomFactor, px, py))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (init) setCurVb(init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown, { signal: ac.signal })
+    svg.addEventListener('pointermove', onPointerMove, { signal: ac.signal })
+    svg.addEventListener('pointerup', onPointerUpOrCancel, { signal: ac.signal })
+    svg.addEventListener('pointercancel', onPointerUpOrCancel, { signal: ac.signal })
+    svg.addEventListener('wheel', onWheel, { passive: false, signal: ac.signal })
+    svg.addEventListener('dblclick', onDblClick, { signal: ac.signal })
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      // Clean up event listeners before removing old SVG
+      if (item.__mermaidAbortController) {
+        item.__mermaidAbortController.abort()
+      }
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      let config = {}
+      try {
+        config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      } catch (e) {
+        console.warn('[mermaid] failed to parse dataset.config:', e)
+      }
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+      const handleError = err => {
+        console.error(`[mermaid] render failed for block #${index}:`, err)
+        const errorEl = document.createElement('div')
+        errorEl.className = 'mermaid-error'
+        errorEl.textContent = `Mermaid render error: ${err.message || err}`
+        mermaidSrc.insertAdjacentElement('afterend', errorEl)
+      }
+
+      try {
+        const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+        // mermaid v9 and v10 compatibility
+        if (typeof renderFn === 'string') {
+          renderMermaid(renderFn)
+        } else {
+          renderFn.then(({ svg }) => renderMermaid(svg)).catch(handleError)
+        }
+      } catch (err) {
+        handleError(err)
+      }
+    })
+  }
+
+  const codeToMermaid = $article => {
+    const codeMermaidEle = $article.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    const $article = document.getElementById('article-container')
+    if (!$article) return
+
+    if (true) codeToMermaid($article)
+    const $mermaid = $article.querySelectorAll('.mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.16.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="/js/dynamic-post-link.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
