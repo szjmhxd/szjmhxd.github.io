@@ -1,25 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="630" height="487" viewBox="0 0 630 487" font-family="Microsoft YaHei, PingFang SC, sans-serif">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0c1a2b"/><stop offset="100%" stop-color="#16395c"/>
+      <stop offset="0%" stop-color="#0a1626"/><stop offset="100%" stop-color="#123050"/>
     </linearGradient>
-    <radialGradient id="glow" cx="70%" cy="35%" r="60%">
-      <stop offset="0%" stop-color="#3fa9f5" stop-opacity="0.2"/>
+    <radialGradient id="glow" cx="50%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#3fa9f5" stop-opacity="0.22"/>
       <stop offset="100%" stop-color="#3fa9f5" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="badge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#e4ecf6"/>
+    </linearGradient>
   </defs>
   <rect width="630" height="487" fill="url(#bg)"/>
   <rect width="630" height="487" fill="url(#glow)"/>
-<g transform="translate(265.00,92.00) scale(7.29167)" fill="#3fa9f5" opacity="0.97">
-<path d="M24 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm-9 9a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm0-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6-6a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 24a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm18 .5a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM6 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm9-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm-3 2.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM6 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM3 5.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
-</g>
-<g transform="translate(448.00,180.00) scale(3.95833)" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.92">
-
-  <path d="m12 14 4-4" />
-  <path d="M3.34 19a10 10 0 1 1 17.32 0" />
-
-</g>
-  <rect x="58" y="288" width="6" height="58" fill="#3fa9f5" rx="3"/>
-  <text x="82" y="332" font-size="46" font-weight="bold" fill="#ffffff">从 3M 中转到 4.9 MB/s</text>
-  <text x="84" y="378" font-size="23" fill="#3fa9f5" opacity="0.92">Tailscale 打洞 · BBR 提速 13 倍</text>
+  <circle cx="315" cy="146" r="86" fill="none" stroke="#ffffff" stroke-opacity="0.16" stroke-width="1.5"/>
+  <circle cx="315" cy="146" r="73" fill="url(#badge)"/>
+  <g transform="translate(267,98) scale(4)" fill="#242424">
+    <path d="M24 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm-9 9a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm0-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6-6a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 24a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm18 .5a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM6 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm9-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm-3 2.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM6 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM3 5.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+  </g>
+  <rect x="58" y="288" width="6" height="56" fill="#3fa9f5" rx="3"/>
+  <text x="82" y="330" font-size="42" font-weight="bold" fill="#ffffff">用 Tailscale 组网</text>
+  <text x="84" y="376" font-size="19" fill="#7fb8e8">异地访问 NAS · 375 KB/s → 4.9 MB/s</text>
 </svg>

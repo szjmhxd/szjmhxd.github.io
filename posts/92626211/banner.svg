@@ -1,25 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="400" viewBox="0 0 1600 400" font-family="Microsoft YaHei, PingFang SC, sans-serif">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0c1a2b"/><stop offset="100%" stop-color="#16395c"/>
+      <stop offset="0%" stop-color="#0a1626"/><stop offset="100%" stop-color="#123050"/>
     </linearGradient>
-    <radialGradient id="glow" cx="70%" cy="35%" r="60%">
-      <stop offset="0%" stop-color="#3fa9f5" stop-opacity="0.2"/>
+    <radialGradient id="glow" cx="78%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#3fa9f5" stop-opacity="0.22"/>
       <stop offset="100%" stop-color="#3fa9f5" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="badge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#e4ecf6"/>
+    </linearGradient>
   </defs>
   <rect width="1600" height="400" fill="url(#bg)"/>
   <rect width="1600" height="400" fill="url(#glow)"/>
-<g transform="translate(1164.00,104.00) scale(5.33333)" fill="#3fa9f5" opacity="0.97">
-<path d="M24 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm-9 9a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm0-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6-6a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 24a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm18 .5a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM6 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm9-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm-3 2.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM6 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM3 5.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
-</g>
-<g transform="translate(1312.00,126.00) scale(3.66667)" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.92">
-
-  <path d="m12 14 4-4" />
-  <path d="M3.34 19a10 10 0 1 1 17.32 0" />
-
-</g>
-  <rect x="182" y="112" width="5" height="52" fill="#3fa9f5" rx="2.5"/>
-  <text x="206" y="152" font-size="44" font-weight="bold" fill="#ffffff">远程访问提速 13 倍</text>
-  <text x="208" y="194" font-size="21" fill="#3fa9f5" opacity="0.9">nps 中转 → P2P 直连 → BBR 拥塞控制</text>
+  <circle cx="1246" cy="200" r="80" fill="none" stroke="#ffffff" stroke-opacity="0.16" stroke-width="1.5"/>
+  <circle cx="1246" cy="200" r="68" fill="url(#badge)"/>
+  <g transform="translate(1205,159) scale(3.4167)" fill="#242424">
+    <path d="M24 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm-9 9a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm0-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6-6a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 24a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm18 .5a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM6 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm9-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm-3 2.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM6 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM3 5.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+  </g>
+  <rect x="182" y="116" width="5" height="54" fill="#3fa9f5" rx="2.5"/>
+  <text x="206" y="160" font-size="44" font-weight="bold" fill="#ffffff">远程访问提速 13 倍</text>
+  <text x="208" y="202" font-size="21" fill="#7fb8e8">375 KB/s → 4.9 MB/s · P2P 直连 + BBR</text>
 </svg>

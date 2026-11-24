@@ -1,13 +1,13 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>异地访问 NAS：从 3M 中转到 4.9 MB/s | 十早九木のBlog</title><meta name="author" content="十早九木"><meta name="copyright" content="十早九木"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在家放一台 NAS，外面随时要能读写，这件事用 nps 做最直接，但每个字节都要过云服务器， 3M 带宽就把速度锁死在 375 KB&#x2F;s。改走 P2P 打洞之后，公网服务器只做握手，数据直连； 再给发送端开 BBR，同一个文件从 3 小时压到 13 分钟。这篇按实际施工顺序写： 确认网络环境、选方案、安装、测延迟与速度、调拥塞控制。">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>用 Tailscale 组网：异地访问 NAS，从 375 KB/s 到 4.9 MB/s | 十早九木のBlog</title><meta name="author" content="十早九木"><meta name="copyright" content="十早九木"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="NAS 放在家里，人在公司、在手机流量下、在出差酒店，随时都要能打开它。 最初用 nps 做端口转发，卡在那台 3M 带宽的云服务器上；换成 P2P 打洞之后， 公网服务器只负责握手，数据两端直连；再给发送端换一个拥塞控制算法， 同一个 3.89 GB 文件从 3 小时压到 13 分钟。全文按施工顺序走： 旧方案的问题、换思路、选型、确认网络环境、安装、测延迟、测速度、调算法。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="异地访问 NAS：从 3M 中转到 4.9 MB&#x2F;s">
+<meta property="og:title" content="用 Tailscale 组网：异地访问 NAS，从 375 KB&#x2F;s 到 4.9 MB&#x2F;s">
 <meta property="og:url" content="https://szjmhxd.github.io/posts/92626211/">
 <meta property="og:site_name" content="十早九木のBlog">
-<meta property="og:description" content="在家放一台 NAS，外面随时要能读写，这件事用 nps 做最直接，但每个字节都要过云服务器， 3M 带宽就把速度锁死在 375 KB&#x2F;s。改走 P2P 打洞之后，公网服务器只做握手，数据直连； 再给发送端开 BBR，同一个文件从 3 小时压到 13 分钟。这篇按实际施工顺序写： 确认网络环境、选方案、安装、测延迟与速度、调拥塞控制。">
+<meta property="og:description" content="NAS 放在家里，人在公司、在手机流量下、在出差酒店，随时都要能打开它。 最初用 nps 做端口转发，卡在那台 3M 带宽的云服务器上；换成 P2P 打洞之后， 公网服务器只负责握手，数据两端直连；再给发送端换一个拥塞控制算法， 同一个 3.89 GB 文件从 3 小时压到 13 分钟。全文按施工顺序走： 旧方案的问题、换思路、选型、确认网络环境、安装、测延迟、测速度、调算法。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://szjmhxd.github.io/posts/92626211/cover.svg">
 <meta property="article:published_time" content="2026-11-23T09:40:00.000Z">
-<meta property="article:modified_time" content="2026-11-24T01:20:00.000Z">
+<meta property="article:modified_time" content="2026-11-24T01:30:00.000Z">
 <meta property="article:author" content="十早九木">
 <meta property="article:tag" content="BBR">
 <meta property="article:tag" content="NAS">
@@ -18,11 +18,11 @@
 <meta name="twitter:image" content="https://szjmhxd.github.io/posts/92626211/cover.svg"><script type="application/ld+json">{
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "异地访问 NAS：从 3M 中转到 4.9 MB/s",
+  "headline": "用 Tailscale 组网：异地访问 NAS，从 375 KB/s 到 4.9 MB/s",
   "url": "https://szjmhxd.github.io/posts/92626211/",
   "image": "https://szjmhxd.github.io/posts/92626211/cover.svg",
   "datePublished": "2026-11-23T09:40:00.000Z",
-  "dateModified": "2026-11-24T01:20:00.000Z",
+  "dateModified": "2026-11-24T01:30:00.000Z",
   "author": [
     {
       "@type": "Person",
@@ -201,12 +201,13 @@
   },
   autoDarkmode: false
 }</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: '异地访问 NAS：从 3M 中转到 4.9 MB/s',
+  title: '用 Tailscale 组网：异地访问 NAS，从 375 KB/s 到 4.9 MB/s',
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
 }</script><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="十早九木のBlog" type="application/atom+xml">
-</head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/posts/92626211/banner.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">异地访问 NAS：从 3M 中转到 4.9 MB/s</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">异地访问 NAS：从 3M 中转到 4.9 MB/s</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-23T09:40:00.000Z" title="发表于 2026-11-23 17:40:00">2026-11-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-24T01:20:00.000Z" title="更新于 2026-11-24 09:20:00">2026-11-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/">折腾记录</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="先说结论"><a href="#先说结论" class="headerlink" title="先说结论"></a>先说结论</h2><p>目标很简单：NAS 放在家里，人在外面（公司、手机流量、出差酒店）时要能读写它。三个阶段的实际速度，同一台 NAS、同一个 3.89 GB 文件：</p>
+</head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/posts/92626211/banner.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">十早九木のBlog</span></a><a class="nav-page-title" href="/"><span class="site-name">用 Tailscale 组网：异地访问 NAS，从 375 KB/s 到 4.9 MB/s</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">用 Tailscale 组网：异地访问 NAS，从 375 KB/s 到 4.9 MB/s</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-23T09:40:00.000Z" title="发表于 2026-11-23 17:40:00">2026-11-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-24T01:30:00.000Z" title="更新于 2026-11-24 09:30:00">2026-11-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/">折腾记录</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="先说结论"><a href="#先说结论" class="headerlink" title="先说结论"></a>先说结论</h2><p>NAS 放在家里，人在公司、在手机流量下、在出差酒店，随时都要能打开它读写文件。这件事的最初解法是 nps 做端口转发，卡在那台 3M 带宽的云服务器上；换成 P2P 打洞之后，公网服务器只负责握手、数据两端直连；再给发送端换一个拥塞控制算法，同一个 3.89 GB 文件从 3 小时压到 13 分钟。</p>
+<p>三个阶段的实际速度，同一台 NAS、同一个文件：</p>
 <table>
 <thead>
 <tr>
@@ -239,11 +240,16 @@
 <blockquote>
 <p><strong>组网工具决定「走哪条路」，拥塞控制决定「这条路能跑多快」。路径选对了、算法不对，速度照样上不去。</strong></p>
 </blockquote>
-<h2 id="一、需求不是组网，是公网可达"><a href="#一、需求不是组网，是公网可达" class="headerlink" title="一、需求不是组网，是公网可达"></a>一、需求不是组网，是公网可达</h2><p>先把要解决的问题说清楚。NAS 在家里的内网，<code>192.168.10.77</code>，外面根本路由不到。需要的效果只有一条：在任何一个有网的地方，用浏览器或资源管理器打开它，像访问本地磁盘一样。</p>
-<p>这件事不能靠「把 NAS 暴露到公网」硬来。家宽普遍封 80&#x2F;443，直接映射端口等于把管理后台交给扫描器。所以要么走一条加密隧道，要么走一个中转。</p>
-<p>最初选的是中转，也就是 nps。</p>
-<h2 id="二、nps-的问题：每个字节都要过那台云服务器"><a href="#二、nps-的问题：每个字节都要过那台云服务器" class="headerlink" title="二、nps 的问题：每个字节都要过那台云服务器"></a>二、nps 的问题：每个字节都要过那台云服务器</h2><p>nps 的 server 端跑在云服务器上，client 端跑在 NAS 上，外面通过云服务器的地址访问。配置直观，一条端口映射对应一个服务，用起来没门槛。</p>
-<p>代价是流量模型：<strong>客户端 → 云服务器 → 访问者，两段都经过同一台机器</strong>。这台机器的带宽就是天花板，跟两端的真实带宽没关系。</p>
+<h2 id="一、需求不是把-NAS-暴露到公网"><a href="#一、需求不是把-NAS-暴露到公网" class="headerlink" title="一、需求不是把 NAS 暴露到公网"></a>一、需求不是把 NAS 暴露到公网</h2><p>先把问题界定清楚，后面每一步才有判断依据。</p>
+<p>NAS 在家里的内网，<code>192.168.10.77</code>，从这个局域网之外的地方根本路由不到。要的效果只有一条：在任何一个有网的地方，用浏览器或资源管理器打开它，像访问本地磁盘一样。</p>
+<p>最直觉的做法是端口映射——把 NAS 的端口直接映射到公网 IP。这条路走不通，有两个原因：</p>
+<ul>
+<li>家宽普遍封 80&#x2F;443，绝大多数服务架不起来</li>
+<li>端口一旦映射出去，就等于把管理后台交给全网扫描器，登录框每天被爆破</li>
+</ul>
+<p>所以只剩两类做法：<strong>走一条加密隧道</strong>（两端各装客户端，公网只做协助），或者<strong>走一个中转</strong>（访问者直接连中转机，中转机再去取数据）。最初选的是后者，也就是 nps。</p>
+<h2 id="二、先用的是-nps，卡在那台-3M-云服务器上"><a href="#二、先用的是-nps，卡在那台-3M-云服务器上" class="headerlink" title="二、先用的是 nps，卡在那台 3M 云服务器上"></a>二、先用的是 nps，卡在那台 3M 云服务器上</h2><p>nps 的 server 端跑在云服务器上，client 端跑在 NAS 上，外面通过云服务器的地址访问。配置直观，一条端口映射对应一个服务，用起来没门槛。</p>
+<p>代价在流量模型上：<strong>访问者 → 云服务器 → NAS，两段都经过同一台机器</strong>。这台机器的带宽就是天花板，跟两端家里的真实带宽没有关系。</p>
 <p>我的云服务器是 3M 带宽。3M 换算过来 375 KB&#x2F;s，实测也就是这个数，一分不多一分不少。</p>
 <table>
 <thead>
@@ -269,10 +275,11 @@
 <td>勉强，得降色深、关动画</td>
 </tr>
 </tbody></table>
-<p>问题不在于 nps 写得不好，而在于<strong>中转这个模型本身</strong>：它把「访问速度」和「中转机带宽」绑死了。升级中转机是一条路，但国内云服务器 3M 提到 10M 一个月就多几十块，而且带宽永远追不上家宽。</p>
-<h2 id="三、换思路：让公网服务器只做握手"><a href="#三、换思路：让公网服务器只做握手" class="headerlink" title="三、换思路：让公网服务器只做握手"></a>三、换思路：让公网服务器只做握手</h2><p>如果两端能互相发包，数据就没必要绕路。P2P 打洞做的就是这件事。</p>
-<p>原理一层就够：两台机器各自先从内网发一个包到公网上的 STUN&#x2F;信令服务，服务记录下它们各自的公网出口 <code>IP:端口</code>；然后把对方的出口地址告诉它。双方拿到地址后<strong>同时</strong>向对方的外网出口发包，路由器看到「内网刚发出去过、回包正好回来」，就把这条映射放行。通道建立后，信令服务完全不参与数据传输。</p>
-<p>公网服务器的角色从「数据中转」降级成「地址交换」，它只要活着、能回几个几十字节的包就够了。</p>
+<p>问题不在 nps 写得不好，而在<strong>中转这个模型本身</strong>：它把「访问速度」和「中转机带宽」绑死了。升级中转机是一条路，但云服务器 3M 提到 10M 一个月多几十块，而且带宽永远追不上家宽。</p>
+<p>真正该改的是模型，不是配置。</p>
+<h2 id="三、换思路：让公网服务器只做握手"><a href="#三、换思路：让公网服务器只做握手" class="headerlink" title="三、换思路：让公网服务器只做握手"></a>三、换思路：让公网服务器只做握手</h2><p>如果两端能互相发包，数据就没必要绕路。<strong>P2P 打洞</strong>（NAT 穿透）做的就是这件事。</p>
+<p>原理一层就够：两台机器各自先从内网发一个包到公网上的 STUN／信令服务，服务记录下它们各自的公网出口 <code>IP:端口</code>；然后把对方的出口地址告诉它。双方拿到地址后<strong>同时</strong>向对方的外网出口发包，路由器看到「内网刚发出去过、回包正好回来」，就把这条映射放行。通道建立之后，信令服务完全不参与数据传输。</p>
+<p>公网服务器的角色，从「数据中转」降级成「地址交换」。它只要活着、能回几个几十字节的包就够了。</p>
 <table>
 <thead>
 <tr>
@@ -307,8 +314,12 @@
 <td>依赖 NAT 类型，可能打不通</td>
 </tr>
 </tbody></table>
-<p>打洞不是万能的。三种情况会失败：一端是<strong>对称型 NAT</strong>（每个目标分配不同端口，无法预测）、链路上<strong>封 UDP</strong>（企业网、校园网常见）、<strong>双层 NAT</strong> 让映射不稳定。这些都要动手前先确认，不能装完再猜——第五节就干这件事。</p>
-<h2 id="四、选型：P2P-方案里-Tailscale-最省心"><a href="#四、选型：P2P-方案里-Tailscale-最省心" class="headerlink" title="四、选型：P2P 方案里 Tailscale 最省心"></a>四、选型：P2P 方案里 Tailscale 最省心</h2><p>能打的洞都是同一个洞，差别在客户端成熟度和「打不通时怎么办」。</p>
+<p>打洞不是万能的。三种情况会失败：一端是<strong>对称型 NAT</strong>（每个目标分配不同端口，无法预测）、链路上<strong>封 UDP</strong>（企业网、校园网常见）、<strong>双层 NAT</strong> 让映射不稳定。</p>
+<p>这三条都可以在动手前查出来，所以安装之前先做一轮网络环境确认——见第五节。</p>
+<blockquote>
+<p>这一节还留下一个预期：<strong>直连之后，速度应该等于两端带宽的较小值。</strong> 记住这句话，第八节会拿它当靶子。</p>
+</blockquote>
+<h2 id="四、P2P-方案里为什么选-Tailscale"><a href="#四、P2P-方案里为什么选-Tailscale" class="headerlink" title="四、P2P 方案里为什么选 Tailscale"></a>四、P2P 方案里为什么选 Tailscale</h2><p>能打的洞都是同一个洞，差别在客户端成熟度和「打不通时怎么办」。</p>
 <table>
 <thead>
 <tr>
@@ -345,8 +356,10 @@
 </tbody></table>
 <p>选 Tailscale 的理由不是它最快——数据面都是 WireGuard，同一链路上差不了几个百分点——而是<strong>它的失败路径最体面</strong>：打洞成功走直连，打洞失败退到中继，永远有一个能用的结果，不会出现「装完发现连不上」。</p>
 <p>这个选择的代价也要认：控制面在境外，首次登录必须能访问 <code>login.tailscale.com</code>。没有代理的话，第一步就过不去。</p>
-<h2 id="五、动手前：先确认两端的网络环境"><a href="#五、动手前：先确认两端的网络环境" class="headerlink" title="五、动手前：先确认两端的网络环境"></a>五、动手前：先确认两端的网络环境</h2><p>这一步能省掉后面所有的瞎猜。要确认两端——<strong>NAS 所在的家宽</strong>，和<strong>你实际在外面用的那台电脑</strong>——各自的出口情况。云服务器不用测，它有公网 IP，不在任何 NAT 后面。</p>
-<h3 id="先看出口-IP：是不是在运营商大内网里"><a href="#先看出口-IP：是不是在运营商大内网里" class="headerlink" title="先看出口 IP：是不是在运营商大内网里"></a>先看出口 IP：是不是在运营商大内网里</h3><p>30 秒，一条命令：</p>
+<h2 id="五、动手前：先确认两端的网络环境"><a href="#五、动手前：先确认两端的网络环境" class="headerlink" title="五、动手前：先确认两端的网络环境"></a>五、动手前：先确认两端的网络环境</h2><p>这一步能省掉后面所有的瞎猜。要确认两端——<strong>NAS 所在的家宽</strong>，和<strong>你实际在外面用的那台电脑</strong>——各自的出口情况。</p>
+<p>公网服务器不用测：它有公网 IP，不在任何 NAT 后面，测出来只会得到无意义的结果。</p>
+<p>这一节分两段时间做：<strong>装之前</strong>做 30 秒初筛，判断这条路可不可能；<strong>装完之后</strong>用 <code>tailscale netcheck</code> 补全细节。不必为了一个 NAT 类型提前装一套额外的工具。</p>
+<h3 id="先看出口-IP：是不是在运营商大内网里"><a href="#先看出口-IP：是不是在运营商大内网里" class="headerlink" title="先看出口 IP：是不是在运营商大内网里"></a>先看出口 IP：是不是在运营商大内网里</h3><p>一条命令，30 秒：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -4 -s https://ipinfo.io/ip</span><br></pre></td></tr></table></figure>
 
 <table>
@@ -360,7 +373,7 @@
 <tbody><tr>
 <td><code>100.64.x.x</code> – <code>100.127.x.x</code></td>
 <td>运营商 CGNAT</td>
-<td>IPv4 打洞基本没戏</td>
+<td>IPv4 打洞基本没戏，转 IPv6</td>
 </tr>
 <tr>
 <td><code>10.x</code> &#x2F; <code>172.16-31.x</code> &#x2F; <code>192.168.x</code></td>
@@ -373,11 +386,14 @@
 <td>值得继续往下测</td>
 </tr>
 </tbody></table>
-<p>我这边返回 <code>106.47.29.166</code>，电信的公网地址，不在 CGNAT 段里。外面那台 Windows 是 <code>117.9.45.61</code>，联通。两台不在同一个网，正好是真实使用场景。</p>
-<p><strong>先排除代理干扰。</strong> 如果 NAS 上跑着 Clash 的 TUN 模式，它会劫持所有出站流量，<code>curl</code> 返回的就是代理节点的出口地址，测的完全不是家宽：</p>
+<p>我这边 NAS 返回 <code>106.47.29.166</code>，电信的公网地址，不在 CGNAT 段里。外面那台 Windows 是 <code>117.9.45.61</code>，联通。两台不在同一个网，正好是真实使用场景。</p>
+<p><strong>两端都要查，任何一端在 CGNAT 后面，整条 P2P 路径就废了。</strong> 只测自己家、结果问题出在公司那台机器上，是这类排障最常见的走偏方式。Windows 侧一条命令：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl.exe <span class="literal">-4</span> <span class="literal">-s</span> https://ipinfo.io/ip</span><br></pre></td></tr></table></figure>
+
+<p><strong>这一步要先排除代理干扰。</strong> 如果 NAS 上跑着 Clash 的 TUN 模式，它会劫持所有出站流量，<code>curl</code> 返回的就是代理节点的出口地址，测的完全不是家宽：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">env</span> | grep -i proxy</span><br><span class="line">curl -4 -s --noproxy <span class="string">&#x27;*&#x27;</span> https://ipinfo.io/ip</span><br></pre></td></tr></table></figure>
 
-<p>更可靠的办法是登录路由器后台看 WAN 口地址，和 <code>curl</code> 的结果对一下。一致才算链路干净。</p>
+<p>两次结果不一致，说明中间有代理。更可靠的办法是登录路由器后台看 WAN 口地址，和 <code>curl</code> 的结果对一下，一致才算链路干净。</p>
 <h3 id="再看-NAT-类型：只有一个指标致命"><a href="#再看-NAT-类型：只有一个指标致命" class="headerlink" title="再看 NAT 类型：只有一个指标致命"></a>再看 NAT 类型：只有一个指标致命</h3><p>四类 NAT 里，只有对称型会让打洞直接失效。</p>
 <table>
 <thead>
@@ -416,7 +432,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 方案一：纯 Python，不受 glibc 影响</span></span><br><span class="line">pip3 install pystun3 --break-system-packages</span><br><span class="line">pystun3 -H stun.qq.com -P 3478</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方案二：容器里跑原版，必须 --network host</span></span><br><span class="line">docker run --<span class="built_in">rm</span> --network host -v <span class="string">&quot;<span class="variable">$PWD</span>&quot;</span>:/app -w /app ubuntu:24.04 ./NatTypeTester.Console</span><br></pre></td></tr></table></figure>
 
 <p><code>--break-system-packages</code> 不能省，Debian 12 的 PEP 668 会拦住全局 pip 安装。</p>
-<h3 id="我的实测结果"><a href="#我的实测结果" class="headerlink" title="我的实测结果"></a>我的实测结果</h3><p>最终是装完 Tailscale 用 <code>tailscale netcheck</code> 一次性看全的，比单独测 NAT 类型更贴近真实使用：</p>
+<h3 id="装完之后的完整结果"><a href="#装完之后的完整结果" class="headerlink" title="装完之后的完整结果"></a>装完之后的完整结果</h3><p>NAT 类型最终是用 <code>tailscale netcheck</code> 一次性看全的。它比单独测 NAT 类型更贴近真实使用，因为它同时给出 UDP 是否可用、IPv6 有没有、以及兜底节点的位置：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">* UDP: true</span><br><span class="line">* IPv4: yes, 106.47.29.166:43994</span><br><span class="line">* IPv6: yes, [240e:328:2796:5f00::6ba]:47035</span><br><span class="line">* MappingVariesByDestIP: false</span><br><span class="line">* Nearest DERP: San Francisco</span><br></pre></td></tr></table></figure>
 
 <p>四条就够判断了：</p>
@@ -501,6 +517,13 @@
 </tr>
 </tbody></table>
 <p>那张表里只有一行是硬约束：<strong><code>network_mode: host</code> 不能省</strong>。默认的 bridge 网络下，容器看不到宿主真实网络，打洞必然失败，NAS 上的服务也访问不到。</p>
+<p><strong>我最后用的是命令行版。</strong> 三个理由，都在表里：</p>
+<ol>
+<li><code>tun0</code> 是系统级设备，飞牛面板、Samba、其他 Docker 容器全部直接可达，不用再为容器互通加转发规则</li>
+<li>不需要给容器额外放大权限，少一处可以被配置错的地方</li>
+<li>卸载干净，<code>apt remove</code> 就结束</li>
+</ol>
+<p><strong>只有一种情况选 Docker</strong>：你已经习惯用 compose 管所有服务，希望 Tailscale 和其他容器放一起启停，或者不愿意往系统目录里装东西。</p>
 <h3 id="Docker-方式"><a href="#Docker-方式" class="headerlink" title="Docker 方式"></a>Docker 方式</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">tailscale:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">tailscale/tailscale:latest</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">tailscale</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">fnos-nas</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">host</span></span><br><span class="line">    <span class="attr">cap_add:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">NET_ADMIN</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">NET_RAW</span></span><br><span class="line">    <span class="attr">devices:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/dev/net/tun:/dev/net/tun</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TZ=Asia/Shanghai</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TS_STATE_DIR=/var/lib/tailscale</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TS_USERSPACE=false</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/vol1/1000/docker/tailscale/data:/var/lib/tailscale</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/etc/localtime:/etc/localtime:ro</span></span><br></pre></td></tr></table></figure>
 
 <p>启动前确认 tun 设备在：</p>
@@ -514,7 +537,7 @@
 <p><strong>不要用 <code>TS_USERSPACE=true</code>。</strong> 用户态网络能连上，但拿不到内核 tun，性能和一整段路由行为都不一样。</p>
 <h3 id="命令行方式"><a href="#命令行方式" class="headerlink" title="命令行方式"></a>命令行方式</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://tailscale.com/install.sh | sh</span><br><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> --now tailscaled</span><br><span class="line"><span class="built_in">sudo</span> tailscale up</span><br></pre></td></tr></table></figure>
 
-<p>脚本能正确识别 Debian 12。三条命令之后 <code>tun0</code> 就是系统级设备，NAS 上所有服务——飞牛面板、Samba、其他 Docker 容器——都能直接通过 Tailscale 地址访问，不用再为容器互通加转发规则。</p>
+<p>脚本能正确识别 Debian 12。</p>
 <p>如果 <code>pkgs.tailscale.com</code> 连不上，手动装包：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /tmp</span><br><span class="line">wget https://pkgs.tailscale.com/stable/tailscale_latest_amd64.tgz</span><br><span class="line">tar xzf tailscale_latest_amd64.tgz</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">cp</span> tailscale_*/tailscale tailscale_*/tailscaled /usr/local/bin/</span><br><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> --now tailscaled</span><br></pre></td></tr></table></figure>
 
@@ -526,7 +549,7 @@
 <blockquote>
 <p><strong>登录成功后别忘了给客户端配代理放行规则</strong>（见文末「定稿」里的 Clash 规则）。代理开着不改规则，Tailscale 的流量会被劫持到境外节点，速度掉到几百 KB&#x2F;s，而且很难想到是这个原因。</p>
 </blockquote>
-<h2 id="七、测延迟：先确认走的是直连，不是中转"><a href="#七、测延迟：先确认走的是直连，不是中转" class="headerlink" title="七、测延迟：先确认走的是直连，不是中转"></a>七、测延迟：先确认走的是直连，不是中转</h2><p>装完两台都在线了，接下来只看一件事：数据到底走哪条路。</p>
+<h2 id="七、测延迟：确认数据走的是直连"><a href="#七、测延迟：确认数据走的是直连" class="headerlink" title="七、测延迟：确认数据走的是直连"></a>七、测延迟：确认数据走的是直连</h2><p>装完两台都在线了，接下来只看一件事：数据到底走哪条路。</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tailscale status</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">100.125.162.49  fn-8100t         szjmhxd@  linux    -</span><br><span class="line">100.111.120.33  desktop-kl7r0u3  szjmhxd@  windows  active; direct 117.9.45.61:41641</span><br></pre></td></tr></table></figure>
@@ -560,17 +583,25 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tailscale ping desktop-kl7r0u3</span><br></pre></td></tr></table></figure>
 
 <p>实测两个方向都是 26–29 ms 直连，<code>MappingVariesByDestIP: false</code> 的链路，映射稳定。</p>
-<h2 id="八、测速度：直连之后只有-652-KB-s"><a href="#八、测速度：直连之后只有-652-KB-s" class="headerlink" title="八、测速度：直连之后只有 652 KB&#x2F;s"></a>八、测速度：直连之后只有 652 KB&#x2F;s</h2><p>ping 只测延迟，真实吞吐得传大文件。最省事的是 SMB：资源管理器地址栏输入 <code>\\100.125.162.49</code>，拖一个 3.89 GB 的文件过去。</p>
-<p>结果是 <strong>652 KB&#x2F;s，1 小时 45 分</strong>。比 nps 的 375 KB&#x2F;s 快了不到一倍，离「直连应该等于带宽」差得远。</p>
-<p>这时候很容易得出「Tailscale 不行」的结论。先别急，把「慢」拆成三层，一层层排除。</p>
-<h3 id="磁盘是不是瓶颈"><a href="#磁盘是不是瓶颈" class="headerlink" title="磁盘是不是瓶颈"></a>磁盘是不是瓶颈</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">dd</span> <span class="keyword">if</span>=/dev/zero of=/vol1/1000/test.bin bs=1M count=2048 oflag=direct</span><br><span class="line"><span class="built_in">rm</span> /vol1/1000/test.bin</span><br></pre></td></tr></table></figure>
+<p><strong>到这里，第三节那个预期成立了</strong>：两端直连，26 ms，理论上速度应该由两端带宽决定。下面是打脸的部分。</p>
+<h2 id="八、测速度：直连只有-652-KB-s"><a href="#八、测速度：直连只有-652-KB-s" class="headerlink" title="八、测速度：直连只有 652 KB&#x2F;s"></a>八、测速度：直连只有 652 KB&#x2F;s</h2><p>ping 只测延迟，真实吞吐得传大文件。最省事的是 SMB：资源管理器地址栏输入 <code>\\100.125.162.49</code>，拖一个 3.89 GB 的文件过去。</p>
+<p>结果是 <strong>652 KB&#x2F;s，1 小时 45 分</strong>。比 nps 的 375 KB&#x2F;s 快了不到一倍，离「直连等于带宽」差得远。</p>
+<p>这时候很容易得出「Tailscale 不行」的结论。先别急，把「慢」拆成三层，一层层排除：<strong>磁盘、链路、协议</strong>。</p>
+<h3 id="第一层：磁盘是不是瓶颈"><a href="#第一层：磁盘是不是瓶颈" class="headerlink" title="第一层：磁盘是不是瓶颈"></a>第一层：磁盘是不是瓶颈</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">dd</span> <span class="keyword">if</span>=/dev/zero of=/vol1/1000/test.bin bs=1M count=2048 oflag=direct</span><br><span class="line"><span class="built_in">rm</span> /vol1/1000/test.bin</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2147483648 bytes (2.1 GB, 2.0 GiB) copied, 3.53908 s, 607 MB/s</span><br></pre></td></tr></table></figure>
 
 <p>607 MB&#x2F;s，机械盘和 SATA SSD 都给不出这个数，是写在缓存层的。总之不是瓶颈。</p>
-<h3 id="链路是不是丢包、是不是被代理劫持"><a href="#链路是不是丢包、是不是被代理劫持" class="headerlink" title="链路是不是丢包、是不是被代理劫持"></a>链路是不是丢包、是不是被代理劫持</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ping <span class="literal">-l</span> <span class="number">1200</span> <span class="literal">-n</span> <span class="number">100</span> <span class="number">100.125</span>.<span class="number">162.49</span></span><br><span class="line">tracert <span class="number">100.125</span>.<span class="number">162.49</span></span><br></pre></td></tr></table></figure>
+<h3 id="第二层：链路是不是丢包、是不是被代理劫持"><a href="#第二层：链路是不是丢包、是不是被代理劫持" class="headerlink" title="第二层：链路是不是丢包、是不是被代理劫持"></a>第二层：链路是不是丢包、是不是被代理劫持</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ping <span class="literal">-l</span> <span class="number">1200</span> <span class="literal">-n</span> <span class="number">100</span> <span class="number">100.125</span>.<span class="number">162.49</span></span><br><span class="line">tracert <span class="number">100.125</span>.<span class="number">162.49</span></span><br></pre></td></tr></table></figure>
 
 <p><code>ping</code> 用 1200 字节，接近隧道 MTU，比默认 32 字节有意义得多。实测 12 个包 0% 丢包、抖动 4 ms；<code>tracert</code> 只有一跳，直接就是 NAS 的 Tailscale 地址，说明没有代理在中间劫持。</p>
+<h3 id="第三层：是不是-SMB-协议的问题"><a href="#第三层：是不是-SMB-协议的问题" class="headerlink" title="第三层：是不是 SMB 协议的问题"></a>第三层：是不是 SMB 协议的问题</h3><p>换一个协议做对照。NAS 上起个 HTTP 服务，从 Windows 用 <code>curl</code> 拉同一个文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># NAS</span></span><br><span class="line"><span class="built_in">dd</span> <span class="keyword">if</span>=/dev/zero of=/vol1/1000/speedtest.bin bs=1M count=500</span><br><span class="line"><span class="built_in">cd</span> /vol1/1000 &amp;&amp; python3 -m http.server 8000</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Windows</span></span><br><span class="line">curl.exe <span class="literal">-o</span> NUL <span class="literal">-w</span> <span class="string">&quot;速度: %&#123;speed_download&#125; B/s`n&quot;</span> http://<span class="number">100.125</span>.<span class="number">162.49</span>:<span class="number">8000</span>/speedtest.bin</span><br></pre></td></tr></table></figure>
+
+<p>HTTP 478 KB&#x2F;s，同期 SMB 548 KB&#x2F;s。两个数与开头的 652 KB&#x2F;s 差在同一量级的采样波动上（缓存预热、单次计时），<strong>关键是「两条路径同速」这个形态——SMB 协议被排除</strong>。如果 HTTP 能跑满而 SMB 不行，问题才在 Samba 配置。</p>
+<p>三层排除完，结果摆在一起：</p>
 <table>
 <thead>
 <tr>
@@ -600,54 +631,18 @@
 <td>无代理劫持</td>
 </tr>
 <tr>
+<td>HTTP over 隧道</td>
+<td>478 KB&#x2F;s</td>
+<td>排除 SMB 协议</td>
+</tr>
+<tr>
 <td>实际吞吐</td>
-<td>652 KB&#x2F;s</td>
+<td>478–652 KB&#x2F;s</td>
 <td><strong>问题在这一层</strong></td>
 </tr>
 </tbody></table>
-<h3 id="顺带确认一件事：SMB-按服务器名缓存会话"><a href="#顺带确认一件事：SMB-按服务器名缓存会话" class="headerlink" title="顺带确认一件事：SMB 按服务器名缓存会话"></a>顺带确认一件事：SMB 按服务器名缓存会话</h3><p>这里有个现象值得单独说，因为它会反复误导判断。</p>
-<p>我在 NAS 上起了个 HTTP 服务做对照，<code>python3 -m http.server 8000</code>，从 Windows 用 <code>curl</code> 拉同一个文件，得到 478 KB&#x2F;s；SMB 是 548 KB&#x2F;s。两者一致，说明不是 SMB 协议的问题。而后来 BBR 生效后，HTTP 立刻变成 4.77 MB&#x2F;s，SMB <strong>还是 652 KB&#x2F;s</strong>。</p>
-<p>原因是 Windows 的 SMB 客户端<strong>按服务器名缓存会话</strong>，而拥塞控制只对新建连接生效：</p>
-<table>
-<thead>
-<tr>
-<th>操作</th>
-<th>结果</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>net use * /delete /y</code></td>
-<td>无效——地址栏敲 UNC 是隐式连接，没有显式映射可删</td>
-</tr>
-<tr>
-<td><code>Restart-Service LanmanWorkstation -Force</code></td>
-<td>可能失败——依赖 <code>Browser</code> 服务，停不掉就整体失败</td>
-</tr>
-<tr>
-<td><strong>换一个访问名</strong>（IP → 完整域名）</td>
-<td><strong>立即新建会话，生效</strong></td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th>访问方式</th>
-<th>速度</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>\\100.125.162.49</code>（改 BBR 前建立的会话）</td>
-<td>652 KB&#x2F;s</td>
-</tr>
-<tr>
-<td><code>\\fn-8100t.tailf92ed3.ts.net</code>（新会话）</td>
-<td><strong>4.90 MB&#x2F;s</strong></td>
-</tr>
-</tbody></table>
-<blockquote>
-<p><strong>改完任何网络栈参数（拥塞控制、MTU、缓冲区），第一件事是断开旧连接再测。</strong> 这类配置对已建立的连接一律无效，测出来的全是上一轮的数字。</p>
-</blockquote>
-<h2 id="九、定位：单流被-CUBIC-锁死在-5-Mbps"><a href="#九、定位：单流被-CUBIC-锁死在-5-Mbps" class="headerlink" title="九、定位：单流被 CUBIC 锁死在 5 Mbps"></a>九、定位：单流被 CUBIC 锁死在 5 Mbps</h2><p>排除磁盘、丢包、代理之后，剩下的怀疑对象是「带宽真的只有这么点」。这个判断被一个数字误导过：<code>speedtest-cli</code> 报上行 4.06 Mbps，看着结论很明确。</p>
+<p>磁盘、链路、协议全部健康，数据却只能跑 4 Mbps 左右。剩下的怀疑对象只有一个：<strong>带宽真的只有这么点</strong>。</p>
+<h2 id="九、定位：单流被-CUBIC-锁死在-5-Mbps"><a href="#九、定位：单流被-CUBIC-锁死在-5-Mbps" class="headerlink" title="九、定位：单流被 CUBIC 锁死在 5 Mbps"></a>九、定位：单流被 CUBIC 锁死在 5 Mbps</h2><p>「带宽只有这么点」这个判断，被一个数字误导过：<code>speedtest-cli</code> 报上行 4.06 Mbps，看着结论很明确。</p>
 <p>换成 iperf3 打四条并行流，同一时间、同一条上行：</p>
 <table>
 <thead>
@@ -673,12 +668,12 @@
 <td>被同一个数字锁住</td>
 </tr>
 </tbody></table>
-<p>四条流各自 5.1–5.4 Mbps、总和 20.8 Mbps，这个形态说明瓶颈不在总带宽，而在<strong>单条流始终爬不上去</strong>。</p>
+<p>四条流各自 5.1–5.4 Mbps、总和 20.8 Mbps。这个形态说明瓶颈不在总带宽，而在<strong>单条流始终爬不上去</strong>。</p>
 <p>单流上限可以算出来。RTT 26 ms、丢包率约 1%、MSS 1460 字节：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1460 B / 0.026 s × sqrt(1.5 / 0.01) ≈ 5.4 Mbps</span><br></pre></td></tr></table></figure>
 
 <p>和实测完全对得上。这不是巧合，是 CUBIC 的吞吐公式。</p>
-<p>同一次输出里还有两个指标，比吞吐更有说服力：</p>
+<p>同一次输出里还有两个指标，比吞吐更有说服力。先解释一下<strong>拥塞窗口</strong>（Cwnd）是什么：可以理解为「在收到对方确认之前，一次最多能发多少数据」。窗口越大，单位时间发得越多；窗口被压小，链路再空也发不快。</p>
 <table>
 <thead>
 <tr>
@@ -701,11 +696,12 @@
 <td>持续丢包，反复退回慢启动</td>
 </tr>
 </tbody></table>
-<p>CUBIC 的规则是丢包就往回缩。窗口缩了吞吐就低，吞吐低就发不快。这也解释了为什么「延迟 26 ms、<code>ping</code> 0% 丢包」的链路实际只有 500 KB&#x2F;s——<code>ping</code> 发的是小包、速率极低，测不出上行整形器的丢包。</p>
+<p>CUBIC 的规则是丢包就往回缩。窗口缩了吞吐就低，吞吐低就更难探到可用带宽。这也解释了为什么「延迟 26 ms、<code>ping</code> 0% 丢包」的链路实际只有 500 KB&#x2F;s——<code>ping</code> 发的是小包、速率极低，测不出上行整形器在高负载下的丢包。</p>
 <blockquote>
 <p><strong>单流测速工具（speedtest、单个 curl、单次 SMB 复制）测的是算法天花板，不是物理带宽。判断家宽上行，必须跑多流。</strong></p>
 </blockquote>
-<h2 id="十、开-BBR：三条命令，立即生效"><a href="#十、开-BBR：三条命令，立即生效" class="headerlink" title="十、开 BBR：三条命令，立即生效"></a>十、开 BBR：三条命令，立即生效</h2><p>Debian 12 内核自带 BBR，不需要装模块。NAS 是数据发送方，改发送端才有意义。</p>
+<h2 id="十、开-BBR：路径不变，换算法"><a href="#十、开-BBR：路径不变，换算法" class="headerlink" title="十、开 BBR：路径不变，换算法"></a>十、开 BBR：路径不变，换算法</h2><p><strong>BBR 是 Google 提的一种拥塞控制算法。</strong> 它不看丢包判断拥塞，而是持续估算「这条链路当前能跑多快」和「往返延迟有多久」，按估算值控制发包节奏。所以链路上有 3–5% 丢包时，CUBIC 会一路缩窗口，BBR 却能把丢掉的包吞下去继续推。</p>
+<p>Debian 12 内核自带 BBR，不需要装模块。NAS 是数据发送方，改发送端才有意义。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 看当前算法</span></span><br><span class="line"><span class="built_in">cat</span> /proc/sys/net/ipv4/tcp_congestion_control</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 写入配置：fq 队列 + bbr</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;net.core.default_qdisc=fq&quot;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> -a /etc/sysctl.conf</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;net.ipv4.tcp_congestion_control=bbr&quot;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> -a /etc/sysctl.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 应用</span></span><br><span class="line"><span class="built_in">sudo</span> sysctl -p</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 验证</span></span><br><span class="line"><span class="built_in">cat</span> /proc/sys/net/ipv4/tcp_congestion_control   <span class="comment"># bbr</span></span><br><span class="line"><span class="built_in">cat</span> /proc/sys/net/core/default_qdisc            <span class="comment"># fq</span></span><br></pre></td></tr></table></figure>
 
 <p><code>fq</code> 不是可选项。BBR 依赖这个队列调度器控制发包节奏，配成 <code>pfifo_fast</code> 吞吐会明显打折。</p>
@@ -742,8 +738,48 @@
 </tr>
 </tbody></table>
 <p>49.1 Mbps 这个数字很接近 50M 整数，说明上行本身可能有 50M 的整形上限，BBR 已经把能拿到的都拿到了。</p>
-<h3 id="最后落到实际使用"><a href="#最后落到实际使用" class="headerlink" title="最后落到实际使用"></a>最后落到实际使用</h3><p>改完 BBR 要断开旧会话重测（原因见第八节里「SMB 按服务器名缓存会话」那段），最终数字：</p>
+<h3 id="验证时最容易踩的坑：旧连接不走新算法"><a href="#验证时最容易踩的坑：旧连接不走新算法" class="headerlink" title="验证时最容易踩的坑：旧连接不走新算法"></a>验证时最容易踩的坑：旧连接不走新算法</h3><p>改完 BBR，<code>curl</code> 立刻变成 4.77 MB&#x2F;s，SMB 复制<strong>还是 652 KB&#x2F;s</strong>。这不是 BBR 没生效，是那条 SMB 会话在改配置之前就建立了。</p>
+<p><strong>拥塞控制只对新建连接生效。</strong> 而 Windows 的 SMB 客户端是<strong>按服务器名缓存会话</strong>的：</p>
 <table>
+<thead>
+<tr>
+<th>断开方式</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>net use * /delete /y</code></td>
+<td>无效——地址栏敲 UNC 是隐式连接，没有显式映射可删</td>
+</tr>
+<tr>
+<td><code>Restart-Service LanmanWorkstation -Force</code></td>
+<td>可能失败——依赖 <code>Browser</code> 服务，停不掉就整体失败</td>
+</tr>
+<tr>
+<td><strong>换一个访问名</strong>（IP → 完整域名）</td>
+<td><strong>立即新建会话，生效</strong></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>访问方式</th>
+<th>速度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>\\100.125.162.49</code>（改 BBR 前建立的会话）</td>
+<td>652 KB&#x2F;s</td>
+</tr>
+<tr>
+<td><code>\\fn-8100t.tailf92ed3.ts.net</code>（新会话）</td>
+<td><strong>4.90 MB&#x2F;s</strong></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>改完任何网络栈参数（拥塞控制、MTU、缓冲区），第一件事是断开旧连接再测。</strong> 这类配置对已建立的连接一律无效，测出来的全是上一轮的数字。</p>
+</blockquote>
+<h3 id="最后落到实际使用"><a href="#最后落到实际使用" class="headerlink" title="最后落到实际使用"></a>最后落到实际使用</h3><table>
 <thead>
 <tr>
 <th>层</th>
@@ -752,7 +788,7 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>家宽上行（电信 → 阿里云 BGP）</td>
+<td>家宽上行（电信 → 云服务器 BGP）</td>
 <td>49.1 Mbps</td>
 <td>iperf3 多流实测</td>
 </tr>
@@ -768,12 +804,12 @@
 </tr>
 </tbody></table>
 <p>77% 对跨网 P2P 加密隧道是健康水平，剩下 23% 主要是加密与封装的固有开销，配置层面改不动。</p>
-<h3 id="BBR-的代价"><a href="#BBR-的代价" class="headerlink" title="BBR 的代价"></a>BBR 的代价</h3><p>BBR 不把丢包当拥塞信号，只看 RTT 和带宽估计模型。两个代价要认：</p>
+<h3 id="BBR-的代价"><a href="#BBR-的代价" class="headerlink" title="BBR 的代价"></a>BBR 的代价</h3><p>两个代价要认：</p>
 <ul>
 <li><strong>对同链路其他流量不够友好。</strong> BBR 流会持续抢占，同链路上的 CUBIC 流被挤压。家宽只自己在用没有影响，共享上行时要考虑。</li>
 <li><strong>丢包不会消失。</strong> 3–5% 的丢包被吞下去了，重传仍然发生，有效带宽比理论值低两成左右。这部分损耗换任何算法都消不掉。</li>
 </ul>
-<h2 id="十一、定稿：让这套配置开机就绪"><a href="#十一、定稿：让这套配置开机就绪" class="headerlink" title="十一、定稿：让这套配置开机就绪"></a>十一、定稿：让这套配置开机就绪</h2><p>服务能用之后，把它固定下来，避免每次重启都要重新配。</p>
+<h2 id="十一、定稿：让它开机就绪"><a href="#十一、定稿：让它开机就绪" class="headerlink" title="十一、定稿：让它开机就绪"></a>十一、定稿：让它开机就绪</h2><p>服务能用之后，把它固定下来，避免每次重启都要重新配。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># NAS：确认自启</span></span><br><span class="line">systemctl is-enabled tailscaled</span><br><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> tailscaled</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Windows：映射盘符（/persistent 前要有空格，盘符按需换）</span></span><br><span class="line">net use N: \\fn<span class="literal">-8100t</span>.tailf92ed3.ts.net\影音 /persistent:yes</span><br><span class="line"></span><br><span class="line"><span class="comment"># 单独保存凭据，重启不弹密码框</span></span><br><span class="line">cmdkey /add:fn<span class="literal">-8100t</span>.tailf92ed3.ts.net /user:用户名 /pass:密码</span><br><span class="line">cmdkey /list:fn<span class="literal">-8100t</span>.tailf92ed3.ts.net</span><br></pre></td></tr></table></figure>
@@ -853,24 +889,48 @@
 <td>规则加 <code>DIRECT,no-resolve</code></td>
 </tr>
 </tbody></table>
-<h2 id="完整流程速查"><a href="#完整流程速查" class="headerlink" title="完整流程速查"></a>完整流程速查</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ---------- NAS 侧 ----------</span></span><br><span class="line"><span class="comment"># 1. 确认出口不是 CGNAT</span></span><br><span class="line">curl -4 -s https://ipinfo.io/ip</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 装 Tailscale 并登录</span></span><br><span class="line">curl -fsSL https://tailscale.com/install.sh | sh</span><br><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> --now tailscaled</span><br><span class="line"><span class="built_in">sudo</span> tailscale up</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 看路径与环境</span></span><br><span class="line">tailscale status</span><br><span class="line">tailscale netcheck</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 开 BBR（发送端）</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;net.core.default_qdisc=fq&quot;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> -a /etc/sysctl.conf</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;net.ipv4.tcp_congestion_control=bbr&quot;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> -a /etc/sysctl.conf</span><br><span class="line"><span class="built_in">sudo</span> sysctl -p</span><br><span class="line"><span class="built_in">cat</span> /proc/sys/net/ipv4/tcp_congestion_control   <span class="comment"># bbr</span></span><br></pre></td></tr></table></figure>
+<h2 id="流程速查"><a href="#流程速查" class="headerlink" title="流程速查"></a>流程速查</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ---------- NAS 侧 ----------</span></span><br><span class="line"><span class="comment"># 1. 确认出口不是 CGNAT</span></span><br><span class="line">curl -4 -s https://ipinfo.io/ip</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 装 Tailscale 并登录</span></span><br><span class="line">curl -fsSL https://tailscale.com/install.sh | sh</span><br><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> --now tailscaled</span><br><span class="line"><span class="built_in">sudo</span> tailscale up</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 看路径与环境</span></span><br><span class="line">tailscale status</span><br><span class="line">tailscale netcheck</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 开 BBR（发送端）</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;net.core.default_qdisc=fq&quot;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> -a /etc/sysctl.conf</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;net.ipv4.tcp_congestion_control=bbr&quot;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> -a /etc/sysctl.conf</span><br><span class="line"><span class="built_in">sudo</span> sysctl -p</span><br><span class="line"><span class="built_in">cat</span> /proc/sys/net/ipv4/tcp_congestion_control   <span class="comment"># bbr</span></span><br></pre></td></tr></table></figure>
 
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ---------- Windows 侧 ----------</span></span><br><span class="line">tailscale status</span><br><span class="line">tailscale ping <span class="literal">--until-direct</span>=true <span class="literal">-c</span> <span class="number">20</span> fn<span class="literal">-8100t</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 映射 + 存凭据（换访问名同时完成「新建会话」）</span></span><br><span class="line">net use N: \\fn<span class="literal">-8100t</span>.tailf92ed3.ts.net\影音 /persistent:yes</span><br><span class="line">cmdkey /add:fn<span class="literal">-8100t</span>.tailf92ed3.ts.net /user:用户名 /pass:密码</span><br><span class="line"><span class="built_in">dir</span> N:\</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ---------- Clash 规则 ----------</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">IP-CIDR,100.64.0.0/10,DIRECT,no-resolve</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>这套东西真正的价值不在于换了个工具，而在于把「慢」拆成了三层，每层用不同的手段验证：</p>
-<ul>
-<li>瓶颈在<strong>中转服务器带宽</strong> → 换 P2P 直连（375 → 652 KB&#x2F;s）</li>
-<li>瓶颈在<strong>家宽上行</strong> → 换什么都不行，只能找运营商提带宽</li>
-<li>瓶颈在<strong>拥塞控制算法</strong> → 换工具、换协议都没用，必须改算法（652 KB&#x2F;s → 4.9 MB&#x2F;s）</li>
-</ul>
-<p>我这次撞的是第三种，却先误判成第二种。判据很简单：<strong>多流能跑满、单流跑不满，就是算法问题，不是带宽问题。</strong></p>
+<h2 id="最后：一个判断表，省掉下一次排查"><a href="#最后：一个判断表，省掉下一次排查" class="headerlink" title="最后：一个判断表，省掉下一次排查"></a>最后：一个判断表，省掉下一次排查</h2><p>这套东西的价值不在于换了个工具，而在于把「慢」拆成了可以分别验证的三层，每一层对应一种改法：</p>
+<table>
+<thead>
+<tr>
+<th>症状</th>
+<th>瓶颈在哪</th>
+<th>该动什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单流、多流一样慢，换个中转也一样</td>
+<td>物理带宽</td>
+<td>提带宽，或换一条路径</td>
+</tr>
+<tr>
+<td>多流快、单流慢</td>
+<td>拥塞控制算法</td>
+<td>换算法（BBR），换工具没用</td>
+</tr>
+<tr>
+<td>时通时断、握手就失败</td>
+<td>NAT 类型或防火墙</td>
+<td>回到第五节确认网络环境</td>
+</tr>
+<tr>
+<td>能连上但速度只有几百 KB&#x2F;s，且开着代理</td>
+<td>流量被劫持</td>
+<td>加 <code>DIRECT</code> 规则</td>
+</tr>
+</tbody></table>
+<p>我这次撞的是第二行，却先误判成第一行——<code>speedtest</code> 报 4 Mbps 时差点直接去找运营商提带宽。判据其实一句话：<strong>多流能跑满、单流跑不满，就是算法问题，不是带宽问题。</strong></p>
 <blockquote>
 <p><strong>先测清楚瓶颈在哪一层，再决定改什么。改错层，所有操作都是零收益。</strong></p>
 </blockquote>
 <p>还剩一件事没做：<code>netcheck</code> 显示最近的 DERP 节点是旧金山 159 ms，香港反而 213 ms。平时打洞成功用不上它，但万一哪天打洞失败退回中转，延迟会很痛苦。那台已经闲置的 3M 云服务器做自建 DERP 正合适——只在中转时吃流量，3M 兜底够用，延迟能压到 30 ms 内。这部分留到下一篇。</p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://szjmhxd.github.io">十早九木</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://szjmhxd.github.io/posts/92626211/">https://szjmhxd.github.io/posts/92626211/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://szjmhxd.github.io" target="_blank">十早九木のBlog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/SMB/">SMB</a><a class="post-meta__tags" href="/tags/Tailscale/">Tailscale</a><a class="post-meta__tags" href="/tags/BBR/">BBR</a><a class="post-meta__tags" href="/tags/NAT-%E7%A9%BF%E9%80%8F/">NAT 穿透</a><a class="post-meta__tags" href="/tags/NAS/">NAS</a></div><div class="post-share"><div class="social-share" data-image="/posts/92626211/cover.svg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/d7309f33/" title="从写 md 到上线：这个博客的完整工作流"><img class="cover" src="/posts/d7309f33/cover.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">从写 md 到上线：这个博客的完整工作流</div></div><div class="info-2"><div class="info-item-1">先说结论这个博客是「源码仓负责写，产物仓负责展示」的两段式结构。你只在源码仓里写 markdown，一条命令帮你编译、同步、推送到两个 GitHub 仓库，剩下的交给 Pages 自动构建。 整个链路只有一条命令： 12cd E:\test\hexo.\deploy.ps1 -Message &quot;新增：文章标题&quot;  但在按下这条命令之前，有四件事必须做对：front matter、配图语法、封面生成、本地预览。这篇把每一步都写清楚，下次照着做就行。  一、四个仓库，各管什么打开我的 GitHub 会看到四个仓库，很容易混。先把关系摆清楚：    仓库 可见性 角色 本地路径 我要不要动它    blog-hexo-butterfly-old 私有 Hexo 源码（md + 素材 + 主题配置） E:\test\hexo ✅ 只在这里写   szjmhxd.github.io 公开 展示站（编译产物） E:\test\site-new ❌ 自动生成，不要手改   blog-hexo-Melody-old 公开 旧版博客归档快照 无 只读留存   szjmhxd 公...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/dcc80514/" title="用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区"><img class="cover" src="/posts/dcc80514/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-20</div><div class="info-item-2">用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区</div></div><div class="info-2"><div class="info-item-1"> 适用场景：工程代码放在局域网另一台机器的共享盘上（如 \\192.168.2.46\szjm-doc，映射为 P:），DSH Desktop 选工作区时弹「NTFS 不能安全用作 DSH Desktop 工作区」拒绝登记。本文方法已在 Windows 11 + DSH Desktop 2.0.17 实测走通。   一、快速使用（三步）123456:: ① 建目录符号链接（普通权限即可，需已开启&quot;开发者模式&quot;）mklink /D &quot;E:\ws\jypt_worker&quot; &quot;P:\jypt_laravel_server_2.0_python_worker&quot;:: ② DSH 设置 → 文件访问策略 → 切到 Full access（danger-full-access）:: ③ DSH「选择工作区目录」→ 定位到 E:\ws → 单击选中 jypt_worker（不要双击进入！）→ 选择文件夹  第 ③ 步是最容易做错的一步：双击进入链接后，Windows 文件夹对话框返回的是解析后的真实路径 P:\...，DSH 会再次拒绝...</div></div></div></a><a class="pagination-related" href="/posts/425b83a5/" title="Ubuntu 22.04 Samba 共享配置与踩坑实录"><img class="cover" src="/posts/425b83a5/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-21</div><div class="info-item-2">Ubuntu 22.04 Samba 共享配置与踩坑实录</div></div><div class="info-2"><div class="info-item-1"> 场景：在 VMware 虚拟机 szjm-ubu22（Ubuntu 22.04，IP 192.168.2.46）上开启 SMB 共享，把 ~/Documents 发布出去，Windows 端以映射盘方式访问。全程从”装个 samba”开始，一路踩了 dpkg 锁、Windows 来宾策略、1219 多重连接、匿名枚举、管理员会话盘符分裂等坑，本文按时间线记录问题、根因与解法。   一、标准配置流程（正确姿势速览）12345678# 1. 安装sudo apt install -y samba# 2. 添加 SMB 用户（SMB 密码独立于系统密码）sudo smbpasswd -a szjm# 3. 编辑 /etc/samba/smb.conf，末尾追加共享段sudo nano /etc/samba/smb.conf  1234567[szjmDoc]        path = /home/szjm/Documents        browseable = yes        read only = No        valid users = szjm        ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">十早九木</div><div class="author-info-description">个人博客 · 技术笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">49</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/szjmhxd"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/szjmhxd" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #f26522;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E8%AF%B4%E7%BB%93%E8%AE%BA"><span class="toc-text">先说结论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E9%9C%80%E6%B1%82%E4%B8%8D%E6%98%AF%E7%BB%84%E7%BD%91%EF%BC%8C%E6%98%AF%E5%85%AC%E7%BD%91%E5%8F%AF%E8%BE%BE"><span class="toc-text">一、需求不是组网，是公网可达</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81nps-%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%9A%E6%AF%8F%E4%B8%AA%E5%AD%97%E8%8A%82%E9%83%BD%E8%A6%81%E8%BF%87%E9%82%A3%E5%8F%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-text">二、nps 的问题：每个字节都要过那台云服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8D%A2%E6%80%9D%E8%B7%AF%EF%BC%9A%E8%AE%A9%E5%85%AC%E7%BD%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%8F%AA%E5%81%9A%E6%8F%A1%E6%89%8B"><span class="toc-text">三、换思路：让公网服务器只做握手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E9%80%89%E5%9E%8B%EF%BC%9AP2P-%E6%96%B9%E6%A1%88%E9%87%8C-Tailscale-%E6%9C%80%E7%9C%81%E5%BF%83"><span class="toc-text">四、选型：P2P 方案里 Tailscale 最省心</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E5%8A%A8%E6%89%8B%E5%89%8D%EF%BC%9A%E5%85%88%E7%A1%AE%E8%AE%A4%E4%B8%A4%E7%AB%AF%E7%9A%84%E7%BD%91%E7%BB%9C%E7%8E%AF%E5%A2%83"><span class="toc-text">五、动手前：先确认两端的网络环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%88%E7%9C%8B%E5%87%BA%E5%8F%A3-IP%EF%BC%9A%E6%98%AF%E4%B8%8D%E6%98%AF%E5%9C%A8%E8%BF%90%E8%90%A5%E5%95%86%E5%A4%A7%E5%86%85%E7%BD%91%E9%87%8C"><span class="toc-text">先看出口 IP：是不是在运营商大内网里</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%8D%E7%9C%8B-NAT-%E7%B1%BB%E5%9E%8B%EF%BC%9A%E5%8F%AA%E6%9C%89%E4%B8%80%E4%B8%AA%E6%8C%87%E6%A0%87%E8%87%B4%E5%91%BD"><span class="toc-text">再看 NAT 类型：只有一个指标致命</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E5%AE%9E%E6%B5%8B%E7%BB%93%E6%9E%9C"><span class="toc-text">我的实测结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%AE%89%E8%A3%85%EF%BC%9ADocker-%E8%BF%98%E6%98%AF%E5%91%BD%E4%BB%A4%E8%A1%8C"><span class="toc-text">六、安装：Docker 还是命令行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F%E7%9A%84%E5%B7%AE%E5%BC%82"><span class="toc-text">两种方式的差异</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Docker-%E6%96%B9%E5%BC%8F"><span class="toc-text">Docker 方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E6%96%B9%E5%BC%8F"><span class="toc-text">命令行方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%96%E6%AC%A1%E7%99%BB%E5%BD%95%EF%BC%9A%E8%BF%99%E4%B8%80%E6%AD%A5%E9%9C%80%E8%A6%81%E8%83%BD%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6%E9%9D%A2"><span class="toc-text">首次登录：这一步需要能访问控制面</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E6%B5%8B%E5%BB%B6%E8%BF%9F%EF%BC%9A%E5%85%88%E7%A1%AE%E8%AE%A4%E8%B5%B0%E7%9A%84%E6%98%AF%E7%9B%B4%E8%BF%9E%EF%BC%8C%E4%B8%8D%E6%98%AF%E4%B8%AD%E8%BD%AC"><span class="toc-text">七、测延迟：先确认走的是直连，不是中转</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%B5%8B%E9%80%9F%E5%BA%A6%EF%BC%9A%E7%9B%B4%E8%BF%9E%E4%B9%8B%E5%90%8E%E5%8F%AA%E6%9C%89-652-KB-s"><span class="toc-text">八、测速度：直连之后只有 652 KB&#x2F;s</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E6%98%AF%E4%B8%8D%E6%98%AF%E7%93%B6%E9%A2%88"><span class="toc-text">磁盘是不是瓶颈</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E8%B7%AF%E6%98%AF%E4%B8%8D%E6%98%AF%E4%B8%A2%E5%8C%85%E3%80%81%E6%98%AF%E4%B8%8D%E6%98%AF%E8%A2%AB%E4%BB%A3%E7%90%86%E5%8A%AB%E6%8C%81"><span class="toc-text">链路是不是丢包、是不是被代理劫持</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%BA%E5%B8%A6%E7%A1%AE%E8%AE%A4%E4%B8%80%E4%BB%B6%E4%BA%8B%EF%BC%9ASMB-%E6%8C%89%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%8D%E7%BC%93%E5%AD%98%E4%BC%9A%E8%AF%9D"><span class="toc-text">顺带确认一件事：SMB 按服务器名缓存会话</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E5%AE%9A%E4%BD%8D%EF%BC%9A%E5%8D%95%E6%B5%81%E8%A2%AB-CUBIC-%E9%94%81%E6%AD%BB%E5%9C%A8-5-Mbps"><span class="toc-text">九、定位：单流被 CUBIC 锁死在 5 Mbps</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E5%BC%80-BBR%EF%BC%9A%E4%B8%89%E6%9D%A1%E5%91%BD%E4%BB%A4%EF%BC%8C%E7%AB%8B%E5%8D%B3%E7%94%9F%E6%95%88"><span class="toc-text">十、开 BBR：三条命令，立即生效</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%E8%90%BD%E5%88%B0%E5%AE%9E%E9%99%85%E4%BD%BF%E7%94%A8"><span class="toc-text">最后落到实际使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BBR-%E7%9A%84%E4%BB%A3%E4%BB%B7"><span class="toc-text">BBR 的代价</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E5%AE%9A%E7%A8%BF%EF%BC%9A%E8%AE%A9%E8%BF%99%E5%A5%97%E9%85%8D%E7%BD%AE%E5%BC%80%E6%9C%BA%E5%B0%B1%E7%BB%AA"><span class="toc-text">十一、定稿：让这套配置开机就绪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E6%98%93%E9%94%99%E6%B8%85%E5%8D%95"><span class="toc-text">十二、易错清单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B%E9%80%9F%E6%9F%A5"><span class="toc-text">完整流程速查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/92626211/" title="异地访问 NAS：从 3M 中转到 4.9 MB/s"><img src="/posts/92626211/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="异地访问 NAS：从 3M 中转到 4.9 MB/s"/></a><div class="content"><a class="title" href="/posts/92626211/" title="异地访问 NAS：从 3M 中转到 4.9 MB/s">异地访问 NAS：从 3M 中转到 4.9 MB/s</a><time datetime="2026-11-23T09:40:00.000Z" title="发表于 2026-11-23 17:40:00">2026-11-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/d7309f33/" title="从写 md 到上线：这个博客的完整工作流"><img src="/posts/d7309f33/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="从写 md 到上线：这个博客的完整工作流"/></a><div class="content"><a class="title" href="/posts/d7309f33/" title="从写 md 到上线：这个博客的完整工作流">从写 md 到上线：这个博客的完整工作流</a><time datetime="2026-11-23T09:20:00.000Z" title="发表于 2026-11-23 17:20:00">2026-11-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3f7c9a21/" title="小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势"><img src="/posts/3f7c9a21/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势"/></a><div class="content"><a class="title" href="/posts/3f7c9a21/" title="小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势">小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势</a><time datetime="2026-11-22T07:45:00.000Z" title="发表于 2026-11-22 15:45:00">2026-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/4b2bdae9/" title="我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的"><img src="/posts/4b2bdae9/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的"/></a><div class="content"><a class="title" href="/posts/4b2bdae9/" title="我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的">我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的</a><time datetime="2026-11-22T05:00:00.000Z" title="发表于 2026-11-22 13:00:00">2026-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7d2c1b8e/" title="微信输入法的算式结果时灵时不灵，我用 AutoHotkey 补了个按 = 出答案的"><img src="/posts/7d2c1b8e/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="微信输入法的算式结果时灵时不灵，我用 AutoHotkey 补了个按 = 出答案的"/></a><div class="content"><a class="title" href="/posts/7d2c1b8e/" title="微信输入法的算式结果时灵时不灵，我用 AutoHotkey 补了个按 = 出答案的">微信输入法的算式结果时灵时不灵，我用 AutoHotkey 补了个按 = 出答案的</a><time datetime="2026-11-22T02:50:00.000Z" title="发表于 2026-11-22 10:50:00">2026-11-22</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 十早九木</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.0</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.0"></script><script src="/js/main.js?v=5.7.0"></script><div class="js-pjax"><script>(() => {
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://szjmhxd.github.io">十早九木</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://szjmhxd.github.io/posts/92626211/">https://szjmhxd.github.io/posts/92626211/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://szjmhxd.github.io" target="_blank">十早九木のBlog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/SMB/">SMB</a><a class="post-meta__tags" href="/tags/Tailscale/">Tailscale</a><a class="post-meta__tags" href="/tags/BBR/">BBR</a><a class="post-meta__tags" href="/tags/NAT-%E7%A9%BF%E9%80%8F/">NAT 穿透</a><a class="post-meta__tags" href="/tags/NAS/">NAS</a></div><div class="post-share"><div class="social-share" data-image="/posts/92626211/cover.svg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/d7309f33/" title="从写 md 到上线：这个博客的完整工作流"><img class="cover" src="/posts/d7309f33/cover.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">从写 md 到上线：这个博客的完整工作流</div></div><div class="info-2"><div class="info-item-1">先说结论这个博客是「源码仓负责写，产物仓负责展示」的两段式结构。你只在源码仓里写 markdown，一条命令帮你编译、同步、推送到两个 GitHub 仓库，剩下的交给 Pages 自动构建。 整个链路只有一条命令： 12cd E:\test\hexo.\deploy.ps1 -Message &quot;新增：文章标题&quot;  但在按下这条命令之前，有四件事必须做对：front matter、配图语法、封面生成、本地预览。这篇把每一步都写清楚，下次照着做就行。  一、四个仓库，各管什么打开我的 GitHub 会看到四个仓库，很容易混。先把关系摆清楚：    仓库 可见性 角色 本地路径 我要不要动它    blog-hexo-butterfly-old 私有 Hexo 源码（md + 素材 + 主题配置） E:\test\hexo ✅ 只在这里写   szjmhxd.github.io 公开 展示站（编译产物） E:\test\site-new ❌ 自动生成，不要手改   blog-hexo-Melody-old 公开 旧版博客归档快照 无 只读留存   szjmhxd 公...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/425b83a5/" title="Ubuntu 22.04 Samba 共享配置与踩坑实录"><img class="cover" src="/posts/425b83a5/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-21</div><div class="info-item-2">Ubuntu 22.04 Samba 共享配置与踩坑实录</div></div><div class="info-2"><div class="info-item-1"> 场景：在 VMware 虚拟机 szjm-ubu22（Ubuntu 22.04，IP 192.168.2.46）上开启 SMB 共享，把 ~/Documents 发布出去，Windows 端以映射盘方式访问。全程从”装个 samba”开始，一路踩了 dpkg 锁、Windows 来宾策略、1219 多重连接、匿名枚举、管理员会话盘符分裂等坑，本文按时间线记录问题、根因与解法。   一、标准配置流程（正确姿势速览）12345678# 1. 安装sudo apt install -y samba# 2. 添加 SMB 用户（SMB 密码独立于系统密码）sudo smbpasswd -a szjm# 3. 编辑 /etc/samba/smb.conf，末尾追加共享段sudo nano /etc/samba/smb.conf  1234567[szjmDoc]        path = /home/szjm/Documents        browseable = yes        read only = No        valid users = szjm        ...</div></div></div></a><a class="pagination-related" href="/posts/dcc80514/" title="用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区"><img class="cover" src="/posts/dcc80514/cover.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-20</div><div class="info-item-2">用软链接让 DSH Desktop 使用网络挂载盘（SMB 共享）作工作区</div></div><div class="info-2"><div class="info-item-1"> 适用场景：工程代码放在局域网另一台机器的共享盘上（如 \\192.168.2.46\szjm-doc，映射为 P:），DSH Desktop 选工作区时弹「NTFS 不能安全用作 DSH Desktop 工作区」拒绝登记。本文方法已在 Windows 11 + DSH Desktop 2.0.17 实测走通。   一、快速使用（三步）123456:: ① 建目录符号链接（普通权限即可，需已开启&quot;开发者模式&quot;）mklink /D &quot;E:\ws\jypt_worker&quot; &quot;P:\jypt_laravel_server_2.0_python_worker&quot;:: ② DSH 设置 → 文件访问策略 → 切到 Full access（danger-full-access）:: ③ DSH「选择工作区目录」→ 定位到 E:\ws → 单击选中 jypt_worker（不要双击进入！）→ 选择文件夹  第 ③ 步是最容易做错的一步：双击进入链接后，Windows 文件夹对话框返回的是解析后的真实路径 P:\...，DSH 会再次拒绝...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">十早九木</div><div class="author-info-description">个人博客 · 技术笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">49</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/szjmhxd"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/szjmhxd" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #f26522;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E8%AF%B4%E7%BB%93%E8%AE%BA"><span class="toc-text">先说结论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E9%9C%80%E6%B1%82%E4%B8%8D%E6%98%AF%E6%8A%8A-NAS-%E6%9A%B4%E9%9C%B2%E5%88%B0%E5%85%AC%E7%BD%91"><span class="toc-text">一、需求不是把 NAS 暴露到公网</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%85%88%E7%94%A8%E7%9A%84%E6%98%AF-nps%EF%BC%8C%E5%8D%A1%E5%9C%A8%E9%82%A3%E5%8F%B0-3M-%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A"><span class="toc-text">二、先用的是 nps，卡在那台 3M 云服务器上</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8D%A2%E6%80%9D%E8%B7%AF%EF%BC%9A%E8%AE%A9%E5%85%AC%E7%BD%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%8F%AA%E5%81%9A%E6%8F%A1%E6%89%8B"><span class="toc-text">三、换思路：让公网服务器只做握手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81P2P-%E6%96%B9%E6%A1%88%E9%87%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89-Tailscale"><span class="toc-text">四、P2P 方案里为什么选 Tailscale</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E5%8A%A8%E6%89%8B%E5%89%8D%EF%BC%9A%E5%85%88%E7%A1%AE%E8%AE%A4%E4%B8%A4%E7%AB%AF%E7%9A%84%E7%BD%91%E7%BB%9C%E7%8E%AF%E5%A2%83"><span class="toc-text">五、动手前：先确认两端的网络环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%88%E7%9C%8B%E5%87%BA%E5%8F%A3-IP%EF%BC%9A%E6%98%AF%E4%B8%8D%E6%98%AF%E5%9C%A8%E8%BF%90%E8%90%A5%E5%95%86%E5%A4%A7%E5%86%85%E7%BD%91%E9%87%8C"><span class="toc-text">先看出口 IP：是不是在运营商大内网里</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%8D%E7%9C%8B-NAT-%E7%B1%BB%E5%9E%8B%EF%BC%9A%E5%8F%AA%E6%9C%89%E4%B8%80%E4%B8%AA%E6%8C%87%E6%A0%87%E8%87%B4%E5%91%BD"><span class="toc-text">再看 NAT 类型：只有一个指标致命</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A3%85%E5%AE%8C%E4%B9%8B%E5%90%8E%E7%9A%84%E5%AE%8C%E6%95%B4%E7%BB%93%E6%9E%9C"><span class="toc-text">装完之后的完整结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%AE%89%E8%A3%85%EF%BC%9ADocker-%E8%BF%98%E6%98%AF%E5%91%BD%E4%BB%A4%E8%A1%8C"><span class="toc-text">六、安装：Docker 还是命令行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F%E7%9A%84%E5%B7%AE%E5%BC%82"><span class="toc-text">两种方式的差异</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Docker-%E6%96%B9%E5%BC%8F"><span class="toc-text">Docker 方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E6%96%B9%E5%BC%8F"><span class="toc-text">命令行方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%96%E6%AC%A1%E7%99%BB%E5%BD%95%EF%BC%9A%E8%BF%99%E4%B8%80%E6%AD%A5%E9%9C%80%E8%A6%81%E8%83%BD%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6%E9%9D%A2"><span class="toc-text">首次登录：这一步需要能访问控制面</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E6%B5%8B%E5%BB%B6%E8%BF%9F%EF%BC%9A%E7%A1%AE%E8%AE%A4%E6%95%B0%E6%8D%AE%E8%B5%B0%E7%9A%84%E6%98%AF%E7%9B%B4%E8%BF%9E"><span class="toc-text">七、测延迟：确认数据走的是直连</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%B5%8B%E9%80%9F%E5%BA%A6%EF%BC%9A%E7%9B%B4%E8%BF%9E%E5%8F%AA%E6%9C%89-652-KB-s"><span class="toc-text">八、测速度：直连只有 652 KB&#x2F;s</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E5%B1%82%EF%BC%9A%E7%A3%81%E7%9B%98%E6%98%AF%E4%B8%8D%E6%98%AF%E7%93%B6%E9%A2%88"><span class="toc-text">第一层：磁盘是不是瓶颈</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%B1%82%EF%BC%9A%E9%93%BE%E8%B7%AF%E6%98%AF%E4%B8%8D%E6%98%AF%E4%B8%A2%E5%8C%85%E3%80%81%E6%98%AF%E4%B8%8D%E6%98%AF%E8%A2%AB%E4%BB%A3%E7%90%86%E5%8A%AB%E6%8C%81"><span class="toc-text">第二层：链路是不是丢包、是不是被代理劫持</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E5%B1%82%EF%BC%9A%E6%98%AF%E4%B8%8D%E6%98%AF-SMB-%E5%8D%8F%E8%AE%AE%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">第三层：是不是 SMB 协议的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E5%AE%9A%E4%BD%8D%EF%BC%9A%E5%8D%95%E6%B5%81%E8%A2%AB-CUBIC-%E9%94%81%E6%AD%BB%E5%9C%A8-5-Mbps"><span class="toc-text">九、定位：单流被 CUBIC 锁死在 5 Mbps</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E5%BC%80-BBR%EF%BC%9A%E8%B7%AF%E5%BE%84%E4%B8%8D%E5%8F%98%EF%BC%8C%E6%8D%A2%E7%AE%97%E6%B3%95"><span class="toc-text">十、开 BBR：路径不变，换算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E6%97%B6%E6%9C%80%E5%AE%B9%E6%98%93%E8%B8%A9%E7%9A%84%E5%9D%91%EF%BC%9A%E6%97%A7%E8%BF%9E%E6%8E%A5%E4%B8%8D%E8%B5%B0%E6%96%B0%E7%AE%97%E6%B3%95"><span class="toc-text">验证时最容易踩的坑：旧连接不走新算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%E8%90%BD%E5%88%B0%E5%AE%9E%E9%99%85%E4%BD%BF%E7%94%A8"><span class="toc-text">最后落到实际使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BBR-%E7%9A%84%E4%BB%A3%E4%BB%B7"><span class="toc-text">BBR 的代价</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E5%AE%9A%E7%A8%BF%EF%BC%9A%E8%AE%A9%E5%AE%83%E5%BC%80%E6%9C%BA%E5%B0%B1%E7%BB%AA"><span class="toc-text">十一、定稿：让它开机就绪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E6%98%93%E9%94%99%E6%B8%85%E5%8D%95"><span class="toc-text">十二、易错清单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B%E9%80%9F%E6%9F%A5"><span class="toc-text">流程速查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%EF%BC%9A%E4%B8%80%E4%B8%AA%E5%88%A4%E6%96%AD%E8%A1%A8%EF%BC%8C%E7%9C%81%E6%8E%89%E4%B8%8B%E4%B8%80%E6%AC%A1%E6%8E%92%E6%9F%A5"><span class="toc-text">最后：一个判断表，省掉下一次排查</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/92626211/" title="用 Tailscale 组网：异地访问 NAS，从 375 KB/s 到 4.9 MB/s"><img src="/posts/92626211/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用 Tailscale 组网：异地访问 NAS，从 375 KB/s 到 4.9 MB/s"/></a><div class="content"><a class="title" href="/posts/92626211/" title="用 Tailscale 组网：异地访问 NAS，从 375 KB/s 到 4.9 MB/s">用 Tailscale 组网：异地访问 NAS，从 375 KB/s 到 4.9 MB/s</a><time datetime="2026-11-23T09:40:00.000Z" title="发表于 2026-11-23 17:40:00">2026-11-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/d7309f33/" title="从写 md 到上线：这个博客的完整工作流"><img src="/posts/d7309f33/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="从写 md 到上线：这个博客的完整工作流"/></a><div class="content"><a class="title" href="/posts/d7309f33/" title="从写 md 到上线：这个博客的完整工作流">从写 md 到上线：这个博客的完整工作流</a><time datetime="2026-11-23T09:20:00.000Z" title="发表于 2026-11-23 17:20:00">2026-11-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3f7c9a21/" title="小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势"><img src="/posts/3f7c9a21/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势"/></a><div class="content"><a class="title" href="/posts/3f7c9a21/" title="小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势">小米妙享的投屏窗口没有右键返回，我用 AutoHotkey 补了一套鼠标手势</a><time datetime="2026-11-22T07:45:00.000Z" title="发表于 2026-11-22 15:45:00">2026-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/4b2bdae9/" title="我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的"><img src="/posts/4b2bdae9/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的"/></a><div class="content"><a class="title" href="/posts/4b2bdae9/" title="我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的">我给自己博客写了一套封面生成规则：630×487 的封面是怎么算出来的</a><time datetime="2026-11-22T05:00:00.000Z" title="发表于 2026-11-22 13:00:00">2026-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/7d2c1b8e/" title="微信输入法的算式结果时灵时不灵，我用 AutoHotkey 补了个按 = 出答案的"><img src="/posts/7d2c1b8e/cover.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="微信输入法的算式结果时灵时不灵，我用 AutoHotkey 补了个按 = 出答案的"/></a><div class="content"><a class="title" href="/posts/7d2c1b8e/" title="微信输入法的算式结果时灵时不灵，我用 AutoHotkey 补了个按 = 出答案的">微信输入法的算式结果时灵时不灵，我用 AutoHotkey 补了个按 = 出答案的</a><time datetime="2026-11-22T02:50:00.000Z" title="发表于 2026-11-22 10:50:00">2026-11-22</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 十早九木</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.0</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.0"></script><script src="/js/main.js?v=5.7.0"></script><div class="js-pjax"><script>(() => {
   const parseViewBox = viewBox => {
     if (!viewBox) return null
     const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
