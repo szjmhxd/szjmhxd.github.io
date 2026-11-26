@@ -10,7 +10,26 @@
   <rights>All rights reserved 2026, 十早九木</rights>
   <subtitle>个人博客 · 技术笔记</subtitle>
   <title>十早九木のBlog</title>
-  <updated>2026-11-26T15:08:00.000Z</updated>
+  <updated>2026-11-26T16:25:00.000Z</updated>
+  <entry>
+    <author>
+      <name>十早九木</name>
+    </author>
+    <category term="开发工具" scheme="https://szjmhxd.github.io/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/"/>
+    <category term="MediaShelf" scheme="https://szjmhxd.github.io/tags/MediaShelf/"/>
+    <category term="TMDB" scheme="https://szjmhxd.github.io/tags/TMDB/"/>
+    <category term="媒体库" scheme="https://szjmhxd.github.io/tags/%E5%AA%92%E4%BD%93%E5%BA%93/"/>
+    <category term="Python" scheme="https://szjmhxd.github.io/tags/Python/"/>
+    <content>
+      <![CDATA[<p>下载的影视资源，文件名是发布组的命名习惯：<code>长发公主.Tangled.2010.BluRay.1080p.x265.10bit.3Audio.MNHD-FRDS.mkv</code>、<code>01.flv</code>、<code>2026-07-25 第5期上.mkv</code>。Jellyfin&#x2F;Emby 的刮削器按「片名 (年份)」去 TMDB 找条目，文件名对不上就识别不出，海报、简介、评分全是空的。手工改 50 个文件还能忍，改 2000 个就是另一回事。</p><p>MediaShelf 是一个开源的 Windows 桌面工具（Python + PySide6），把「扫描 → 联网识别 → 预览 → 执行」做成一条流水线：读 TMDB 元数据，按你定的命名模板改名、归目录、生成 nfo 和海报。电影、剧集、综艺三类都覆盖。本文是它的匹配引擎设计与 2000+ 文件整理的实测记录。</p><p>源码与下载：<a href="https://github.com/szjmhxd/media-shelf">github.com&#x2F;szjmhxd&#x2F;media-shelf</a></p><span id="more"></span><h2 id="目标结构：让刮削器一眼认出"><a href="#目标结构：让刮削器一眼认出" class="headerlink" title="目标结构：让刮削器一眼认出"></a>目标结构：让刮削器一眼认出</h2><p>整理的终点是 Jellyfin&#x2F;Emby 惯例的目录布局：</p><table><thead><tr><th>类型</th><th>目录结构</th><th>示例</th></tr></thead><tbody><tr><td>电影（无系列）</td><td><code>片名 (年)/片名.英文名.年份.片源….mkv</code></td><td><code>天气之子 (2019)/天气之子.天気の子.2019.BluRay….mkv</code></td></tr><tr><td>电影（有系列）</td><td><code>Xxx Collection/片名 (年)/…</code></td><td><code>冰雪奇缘 Collection/冰雪奇缘 (2013)/…</code></td></tr><tr><td>剧集</td><td><code>剧名 (年)/Season 01/剧名 - S01E01.mkv</code></td><td><code>绝命毒师 (2008)/Season 04/绝命毒师 - S04E01.mkv</code></td></tr><tr><td>综艺特别篇</td><td><code>剧名 (年)/Season 00/剧名 - S00E01.标题.mkv</code></td><td><code>现在就出发 (2023)/Season 00/现在就出发 - S00E01.第1期加更….mkv</code></td></tr></tbody></table><p>配套产出：电影写 <code>movie.nfo</code>、剧集写 <code>tvshow.nfo</code> + 每集 <code>SxxExx.nfo</code>，海报从 TMDB 下载。命名模板可配置，字段形如 <code>{cn}.{en}.{year}.{source}.{res}.{codec}</code>，日文作品可以用 <code>{orig}</code> 输出日文原名——TMDB 的 <code>original_language</code> 决定 <code>{orig}</code> 取哪种语言的原名。</p><h2 id="工作流：两阶段把关"><a href="#工作流：两阶段把关" class="headerlink" title="工作流：两阶段把关"></a>工作流：两阶段把关</h2><p>自动匹配必然有误差，所以流程设计成「机器干活、人只看差异」：</p><ol><li><strong>扫描</strong>：ffprobe 读码流参数（分辨率、编码、音轨、HDR），文件名补推片源与发布组。</li><li><strong>联网识别</strong>：逐条查 TMDB，表格里回填中英文名、年份、状态（已匹配 &#x2F; 需人工确认 &#x2F; 无匹配）。</li><li><strong>预览</strong>：生成完整的移动计划（旧路径 → 新路径），不碰任何文件。</li><li><strong>执行</strong>：确认后才移动改名、写 nfo、下海报；目标重名的条目自动跳过，不会覆盖已有文件。</li></ol><p>识别状态有「筛选」下拉可以快速过滤出未匹配的条目，千行以上的库不用滚动找。执行后自动扫描空壳目录并清理。</p><h2 id="匹配引擎：三个关键判断"><a href="#匹配引擎：三个关键判断" class="headerlink" title="匹配引擎：三个关键判断"></a>匹配引擎：三个关键判断</h2><h3 id="译名断层时，原名是唯一的钥匙"><a href="#译名断层时，原名是唯一的钥匙" class="headerlink" title="译名断层时，原名是唯一的钥匙"></a>译名断层时，原名是唯一的钥匙</h3><p>TMDB 的中文条目用的是官方译名，和资源站的叫法经常对不上。实测案例：文件名 <code>长发公主.Tangled.2010…</code>，TMDB 搜「长发公主」不返回任何条目——它的官方译名是《魔发奇缘》，字面上没有交集。但文件名里的 <strong>Tangled</strong> 一搜即中。</p><p>策略：主查询词的匹配结果不够确定时，从文件名里提取原名段（拉丁连续片段，限 2 个）补搜一轮，两轮候选合并打分。文件名只有中文叫法、没有原名的资源仍然是盲区，这类留给「手动匹配」。</p><p>类似的还有后缀污染：<code>碧蓝之海真人版</code> 搜不到条目，TMDB 上对应的是电影《碧蓝之海》(ぐらんぶる, 2020)。「真人版 &#x2F; 动画版 &#x2F; 剧场版 &#x2F; Live Action」这类后缀会剥掉重搜。</p><h3 id="年份信号：电影降级，剧集不降级"><a href="#年份信号：电影降级，剧集不降级" class="headerlink" title="年份信号：电影降级，剧集不降级"></a>年份信号：电影降级，剧集不降级</h3><p>同名不同片是自动匹配最常见的错误，年份是最有效的校验。电影的年份不符时，匹配结果降级为「需人工确认」，不允许直接执行。</p><p>剧集要区别对待：TMDB 剧集条目的年份是<strong>首播年</strong>，而文件夹&#x2F;文件名里常写<strong>季的播出年</strong>。《家有儿女》条目是 2005，S03 实际 2007 年播出——按电影的规则会把 260 个正确匹配全部降级。所以剧集不做年份降级，年份只参与排序打分。</p><h3 id="候选窗口用-TMDB-的排序，不要自己重排"><a href="#候选窗口用-TMDB-的排序，不要自己重排" class="headerlink" title="候选窗口用 TMDB 的排序，不要自己重排"></a>候选窗口用 TMDB 的排序，不要自己重排</h3><p>TMDB 的搜索结果已经按相关性排好。如果先按标题相似度重排再截断前 N，查询词是英文而条目标题是中文时（相似度为 0），正确答案会被挤出窗口，最后匹配到一部无关片。相似度只用来在候选内挑最优，不用来筛候选。</p><h2 id="剧集：集号格式是最大的变量"><a href="#剧集：集号格式是最大的变量" class="headerlink" title="剧集：集号格式是最大的变量"></a>剧集：集号格式是最大的变量</h2><p><code>S01E02</code>、<code>01.flv</code>、<code>[01]</code>、<code>第01话</code>、<code>Dan Da Dan - 01 […]</code>、<code>老九门.EP04.2016…</code>——五花八门。解析器用模式列表依次匹配，全部支持。两个判定规则值得强调：</p><ul><li><strong>电影 vs 剧集</strong>：同目录下出现 ≥2 个不同集号才判为剧集。防止《101忠狗》这类标题里带数字的电影被误判。</li><li><strong>集号解析失败的代价</strong>：<code>EP04</code> 这类格式如果解析不出集号，整目录会被判成电影，进而被匹配到完全无关的条目上（文件名带 EP 编号的资源很容易和外语纪录片撞上）。集号解析器的覆盖面直接决定安全性，宁可多加模式，不能漏。</li></ul><p>剧集搜索不带年份硬过滤（<code>first_air_date_year</code> 会把正主滤掉），年份只做加权。季号支持中文数字（<code>第二季</code>）。</p><h2 id="综艺：播出日期是最强的匹配键"><a href="#综艺：播出日期是最强的匹配键" class="headerlink" title="综艺：播出日期是最强的匹配键"></a>综艺：播出日期是最强的匹配键</h2><p>国产综艺在 TMDB 的组织方式和文件名正好能对上：<strong>「第1期上」「第1期下」是两个独立集</strong>（E01 &#x2F; E02），每集有 <code>air_date</code>。只要文件名里保留了播出日期（<code>2026-07-25 第5期上.mkv</code>），就能零歧义精确匹配。三级定位策略：</p><ol><li><code>air_date</code> 精确命中（最强，优先）；</li><li>「第N期上&#x2F;下」在集标题里唯一命中；</li><li>期号数学映射兜底（上 &#x3D; N×2-1，下 &#x3D; N×2），验证该集存在。</li></ol><p>跨季的期号会撞（S01&#x2F;S02&#x2F;S04 都有「第6期上」），所以先用目录里的季号锁定候选季。</p><p><strong>非正片归 Specials</strong>：加更、花絮、抢先看、先行、无期数的先导篇在 TMDB 没有集条目。这类内容硬编进正片集号会和 TMDB 集序错位，行业惯例是归 <code>Season 00</code>（Specials），按播出日期编 <code>S00E01..n</code>，文件名保留原标题，刮削器显示为特别篇。</p><h2 id="安全边界"><a href="#安全边界" class="headerlink" title="安全边界"></a>安全边界</h2><p>批量改名是不可逆操作，程序侧做了几层约束：</p><ul><li><strong>预览先行</strong>：执行前必须看到完整的旧路径 → 新路径计划。</li><li><strong>目标重名跳过</strong>：多版本并存（8bit&#x2F;10bit 压制）时不覆盖、不删除，留给人工选择。</li><li><strong>空目录清理只删空壳</strong>：判定规则是「整棵树里没有任何视频」，含视频的目录永远不动。</li><li><strong>NAS 上的删除要绕开回收站钩子</strong>：Windows 环境下 Python 进程内的 <code>os.rmdir</code>&#x2F;<code>shutil.rmtree</code> 可能被系统层的回收站重定向劫持，SMB 盘无回收站时直接失败。实现上用 ctypes 调 Win32 <code>RemoveDirectoryW</code>&#x2F;<code>DeleteFileW</code> 完成清理。</li></ul><h2 id="已知限制"><a href="#已知限制" class="headerlink" title="已知限制"></a>已知限制</h2><ul><li>外挂字幕不跟随视频移动，需要手动搬到新目录。</li><li>片源（BluRay &#x2F; WEB-DL &#x2F; REMUX）无法从码流判断，文件名没写时按码率与体积推断，可能不准。</li><li>ISO 与 BDMV 目录只识别外层文件，不进入 <code>STREAM</code> 逐段处理。</li><li>文件名里只有中文叫法、没有原名的资源，译名断层时匹配不上，需手动指定。</li><li>同一部片的多个压制版本（8bit&#x2F;10bit）不是重复文件，程序不自动去重，取哪个版本由人定。</li></ul><h2 id="实测数据"><a href="#实测数据" class="headerlink" title="实测数据"></a>实测数据</h2><table><thead><tr><th>库</th><th>规模</th><th>结果</th></tr></thead><tbody><tr><td>电影 + 动画电影</td><td>333 个视频</td><td>命中 329（98.8%），剧集 145 集全中</td></tr><tr><td>电视剧</td><td>1053 个视频，19 部剧</td><td>1052 自动匹配，1 个错别字目录手动指定</td></tr><tr><td>综艺</td><td>40 个文件</td><td>40&#x2F;40 全自动，含 12 个加更&#x2F;先导篇归 Specials</td></tr></tbody></table><p>回归测试 71 项，覆盖集号解析、译名补搜、剧集&#x2F;综艺判定、Specials 归档。每次整理真实库前先跑两阶段识别统计，把系统性错配挡在执行之前——识别层的一个解析漏洞（如某种集号格式漏掉）会同时影响整个目录，批量执行前的预览把关是必要的，不是可选的。</p><h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>本地媒体库整理的核心问题不是改名，而是<strong>识别</strong>：把发布组的命名语义翻译成 TMDB 条目 ID。译名、年份、集号、期号、播出日期都是线索，可靠性依次递增；线索不足时降级为「需人工确认」，永远比错配安全。</p><p>MediaShelf 在 <a href="https://github.com/szjmhxd/media-shelf">GitHub</a> 开源，Releases 提供单文件 exe（含 SHA256 校验），Windows 10+ 直接运行。欢迎提 issue 和 PR。</p>]]>
+    </content>
+    <id>https://szjmhxd.github.io/posts/fa5857ce/</id>
+    <link href="https://szjmhxd.github.io/posts/fa5857ce/"/>
+    <published>2026-11-26T16:25:00.000Z</published>
+    <summary>本地影视库文件名五花八门，Jellyfin/Emby 刮削认不出。MediaShelf 用 TMDB 做识别与归档：译名断层靠原名补搜、剧集按集号分流、综艺按播出日期定位，整理两千多个文件的实测经验。</summary>
+    <title>MediaShelf：把混乱的本地影视库整理成刮削器认得的结构</title>
+    <updated>2026-11-26T16:25:00.000Z</updated>
+  </entry>
   <entry>
     <author>
       <name>十早九木</name>
@@ -167,8 +186,8 @@
       <name>十早九木</name>
     </author>
     <category term="折腾记录" scheme="https://szjmhxd.github.io/categories/%E6%8A%98%E8%85%BE%E8%AE%B0%E5%BD%95/"/>
-    <category term="AstrBot" scheme="https://szjmhxd.github.io/tags/AstrBot/"/>
     <category term="Python" scheme="https://szjmhxd.github.io/tags/Python/"/>
+    <category term="AstrBot" scheme="https://szjmhxd.github.io/tags/AstrBot/"/>
     <category term="插件开发" scheme="https://szjmhxd.github.io/tags/%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/"/>
     <category term="KOOK" scheme="https://szjmhxd.github.io/tags/KOOK/"/>
     <category term="API 排查" scheme="https://szjmhxd.github.io/tags/API-%E6%8E%92%E6%9F%A5/"/>
@@ -206,8 +225,8 @@
       <name>十早九木</name>
     </author>
     <category term="折腾" scheme="https://szjmhxd.github.io/categories/%E6%8A%98%E8%85%BE/"/>
-    <category term="AstrBot" scheme="https://szjmhxd.github.io/tags/AstrBot/"/>
     <category term="Python" scheme="https://szjmhxd.github.io/tags/Python/"/>
+    <category term="AstrBot" scheme="https://szjmhxd.github.io/tags/AstrBot/"/>
     <category term="插件开发" scheme="https://szjmhxd.github.io/tags/%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/"/>
     <category term="和风天气" scheme="https://szjmhxd.github.io/tags/%E5%92%8C%E9%A3%8E%E5%A4%A9%E6%B0%94/"/>
     <content>
